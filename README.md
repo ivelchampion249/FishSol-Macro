@@ -23,3 +23,5 @@ From here, walk to wherever you would like to fish, and start the macro.
 - Auto-Sell
 - Different Resolution Settings
 - More to come!
+
+Happy fishing!
