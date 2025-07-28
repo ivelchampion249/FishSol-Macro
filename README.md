@@ -24,4 +24,4 @@ From here, walk to wherever you would like to fish, and start the macro.
 - Different Resolution Settings
 - More to come!
 
-Happy fishing!
+Happy fishing, gamblers!
