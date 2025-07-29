@@ -1,5 +1,6 @@
-﻿; ALL credits go to ivelchampion249 or .ivelchampion249._30053 on Discord for making the whole script!
+; ALL credits go to ivelchampion249 or .ivelchampion249._30053 on Discord for making the whole script!
 ; Credits to maxstellar for adding GUI, patch fixes, and 1440p support.
+; Credits to cresqnt for vastly improving GUI.
 ; Special thanks to cresqnt and x2_c for the auto-sell idea!
 
 #NoEnv
@@ -18,31 +19,71 @@ if (FileExist(iniFilePath)) {
     }
 }
 
-; GUI
-Gui, Add, Tab, x5 y5 w400 h150 vTabs, Macro|Resolution|Credits
+Gui, Color, 0x2D2D30
+Gui, Font, s12 cWhite Bold, Segoe UI
 
-Gui, Tab, 1
-Gui, Add, Text,, Use 100`% scaling, and Roblox in fullscreen.
-Gui, Add, Button, gStartScript, F1 - Start
-Gui, Add, Button, x+5 gPauseScript, F2 - Pause
-Gui, Add, Button, x+5 gCloseScript, F3 - Stop
+Gui, Add, Text, x20 y15 w460 h30 Center BackgroundTrans, fishSol v1.2
 
-Gui, Tab, 2
-Gui, Add, Text,, Choose your resolution!
-Gui, Add, DropDownList, vResolution gSelectRes, 1080p|1440p
+; Set normal font for GroupBox labels
+Gui, Font, s9 cWhite Normal, Segoe UI
+Gui, Add, GroupBox, x15 y50 w220 h140 cWhite, Control Panel
+Gui, Font, s10 cWhite Bold
+Gui, Add, Text, x25 y75 w200 h20 BackgroundTrans, Status:
+Gui, Add, Text, x75 y75 w140 h20 vStatusText BackgroundTrans c0xFF6B6B, Stopped
+Gui, Font, s9 cWhite Normal
 
-Gui, Tab, 3
-Gui, Font, bold
-Gui, Add, Text,, Credits!
-Gui, Font, norm
-Gui, Add, Text,, ivelchampion249 - Creator + Main Developer
-Gui, Add, Text,, maxstellar - Developer
-Gui, Add, Text,, Special thanks to cresqnt and x2_c for the auto-sell idea!
+; Set consistent font for buttons
+Gui, Font, s9 cWhite Bold, Segoe UI
+Gui, Add, Button, x25 y100 w60 h30 gStartScript vStartBtn c0x2196F3 +0x8000, Start
+Gui, Add, Button, x95 y100 w60 h30 gPauseScript vPauseBtn c0x2196F3 +0x8000, Pause
+Gui, Add, Button, x165 y100 w60 h30 gCloseScript vStopBtn c0x2196F3 +0x8000, Stop
 
-Gui, Tab
-Gui, Show, w400 h150, fishSol v1.1
+Gui, Font, s8 c0xB0B0B0
+Gui, Add, Text, x25 y140 w200 h15 BackgroundTrans, Hotkeys: F1=Start F2=Pause F3=Stop
+Gui, Add, Text, x25 y155 w200 h15 BackgroundTrans, Use 100`% scaling, Roblox fullscreen
 
-GuiControl, Choose, Resolution, %res%
+; Ensure consistent font for GroupBox labels
+Gui, Font, s9 cWhite Normal, Segoe UI
+Gui, Add, GroupBox, x250 y50 w220 h140 cWhite, Settings
+Gui, Font, s10 cWhite
+Gui, Add, Text, x260 y75 w100 h20 BackgroundTrans, Resolution:
+Gui, Add, DropDownList, x260 y95 w100 h200 vResolution gSelectRes, 1080p|1440p
+
+Gui, Font, s9 c0x4CAF50 Bold
+Gui, Add, Text, x260 y130 w200 h20 vResStatusText BackgroundTrans, Ready
+
+; Ensure consistent font for GroupBox labels
+Gui, Font, s9 cWhite Normal, Segoe UI
+Gui, Add, GroupBox, x15 y200 w455 h140 cWhite, Info
+
+; Statistics section with better spacing and alignment
+Gui, Font, s10 cWhite Bold, Segoe UI
+Gui, Add, Text, x30 y225 w80 h20 BackgroundTrans, Runtime:
+Gui, Add, Text, x90 y225 w120 h20 vRuntimeText BackgroundTrans c0x4CAF50, 00:00:00
+
+Gui, Add, Text, x30 y250 w80 h20 BackgroundTrans, Cycles:
+Gui, Add, Text, x75 y250 w120 h20 vCyclesText BackgroundTrans c0x4CAF50, 0
+
+; Add a visual separator line
+Gui, Font, s8 c0x555555
+Gui, Add, Text, x25 y275 w440 h1 0x10 BackgroundTrans
+
+; Credits section with better formatting
+Gui, Font, s8 c0xB0B0B0 Normal, Segoe UI
+Gui, Add, Text, x30 y285 w200 h15 BackgroundTrans, Creator: ivelchampion249
+Gui, Add, Text, x30 y300 w200 h15 BackgroundTrans, Developers: maxstellar && cresqnt
+Gui, Add, Text, x30 y315 w200 h15 BackgroundTrans, Special thanks: x2_c (auto-sell idea)
+
+Gui, Show, w485 h355, fishSol v1.2
+
+if (res = "1080p") {
+    GuiControl, Choose, Resolution, 1
+} else if (res = "1440p") {
+    GuiControl, Choose, Resolution, 2
+} else {
+    GuiControl, Choose, Resolution, 1
+    res := "1080p"
+}
 return
 
 GuiClose:
@@ -50,6 +91,30 @@ ExitApp
 
 toggle := false
 firstLoop := true
+startTime := 0
+cycleCount := 0
+
+UpdateGUI() {
+    if (toggle) {
+        GuiControl,, StatusText, Running
+        GuiControl, +c0x4CAF50, StatusText
+        GuiControl,, ResStatusText, Active - %res%
+
+        elapsed := A_TickCount - startTime
+        hours := elapsed // 3600000
+        minutes := (elapsed - hours * 3600000) // 60000
+        seconds := (elapsed - hours * 3600000 - minutes * 60000) // 1000
+        timeStr := Format("{:02d}:{:02d}:{:02d}", hours, minutes, seconds)
+        GuiControl,, RuntimeText, %timeStr%
+        GuiControl, +c0x4CAF50, RuntimeText
+        GuiControl,, CyclesText, %cycleCount%
+        GuiControl, +c0x4CAF50, CyclesText
+    } else {
+        GuiControl,, StatusText, Stopped
+        GuiControl, +c0xFF6B6B, StatusText
+        GuiControl,, ResStatusText, Ready
+    }
+}
 
 F1::
 if (!res) {
@@ -57,14 +122,18 @@ if (!res) {
 }
 if (!toggle) {
     toggle := true
+    startTime := A_TickCount
+    cycleCount := 0
     IniWrite, %res%, %iniFilePath%, "Macro", "resolution"
-    WinActivate, ahk_exe RobloxPlayerBeta.exe ;
+    WinActivate, ahk_exe RobloxPlayerBeta.exe
+    UpdateGUI()
+    SetTimer, UpdateGUITimer, 1000
     if (res = "1080p") {
         SetTimer, DoMouseMove, 100
     } else if (res = "1440p") {
 	SetTimer, DoMouseMove2, 100
     } else {
-        MsgBox, Something went wrong with resolution settings.
+        MsgBox, 48, Error, Something went wrong with resolution settings.
 	ExitApp
     }
 }
@@ -75,10 +144,16 @@ toggle := false
 firstLoop := true
 SetTimer, DoMouseMove, Off
 SetTimer, DoMouseMove2, Off
+SetTimer, UpdateGUITimer, Off
+UpdateGUI()
 ToolTip
 Return
 
 F3::ExitApp
+
+UpdateGUITimer:
+UpdateGUI()
+Return
 
 DoMouseMove:
 if (toggle) {
@@ -150,6 +225,7 @@ if (toggle) {
 	sleep 700
         MouseClick, Left
         sleep 300
+        cycleCount++
     }
 }
 Return
@@ -223,6 +299,7 @@ if (toggle) {
 	sleep 700
         MouseClick, Left
         sleep 300
+        cycleCount++
     }
 }
 Return
@@ -230,10 +307,14 @@ Return
 StartScript:
 if (!toggle) {
     toggle := true
-    WinActivate, ahk_exe RobloxPlayerBeta.exe ;
-    if (Resolution == "1080p") {
+    startTime := A_TickCount
+    cycleCount := 0
+    WinActivate, ahk_exe RobloxPlayerBeta.exe
+    UpdateGUI()
+    SetTimer, UpdateGUITimer, 1000
+    if (res = "1080p") {
         SetTimer, DoMouseMove, 100
-    } else {
+    } else if (res = "1440p") {
 	SetTimer, DoMouseMove2, 100
     }
 }
@@ -243,6 +324,9 @@ PauseScript:
 toggle := false
 firstLoop := true
 SetTimer, DoMouseMove, Off
+SetTimer, DoMouseMove2, Off
+SetTimer, UpdateGUITimer, Off
+UpdateGUI()
 ToolTip
 return
 
@@ -253,5 +337,6 @@ return
 SelectRes:
 Gui, Submit, nohide
 res := Resolution
-IniWrite, "%res%", %iniFilePath%, "Macro", "resolution"
+IniWrite, %res%, %iniFilePath%, "Macro", "resolution"
+UpdateGUI()
 return
