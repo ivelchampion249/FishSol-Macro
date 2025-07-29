@@ -11,8 +11,8 @@
 
 ## Installation
 1. Download [AutoHotKey v1.1](https://www.autohotkey.com/) (not v2.0) and install it
-2. Download the most recent release of fishSol, and put it into an empty folder.
-3. Run fishSol through the .ahk file by double-clicking it, or right-clicking it and selecting "Run".
+2. Download the most recent release of fishSol, and put it into an empty folder
+3. Run fishSol through the .ahk file by double-clicking it, or right-clicking it and selecting "Run"
 
 ## Instructions
 To use this macro to its fullest potential, you will need to setup auto-sell.
