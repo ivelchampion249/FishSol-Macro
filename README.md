@@ -16,7 +16,7 @@
 
 ## Instructions
 To use this macro to its fullest potential, you will need to setup auto-sell.
-To start, go up to the Fisherman NPC (Flarg) and interact with him.
+To start, go up to the Fisherman NPC (Captain Flarg) and interact with him.
 Open the "Sell" menu, and do not close it.
 From here, walk to wherever you would like to fish, and start the macro.
 
