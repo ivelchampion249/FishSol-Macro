@@ -2,7 +2,7 @@
 <h1>fishSol Macro</h1>
 <p>A macro for the Roblox game Sol's RNG, specifically to automate its fishing minigame.</p>
 
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/ivelchampion249/FishSol-Macro/total)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/ivelchampion249/FishSol-Macro/total#)
 ![GitHub Release](https://img.shields.io/github/v/release/ivelchampion249/FishSol-Macro)
 ![Static Badge](https://img.shields.io/badge/license-CC_BY--NC--ND_4.0-orange)
 
