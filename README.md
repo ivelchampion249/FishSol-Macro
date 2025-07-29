@@ -4,7 +4,8 @@
 
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/ivelchampion249/FishSol-Macro/total)
 ![GitHub Release](https://img.shields.io/github/v/release/ivelchampion249/FishSol-Macro)
-![GitHub License](https://img.shields.io/github/license/ivelchampion249/FishSol-Macro)
+[![GitHub License](https://img.shields.io/github/license/ivelchampion249/FishSol-Macro)](https://img.shields.io/badge/license-CC_BY--NC--ND_4.0-orange
+)
 </div>
 
 ## Installation
