@@ -47,7 +47,7 @@ Gui, Font, s9 cWhite Normal, Segoe UI
 Gui, Add, GroupBox, x250 y50 w220 h140 cWhite, Settings
 Gui, Font, s10 cWhite
 Gui, Add, Text, x260 y75 w100 h20 BackgroundTrans, Resolution:
-Gui, Add, DropDownList, x260 y95 w100 h200 vResolution gSelectRes, 1080p|1440p
+Gui, Add, DropDownList, x260 y95 w100 h200 vResolution gSelectRes, 1080p|1440p|1366x768
 
 Gui, Font, s9 c0x4CAF50 Bold
 Gui, Add, Text, x260 y130 w200 h20 vResStatusText BackgroundTrans, Ready
@@ -80,6 +80,8 @@ if (res = "1080p") {
     GuiControl, Choose, Resolution, 1
 } else if (res = "1440p") {
     GuiControl, Choose, Resolution, 2
+} else if (res = "1366x768") {
+    GuiControl, Choose, Resolution, 3
 } else {
     GuiControl, Choose, Resolution, 1
     res := "1080p"
@@ -91,16 +93,37 @@ ExitApp
 
 toggle := false
 firstLoop := true
-startTime := 0
+startTick := 0
 cycleCount := 0
 
-UpdateGUI() {
+UpdateGUI:
+if (toggle) {
+    GuiControl,, StatusText, Running
+    GuiControl, +c0x4CAF50, StatusText
+    GuiControl,, ResStatusText, Active - %res%
+
+    elapsed := A_TickCount - startTick
+    hours := elapsed // 3600000
+    minutes := (elapsed - hours * 3600000) // 60000
+    seconds := (elapsed - hours * 3600000 - minutes * 60000) // 1000
+    timeStr := Format("{:02d}:{:02d}:{:02d}", hours, minutes, seconds)
+    GuiControl,, RuntimeText, %timeStr%
+    GuiControl, +c0x4CAF50, RuntimeText
+    GuiControl,, CyclesText, %cycleCount%
+    GuiControl, +c0x4CAF50, CyclesText
+} else {
+    GuiControl,, StatusText, Stopped
+    GuiControl, +c0xFF6B6B, StatusText
+    GuiControl,, ResStatusText, Ready
+}
+
+ManualGUIUpdate() {
     if (toggle) {
         GuiControl,, StatusText, Running
         GuiControl, +c0x4CAF50, StatusText
         GuiControl,, ResStatusText, Active - %res%
 
-        elapsed := A_TickCount - startTime
+        elapsed := A_TickCount - startTick
         hours := elapsed // 3600000
         minutes := (elapsed - hours * 3600000) // 60000
         seconds := (elapsed - hours * 3600000 - minutes * 60000) // 1000
@@ -122,19 +145,22 @@ if (!res) {
 }
 if (!toggle) {
     toggle := true
-    startTime := A_TickCount
-    cycleCount := 0
+    if (startTick = "") {
+        startTick := A_TickCount
+    }
+    if (cycleCount = "") {
+        cycleCount := 0
+    }
     IniWrite, %res%, %iniFilePath%, "Macro", "resolution"
     WinActivate, ahk_exe RobloxPlayerBeta.exe
-    UpdateGUI()
-    SetTimer, UpdateGUITimer, 1000
+    ManualGUIUpdate()
+    SetTimer, UpdateGUI, 1000
     if (res = "1080p") {
         SetTimer, DoMouseMove, 100
     } else if (res = "1440p") {
 	SetTimer, DoMouseMove2, 100
-    } else {
-        MsgBox, 48, Error, Something went wrong with resolution settings.
-	ExitApp
+    } else if (res = "1366x768") {
+        SetTimer, DoMouseMove3, 100
     }
 }
 Return
@@ -144,16 +170,13 @@ toggle := false
 firstLoop := true
 SetTimer, DoMouseMove, Off
 SetTimer, DoMouseMove2, Off
-SetTimer, UpdateGUITimer, Off
-UpdateGUI()
+SetTimer, DoMouseMove3, Off
+SetTimer, UpdateGUI, Off
+ManualGUIUpdate()
 ToolTip
 Return
 
 F3::ExitApp
-
-UpdateGUITimer:
-UpdateGUI()
-Return
 
 DoMouseMove:
 if (toggle) {
@@ -304,18 +327,98 @@ if (toggle) {
 }
 Return
 
+DoMouseMove3:
+if (toggle) {
+    ; Wrap the entire script in a loop to make it repeat
+    Loop {
+        if (!toggle) {
+            break
+	}
+	MouseMove, 589, 589, 3
+        Sleep 300
+        MouseClick, Left
+	sleep 300
+	; Auto-sell
+	if (firstLoop == false) {
+	    MouseMove, 587, 291, 3
+	    sleep 300
+	    MouseClick, Left
+	    sleep 300
+	    MouseMove, 421, 572, 3
+	    sleep 300
+	    MouseClick, Left
+	    sleep 300
+	    MouseMove, 594, 430, 3
+	    sleep 300
+	    MouseClick, Left
+	    sleep 300
+	} else {
+	    firstLoop := false
+	}
+	barColor := 0
+	otherBarColor := 0
+
+        ; Check for white pixel
+        Loop {
+            ErrorLevel := 0
+            PixelSearch, px, py, 866, 593, 865, 593, 0xFFFFFF, 10, Fast RGB
+            if (ErrorLevel = 0) {
+                MouseMove, 676, 638, 3
+		; Determine randomized bar color
+		Sleep 50
+                PixelGetColor, barColor, 674, 533, RGB
+                SetTimer, DoMouseMove, Off
+                break
+            }
+            if (!toggle) {
+                Return
+            }
+        }
+
+        ; === PixelSearch loop with 13-second timeout ===
+        startTime := A_TickCount
+        Loop {
+            if (!toggle)
+                break
+            if (A_TickCount - startTime > 9000)
+                break
+
+            ErrorLevel := 0
+            PixelSearch, FoundX, FoundY, 513, 531, 856, 549, barColor, 5, Fast RGB
+
+            if (ErrorLevel = 0) {
+            } else {
+                MouseClick, left
+            }
+        }
+        sleep 300
+        MouseMove, 817, 210, 3
+	sleep 700
+        MouseClick, Left
+        sleep 300
+        cycleCount++
+    }
+}
+Return
+
 StartScript:
 if (!toggle) {
     toggle := true
-    startTime := A_TickCount
-    cycleCount := 0
+    if (startTick = "") {
+        startTick := A_TickCount
+    }
+    if (cycleCount = "") {
+        cycleCount := 0
+    }
     WinActivate, ahk_exe RobloxPlayerBeta.exe
-    UpdateGUI()
-    SetTimer, UpdateGUITimer, 1000
+    ManualGUIUpdate()
+    SetTimer, UpdateGUI, 1000
     if (res = "1080p") {
         SetTimer, DoMouseMove, 100
     } else if (res = "1440p") {
 	SetTimer, DoMouseMove2, 100
+    } else if (res = "1366x768") {
+        SetTimer, DoMouseMove3, 100
     }
 }
 return
@@ -325,18 +428,19 @@ toggle := false
 firstLoop := true
 SetTimer, DoMouseMove, Off
 SetTimer, DoMouseMove2, Off
-SetTimer, UpdateGUITimer, Off
-UpdateGUI()
+SetTimer, DoMouseMove3, Off
+SetTimer, UpdateGUI, Off
+ManualGUIUpdate()
 ToolTip
 return
 
 CloseScript:
-	ExitApp
+ExitApp
 return
 
 SelectRes:
 Gui, Submit, nohide
 res := Resolution
 IniWrite, %res%, %iniFilePath%, "Macro", "resolution"
-UpdateGUI()
+ManualGUIUpdate()
 return
