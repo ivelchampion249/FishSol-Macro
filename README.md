@@ -26,4 +26,7 @@ From here, walk to wherever you would like to fish, and start the macro.
 - Different Resolution Settings
 - More to come!
 
+## Need help?
+[Create an issue](https://github.com/ivelchampion249/FishSol-Macro/issues/new) on GitHub and submit information about what is going wrong, and we will try to help you or fix the problem.
+
 Happy fishing, gamblers!
