@@ -1,7 +1,7 @@
 ; ALL credits go to ivelchampion249 or .ivelchampion249._30053 on Discord for making the whole script!
-; Credits to maxstellar for adding GUI, patch fixes, and 1440p support.
+; Credits to maxstellar for adding GUI, patch and stability fixes, 1440p and 1366x768 support.
 ; Credits to cresqnt for vastly improving GUI.
-; Special thanks to cresqnt and x2_c for the auto-sell idea!
+; Special thanks to x2_c for the auto-sell idea!
 
 #NoEnv
 #SingleInstance Force
@@ -9,6 +9,10 @@ SetWorkingDir %A_ScriptDir%
 CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
 iniFilePath := A_ScriptDir "\settings.ini"
+iconFilePath := A_ScriptDir "\icon.ico"
+if (FileExist(iconFilePath)) {
+    Menu, Tray, Icon, icon.ico
+}
 
 res := "1080p"
 if (FileExist(iniFilePath)) {
@@ -21,8 +25,7 @@ if (FileExist(iniFilePath)) {
 
 Gui, Color, 0x2D2D30
 Gui, Font, s12 cWhite Bold, Segoe UI
-
-Gui, Add, Text, x20 y15 w460 h30 Center BackgroundTrans, fishSol v1.2
+Gui, Add, Text, x20 y15 w460 h30 Center BackgroundTrans, fishSol v1.3
 
 ; Set normal font for GroupBox labels
 Gui, Font, s9 cWhite Normal, Segoe UI
@@ -39,7 +42,7 @@ Gui, Add, Button, x95 y100 w60 h30 gPauseScript vPauseBtn c0x2196F3 +0x8000, Pau
 Gui, Add, Button, x165 y100 w60 h30 gCloseScript vStopBtn c0x2196F3 +0x8000, Stop
 
 Gui, Font, s8 c0xB0B0B0
-Gui, Add, Text, x25 y140 w200 h15 BackgroundTrans, Hotkeys: F1=Start F2=Pause F3=Stop
+Gui, Add, Text, x25 y140 w200 h15 BackgroundTrans, Hotkeys: F1=Start, F2=Pause, F3=Stop
 Gui, Add, Text, x25 y155 w200 h15 BackgroundTrans, Use 100`% scaling, Roblox fullscreen
 
 ; Ensure consistent font for GroupBox labels
@@ -74,7 +77,7 @@ Gui, Add, Text, x30 y285 w200 h15 BackgroundTrans, Creator: ivelchampion249
 Gui, Add, Text, x30 y300 w200 h15 BackgroundTrans, Developers: maxstellar && cresqnt
 Gui, Add, Text, x30 y315 w200 h15 BackgroundTrans, Special thanks: x2_c (auto-sell idea)
 
-Gui, Show, w485 h355, fishSol v1.2
+Gui, Show, w485 h355, fishSol v1.3
 
 if (res = "1080p") {
     GuiControl, Choose, Resolution, 1
@@ -210,6 +213,7 @@ if (toggle) {
 	otherBarColor := 0
 
         ; Check for white pixel
+        startWhitePixelSearch := A_TickCount
         Loop {
             PixelGetColor, color, 1176, 836, RGB
             if (color = 0xFFFFFF) {
@@ -220,7 +224,14 @@ if (toggle) {
                 SetTimer, DoMouseMove, Off
                 break
             }
-            Sleep, 100
+            if (A_TickCount - startWhitePixelSearch > 60000) {
+                MouseMove, 1113, 342, 3
+                sleep 300
+                MouseClick, left
+                sleep 300
+                StartScript(res)
+                Return
+            }
             if (!toggle) {
                 Return
             }
@@ -245,7 +256,15 @@ if (toggle) {
 
         sleep 300
         MouseMove, 1113, 342, 3
-	sleep 700
+	Loop {
+            PixelGetColor, color, 1112, 342, RGB
+            if (color = 0xFFFFFF) {
+                break
+            }
+            if (!toggle) {
+                Return
+            }
+        }
         MouseClick, Left
         sleep 300
         cycleCount++
@@ -285,6 +304,7 @@ if (toggle) {
 	otherBarColor := 0
 
         ; Check for white pixel
+        startWhitePixelSearch := A_TickCount
         Loop {
             PixelGetColor, color, 1536, 1119, RGB
             if (color = 0xFFFFFF) {
@@ -294,6 +314,14 @@ if (toggle) {
                 PixelGetColor, barColor, 1261, 1033, RGB
                 SetTimer, DoMouseMove, Off
                 break
+            }
+            if (A_TickCount - startWhitePixelSearch > 60000) {
+                MouseMove, 1457, 491, 3
+                sleep 300
+                MouseClick, left
+                sleep 300
+                StartScript(res)
+                Return
             }
             if (!toggle) {
                 Return
@@ -316,10 +344,19 @@ if (toggle) {
                 MouseClick, left
             }
         }
-
+        
         sleep 300
         MouseMove, 1457, 491, 3
-	sleep 700
+	Loop {
+            PixelGetColor, color, 1455, 492, RGB
+            if (color = 0xFFFFFF) {
+                break
+            }
+            if (!toggle) {
+                Return
+            }
+        }
+
         MouseClick, Left
         sleep 300
         cycleCount++
@@ -359,6 +396,7 @@ if (toggle) {
 	otherBarColor := 0
 
         ; Check for white pixel
+        startWhitePixelSearch := A_TickCount
         Loop {
             ErrorLevel := 0
             PixelSearch, px, py, 866, 593, 865, 593, 0xFFFFFF, 10, Fast RGB
@@ -369,6 +407,14 @@ if (toggle) {
                 PixelGetColor, barColor, 674, 533, RGB
                 SetTimer, DoMouseMove, Off
                 break
+            }
+            if (A_TickCount - startWhitePixelSearch > 60000) {
+                MouseMove, 817, 210, 3
+                sleep 300
+                MouseClick, left
+                sleep 300
+                StartScript(res)
+                Return
             }
             if (!toggle) {
                 Return
@@ -393,7 +439,19 @@ if (toggle) {
         }
         sleep 300
         MouseMove, 817, 210, 3
-	sleep 700
+        Sleep 700
+        /*
+	Loop {
+            ErrorLevel := 0
+            PixelSearch, px, py, 816, 211, 8616, 211, 0xFEFEFE, 10, Fast RGB
+            if (ErrorLevel = 0) {
+                break
+            }
+            if (!toggle) {
+                Return
+            }
+        }
+        */
         MouseClick, Left
         sleep 300
         cycleCount++
@@ -422,6 +480,29 @@ if (!toggle) {
     }
 }
 return
+
+StartScript(res) {
+    if (!toggle) {
+        toggle := true
+        if (startTick = "") {
+            startTick := A_TickCount
+        }
+        if (cycleCount = "") {
+            cycleCount := 0
+        }
+        WinActivate, ahk_exe RobloxPlayerBeta.exe
+        ManualGUIUpdate()
+        SetTimer, UpdateGUI, 1000
+        if (res = "1080p") {
+            SetTimer, DoMouseMove, 100
+        } else if (res = "1440p") {
+            SetTimer, DoMouseMove2, 100
+        } else if (res = "1366x768") {
+            SetTimer, DoMouseMove3, 100
+        }
+    }
+    return
+}
 
 PauseScript:
 toggle := false
