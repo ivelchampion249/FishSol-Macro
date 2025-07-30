@@ -1,5 +1,5 @@
 <div align="center" style="text-align: center;">
-<h1><img src="icon.ico" height="30px"> fishSol Macro</h1>
+<h1><img src="icon.ico" height="30px">  fishSol Macro</h1>
 <p>A macro for the Roblox game Sol's RNG, specifically to automate its fishing minigame.</p>
 
 <!-- ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/ivelchampion249/FishSol-Macro/total#) -->
