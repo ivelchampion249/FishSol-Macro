@@ -25,9 +25,8 @@ if (FileExist(iniFilePath)) {
 
 Gui, Color, 0x2D2D30
 Gui, Font, s12 cWhite Bold, Segoe UI
-Gui, Add, Text, x20 y15 w460 h30 Center BackgroundTrans, fishSol v1.3
+Gui, Add, Text, x20 y15 w460 h30 Center BackgroundTrans, fishSol v1.3.1
 
-; Set normal font for GroupBox labels
 Gui, Font, s9 cWhite Normal, Segoe UI
 Gui, Add, GroupBox, x15 y50 w220 h140 cWhite, Control Panel
 Gui, Font, s10 cWhite Bold
@@ -35,7 +34,6 @@ Gui, Add, Text, x25 y75 w200 h20 BackgroundTrans, Status:
 Gui, Add, Text, x75 y75 w140 h20 vStatusText BackgroundTrans c0xFF6B6B, Stopped
 Gui, Font, s9 cWhite Normal
 
-; Set consistent font for buttons
 Gui, Font, s9 cWhite Bold, Segoe UI
 Gui, Add, Button, x25 y100 w60 h30 gStartScript vStartBtn c0x2196F3 +0x8000, Start
 Gui, Add, Button, x95 y100 w60 h30 gPauseScript vPauseBtn c0x2196F3 +0x8000, Pause
@@ -45,7 +43,6 @@ Gui, Font, s8 c0xB0B0B0
 Gui, Add, Text, x25 y140 w200 h15 BackgroundTrans, Hotkeys: F1=Start, F2=Pause, F3=Stop
 Gui, Add, Text, x25 y155 w200 h15 BackgroundTrans, Use 100`% scaling, Roblox fullscreen
 
-; Ensure consistent font for GroupBox labels
 Gui, Font, s9 cWhite Normal, Segoe UI
 Gui, Add, GroupBox, x250 y50 w220 h140 cWhite, Settings
 Gui, Font, s10 cWhite
@@ -55,11 +52,9 @@ Gui, Add, DropDownList, x260 y95 w100 h200 vResolution gSelectRes, 1080p|1440p|1
 Gui, Font, s9 c0x4CAF50 Bold
 Gui, Add, Text, x260 y130 w200 h20 vResStatusText BackgroundTrans, Ready
 
-; Ensure consistent font for GroupBox labels
 Gui, Font, s9 cWhite Normal, Segoe UI
 Gui, Add, GroupBox, x15 y200 w455 h140 cWhite, Info
 
-; Statistics section with better spacing and alignment
 Gui, Font, s10 cWhite Bold, Segoe UI
 Gui, Add, Text, x30 y225 w80 h20 BackgroundTrans, Runtime:
 Gui, Add, Text, x90 y225 w120 h20 vRuntimeText BackgroundTrans c0x4CAF50, 00:00:00
@@ -67,17 +62,15 @@ Gui, Add, Text, x90 y225 w120 h20 vRuntimeText BackgroundTrans c0x4CAF50, 00:00:
 Gui, Add, Text, x30 y250 w80 h20 BackgroundTrans, Cycles:
 Gui, Add, Text, x75 y250 w120 h20 vCyclesText BackgroundTrans c0x4CAF50, 0
 
-; Add a visual separator line
 Gui, Font, s8 c0x555555
 Gui, Add, Text, x25 y275 w440 h1 0x10 BackgroundTrans
 
-; Credits section with better formatting
 Gui, Font, s8 c0xB0B0B0 Normal, Segoe UI
 Gui, Add, Text, x30 y285 w200 h15 BackgroundTrans, Creator: ivelchampion249
 Gui, Add, Text, x30 y300 w200 h15 BackgroundTrans, Developers: maxstellar && cresqnt
 Gui, Add, Text, x30 y315 w200 h15 BackgroundTrans, Special thanks: x2_c (auto-sell idea)
 
-Gui, Show, w485 h355, fishSol v1.3
+Gui, Show, w485 h355, fishSol v1.4
 
 if (res = "1080p") {
     GuiControl, Choose, Resolution, 1
@@ -224,7 +217,7 @@ if (toggle) {
                 SetTimer, DoMouseMove, Off
                 break
             }
-            if (A_TickCount - startWhitePixelSearch > 60000) {
+            if (A_TickCount - startWhitePixelSearch > 31000) {
                 MouseMove, 1113, 342, 3
                 sleep 300
                 MouseClick, left
@@ -256,6 +249,8 @@ if (toggle) {
 
         sleep 300
         MouseMove, 1113, 342, 3
+        Sleep 700
+        /*
 	Loop {
             PixelGetColor, color, 1112, 342, RGB
             if (color = 0xFFFFFF) {
@@ -265,6 +260,7 @@ if (toggle) {
                 Return
             }
         }
+        */
         MouseClick, Left
         sleep 300
         cycleCount++
@@ -315,7 +311,7 @@ if (toggle) {
                 SetTimer, DoMouseMove, Off
                 break
             }
-            if (A_TickCount - startWhitePixelSearch > 60000) {
+            if (A_TickCount - startWhitePixelSearch > 31000) {
                 MouseMove, 1457, 491, 3
                 sleep 300
                 MouseClick, left
@@ -344,9 +340,11 @@ if (toggle) {
                 MouseClick, left
             }
         }
-        
+
         sleep 300
         MouseMove, 1457, 491, 3
+        sleep 700
+        /*
 	Loop {
             PixelGetColor, color, 1455, 492, RGB
             if (color = 0xFFFFFF) {
@@ -356,7 +354,7 @@ if (toggle) {
                 Return
             }
         }
-
+        */
         MouseClick, Left
         sleep 300
         cycleCount++
@@ -408,7 +406,7 @@ if (toggle) {
                 SetTimer, DoMouseMove, Off
                 break
             }
-            if (A_TickCount - startWhitePixelSearch > 60000) {
+            if (A_TickCount - startWhitePixelSearch > 31000) {
                 MouseMove, 817, 210, 3
                 sleep 300
                 MouseClick, left
