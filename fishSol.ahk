@@ -69,6 +69,7 @@ Gui, Font, s8 c0xB0B0B0 Normal, Segoe UI
 Gui, Add, Text, x30 y285 w200 h15 BackgroundTrans, Creator: ivelchampion249
 Gui, Add, Text, x30 y300 w200 h15 BackgroundTrans, Developers: maxstellar && cresqnt
 Gui, Add, Text, x30 y315 w200 h15 BackgroundTrans, Special thanks: x2_c (auto-sell idea)
+Gui, Add, Text, x50 y315 w200 h15 BackgroundTrans, https://www.example.com
 
 Gui, Show, w485 h355, fishSol v1.4
 
@@ -174,6 +175,7 @@ Return
 
 F3::ExitApp
 
+;1080p
 DoMouseMove:
 if (toggle) {
     ; Wrap the entire script in a loop to make it repeat
@@ -191,7 +193,7 @@ if (toggle) {
 	    sleep 300
 	    MouseClick, Left
 	    sleep 300
-	    MouseMove, 589, 801, 3
+	    MouseMove, 515, 805, 3
 	    sleep 300
 	    MouseClick, Left
 	    sleep 300
@@ -230,7 +232,7 @@ if (toggle) {
             }
         }
 
-        ; === PixelSearch loop with 13-second timeout ===
+        ; PixelSearch loop with 9-second timeout
         startTime := A_TickCount
         Loop {
             if (!toggle)
@@ -268,6 +270,7 @@ if (toggle) {
 }
 Return
 
+;1440p
 DoMouseMove2:
 if (toggle) {
     ; Wrap the entire script in a loop to make it repeat
@@ -285,11 +288,11 @@ if (toggle) {
 	    sleep 300
 	    MouseClick, Left
 	    sleep 300
-	    MouseMove, 790, 1071, 3
+	    MouseMove, 685, 1070, 3
 	    sleep 300
 	    MouseClick, Left
 	    sleep 300
-	    MouseMove, 1112, 808, 3
+	    MouseMove, 1067, 831, 3
 	    sleep 300
 	    MouseClick, Left
 	    sleep 300
@@ -324,7 +327,7 @@ if (toggle) {
             }
         }
 
-        ; === PixelSearch loop with 13-second timeout ===
+        ; PixelSearch loop with 9-second timeout
         startTime := A_TickCount
         Loop {
             if (!toggle)
@@ -362,9 +365,9 @@ if (toggle) {
 }
 Return
 
+;786p
 DoMouseMove3:
 if (toggle) {
-    ; Wrap the entire script in a loop to make it repeat
     Loop {
         if (!toggle) {
             break
@@ -379,11 +382,11 @@ if (toggle) {
 	    sleep 300
 	    MouseClick, Left
 	    sleep 300
-	    MouseMove, 421, 572, 3
+	    MouseMove, 366, 573, 3
 	    sleep 300
 	    MouseClick, Left
 	    sleep 300
-	    MouseMove, 594, 430, 3
+	    MouseMove, 570, 444, 3
 	    sleep 300
 	    MouseClick, Left
 	    sleep 300
@@ -419,7 +422,7 @@ if (toggle) {
             }
         }
 
-        ; === PixelSearch loop with 13-second timeout ===
+        ; PixelSearch loop with 9-second timeout
         startTime := A_TickCount
         Loop {
             if (!toggle)
