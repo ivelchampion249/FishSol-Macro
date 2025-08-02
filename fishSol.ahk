@@ -69,7 +69,6 @@ Gui, Font, s8 c0xB0B0B0 Normal, Segoe UI
 Gui, Add, Text, x30 y285 w200 h15 BackgroundTrans, Creator: ivelchampion249
 Gui, Add, Text, x30 y300 w200 h15 BackgroundTrans, Developers: maxstellar && cresqnt
 Gui, Add, Text, x30 y315 w200 h15 BackgroundTrans, Special thanks: x2_c (auto-sell idea)
-Gui, Add, Text, x50 y315 w200 h15 BackgroundTrans, https://www.example.com
 
 Gui, Show, w485 h355, fishSol v1.4
 
