@@ -25,7 +25,7 @@ if (FileExist(iniFilePath)) {
 
 Gui, Color, 0x2D2D30
 Gui, Font, s12 cWhite Bold, Segoe UI
-Gui, Add, Text, x20 y15 w460 h30 Center BackgroundTrans, fishSol v1.3.1
+Gui, Add, Text, x20 y15 w460 h30 Center BackgroundTrans, fishSol v1.4
 
 Gui, Font, s9 cWhite Normal, Segoe UI
 Gui, Add, GroupBox, x15 y50 w220 h140 cWhite, Control Panel
