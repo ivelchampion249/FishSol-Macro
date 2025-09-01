@@ -186,8 +186,9 @@ if (toggle) {
         Sleep 300
         MouseClick, Left
 	sleep 300
+	/*
 	; Auto-sell
-	if (firstLoop == false) {
+    if (firstLoop == false) {
 	    MouseMove, 827, 401, 3
 	    sleep 300
 	    MouseClick, Left
@@ -203,6 +204,7 @@ if (toggle) {
 	} else {
 	    firstLoop := false
 	}
+    */
 	barColor := 0
 	otherBarColor := 0
 
@@ -263,8 +265,38 @@ if (toggle) {
         }
         */
         MouseClick, Left
-        sleep 300
+        Sleep 300
+        MouseMove, 1167, 477, 3
+        Sleep 300
+        MouseClick, Left
+        Sleep 300
         cycleCount++
+        if (cycleCount != 0 && Mod(cycleCount, 15) == 0) {
+            SendInput, {s Down}
+            Sleep, 400
+            SendInput, {Space Down}
+            Sleep, 50
+            SendInput, {Space Up}
+            Sleep, 1150
+            SendInput, {s Up}
+            loop, 15 { ; auto sell x times every x fishes caught
+                MouseMove, 827, 401, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+                MouseMove, 515, 805, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+                MouseMove, 802, 620, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+            }
+            SendInput, {w Down}
+            Sleep, 1600
+            SendInput, {w Up}
+        }
     }
 }
 Return
@@ -281,7 +313,8 @@ if (toggle) {
         Sleep 300
         MouseClick, Left
 	sleep 300
-	; Auto-sell
+	/*
+    ; Auto-sell
 	if (firstLoop == false) {
 	    MouseMove, 1100, 540, 3
 	    sleep 300
@@ -298,6 +331,7 @@ if (toggle) {
 	} else {
 	    firstLoop := false
 	}
+    */
 	barColor := 0
 	otherBarColor := 0
 
@@ -360,6 +394,32 @@ if (toggle) {
         MouseClick, Left
         sleep 300
         cycleCount++
+        if (cycleCount != 0 && Mod(cycleCount, 15) == 0) {
+            SendInput, {s Down}
+            Sleep, 400
+            SendInput, {Space Down}
+            Sleep, 50
+            SendInput, {Space Up}
+            Sleep, 1150
+            SendInput, {s Up}
+            loop, 15 { ; auto sell x times every x fishes caught
+                MouseMove, 1100, 540, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+                MouseMove, 685, 1070, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+                MouseMove, 1067, 831, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+            }
+            SendInput, {w Down}
+            Sleep, 1600
+            SendInput, {w Up}
+        }
     }
 }
 Return
@@ -375,6 +435,7 @@ if (toggle) {
         Sleep 300
         MouseClick, Left
 	sleep 300
+    /*
 	; Auto-sell
 	if (firstLoop == false) {
 	    MouseMove, 587, 291, 3
@@ -392,6 +453,7 @@ if (toggle) {
 	} else {
 	    firstLoop := false
 	}
+    */
 	barColor := 0
 	otherBarColor := 0
 
@@ -455,6 +517,32 @@ if (toggle) {
         MouseClick, Left
         sleep 300
         cycleCount++
+        if (cycleCount != 0 && Mod(cycleCount, 15) == 0) {
+            SendInput, {s Down}
+            Sleep, 400
+            SendInput, {Space Down}
+            Sleep, 50
+            SendInput, {Space Up}
+            Sleep, 1150
+            SendInput, {s Up}
+            loop, 15 { ; auto sell x times every x fishes caught
+                MouseMove, 587, 291, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+                MouseMove, 366, 573, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+                MouseMove, 570, 444, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+            }
+            SendInput, {w Down}
+            Sleep, 1600
+            SendInput, {w Up}
+        }
     }
 }
 Return
