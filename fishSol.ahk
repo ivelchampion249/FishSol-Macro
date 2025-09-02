@@ -264,7 +264,7 @@ if (toggle) {
             }
         }
         */
-        MouseClick, Left	
+        MouseClick, Left
         sleep 300
         cycleCount++
         if (cycleCount != 0 && Mod(cycleCount, 15) == 0) {
@@ -609,5 +609,6 @@ res := Resolution
 IniWrite, %res%, %iniFilePath%, "Macro", "resolution"
 ManualGUIUpdate()
 return
+
 
 
