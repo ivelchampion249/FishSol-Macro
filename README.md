@@ -11,22 +11,25 @@
 
 ## Installation
 1. Download [AutoHotKey v1.1](https://www.autohotkey.com/) (not v2.0) and install it
-2. Download the [latest release](https://github.com/ivelchampion249/FishSol-Macro/releases/latest) of fishSol, and extract the .zip file into an empty folder.
+2. Download the [latest release](https://github.com/ivelchampion249/FishSol-Macro/releases/latest) of fishSol, and extract the .zip file into an empty folder
 3. Run fishSol through the .ahk file by double-clicking it, or right-clicking it and selecting "Run script"
 
-## Instructions
-To use this macro to its fullest potential, you will need to setup auto-sell.
-To start, go up to the Fisherman NPC (Captain Flarg) and interact with him.
-Open the "Sell" menu, and do not close it.
-From here, walk to wherever you would like to fish, and start the macro.
+## Tutorial
+Watch this YouTube tutorial to set up the macro!
+https://youtu.be/6aSNqj3PBpU
 
 ## Features
 - Auto-Fish
 - Auto-Sell
 - Different Resolution Settings
+- Different Pathing Options
+- QWERTY and AZERTY keyboard support
+- Auto-Rejoin Failsafe
+- Fishing & Pathing Failsafes
+- Auto-Unequip
 - More to come!
 
 ## Need help?
-[Create an issue](https://github.com/ivelchampion249/FishSol-Macro/issues/new) on GitHub and submit information about what is going wrong, and we will try to help you or fix the problem.
+Join our [Discord](https://discord.gg/CvZdRea9YH)! Submit any bugs you may find, or any problems that you need help with!
 
 Happy fishing, gamblers!
