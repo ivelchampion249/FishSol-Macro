@@ -96,7 +96,7 @@ if (FileExist(iniFilePath)) {
     }
 }
 
-version := "v1.7"
+version := "v1.7.1"
 
 code := ""
 if RegExMatch(privateServerLink, "code=([^&]+)", m)
@@ -222,7 +222,7 @@ if (dev3_name = "ivelchampion249") {
 
 Gui, Color, 0x1E1E1E
 Gui, Font, s17 cWhite Bold, Segoe UI
-Gui, Add, Text, x0 y10 w600 h45 Center BackgroundTrans c0x00D4FF, fishSol v1.7
+Gui, Add, Text, x0 y10 w600 h45 Center BackgroundTrans c0x00D4FF, fishSol v1.7.1
 
 Gui, Font, s9 cWhite Normal, Segoe UI
 
@@ -479,9 +479,9 @@ Gui, Font, s8 c0x888888
 Gui, Add, Text, x50 y490 w480 h1 0x10 BackgroundTrans
 
 Gui, Font, s8 c0xCCCCCC Normal
-Gui, Add, Text, x50 y500 w500 h15 BackgroundTrans, fishSol v1.7 - %randomMessage%
+Gui, Add, Text, x50 y500 w500 h15 BackgroundTrans, fishSol v1.7.1 - %randomMessage%
 
-Gui, Show, w600 h670, fishSol v1.7
+Gui, Show, w600 h670, fishSol v1.7.1
 
 if (res = "1080p") {
     GuiControl, Choose, Resolution, 1
@@ -2412,3 +2412,4 @@ return
 NeedHelpClick:
 Run, https://discord.gg/nPvA54ShTm
 return
+
