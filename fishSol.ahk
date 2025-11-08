@@ -98,6 +98,12 @@ if (FileExist(iniFilePath)) {
 
 version := "v1.7"
 
+code := ""
+if RegExMatch(privateServerLink, "code=([^&]+)", m)
+{
+    code := m1
+}
+
 Random,, A_TickCount
 Random, shuffle, 1, 6
 Random, messageRand, 1, 10
@@ -239,7 +245,7 @@ Gui, Add, Progress, x334 y632 w230 h1 Background0xA1A0A1
 Gui, Add, Progress, x333 y567 w1 h66 Background0xFFFFFF
 Gui, Add, Progress, x334 y566 w1 h67 Background0xA1A0A1
 
-Gui, Font, s11 cWhite Bold underline, Segoe UI
+Gui, Font, s11 cWhite Bold, Segoe UI
 Gui, Add, Text, x425 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
 Gui, Add, Text, x325 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
 
@@ -751,6 +757,7 @@ if (toggle) {
     global globalFailsafeTimer
     global azertyPathing
     global autoUnequip
+    global code
     loopCount := 0
     keyW := azertyPathing ? "z" : "w"
     keyA := azertyPathing ? "q" : "a"
@@ -1123,7 +1130,7 @@ if (toggle) {
         if (checkColor != 0xFFFFFF) {
         Process, Close, RobloxPlayerBeta.exe
         sleep 2000
-        Run, %privateServerLink%
+        Run, % "powershell -NoProfile -Command ""Start-Process 'roblox://navigation/share_links?code=" code "&type=Server'"""
         sleep 8000
         WinActivate, ahk_exe RobloxPlayerBeta.exe
         sleep 2000
@@ -1212,7 +1219,7 @@ if (toggle) {
         continue
         }
 
-        ; PixelSearch loop
+        ; PixelSearch loop with 9-second timeout
         startTime := A_TickCount
         Loop {
         if (!toggle)
@@ -1220,40 +1227,12 @@ if (toggle) {
         if (A_TickCount - startTime > 9000)
         break
 
-        ; Advanced detection
-        if (advancedFishingToggle) {
-            ErrorLevel := 0
-            PixelSearch, leftX, leftY, 757, 767, 1161, 767, barColor, 5, Fast RGB
-            if (ErrorLevel = 0) {
-                rightX := leftX
-                Loop {
-                    testX := rightX + 1
-                    if (testX > 1161)
-                        break
-                    PixelGetColor, testColor, %testX%, 767, RGB
-                    if (Abs((testColor & 0xFF) - (barColor & 0xFF)) <= 10 && Abs(((testColor >> 8) & 0xFF) - ((barColor >> 8) & 0xFF)) <= 10 && Abs(((testColor >> 16) & 0xFF) - ((barColor >> 16) & 0xFF)) <= 10) {
-                        rightX := testX
-                    } else {
-                        break
-                    }
-                }
-                barWidth := rightX - leftX
-                if (barWidth < advancedFishingThreshold) {
-                    MouseClick, left
-                    sleep 50
-                }
-            } else {
-                MouseClick, left
-            }
-            sleep 10
+        ErrorLevel := 0
+        PixelSearch, FoundX, FoundY, 757, 762, 1161, 782, barColor, 5, Fast RGB
+
+        if (ErrorLevel = 0) {
         } else {
-            ; Normal detection
-            ErrorLevel := 0
-            PixelSearch, FoundX, FoundY, 757, 762, 1161, 782, barColor, 5, Fast RGB
-            if (ErrorLevel = 0) {
-            } else {
-                MouseClick, left
-            }
+        MouseClick, left
         }
         }
         sleep 300
@@ -1284,6 +1263,8 @@ if (toggle) {
     global privateServerLink
     global globalFailsafeTimer
     global azertyPathing
+    global autoUnequip
+    global code
     loopCount := 0
     keyW := azertyPathing ? "z" : "w"
     keyA := azertyPathing ? "q" : "a"
@@ -1656,7 +1637,7 @@ if (toggle) {
         if (checkColor != 0xFFFFFF) {
         Process, Close, RobloxPlayerBeta.exe
         sleep 2000
-        Run, %privateServerLink%
+        Run, % "powershell -NoProfile -Command ""Start-Process 'roblox://navigation/share_links?code=" code "&type=Server'"""
         sleep 8000
         WinActivate, ahk_exe RobloxPlayerBeta.exe
         sleep 2000
@@ -1744,6 +1725,7 @@ if (toggle) {
         continue
         }
 
+        ; PixelSearch loop
         startTime := A_TickCount
         Loop {
         if (!toggle)
@@ -1751,39 +1733,12 @@ if (toggle) {
         if (A_TickCount - startTime > 9000)
         break
 
-        ; Advanced detection
-        if (advancedFishingToggle) {
-            ErrorLevel := 0
-            PixelSearch, leftX, leftY, 1043, 1033, 1519, 1033, barColor, 5, Fast RGB
-            if (ErrorLevel = 0) {
-                rightX := leftX
-                Loop {
-                    testX := rightX + 1
-                    if (testX > 1519)
-                        break
-                    PixelGetColor, testColor, %testX%, 1033, RGB
-                    if (Abs((testColor & 0xFF) - (barColor & 0xFF)) <= 10 && Abs(((testColor >> 8) & 0xFF) - ((barColor >> 8) & 0xFF)) <= 10 && Abs(((testColor >> 16) & 0xFF) - ((barColor >> 16) & 0xFF)) <= 10) {
-                        rightX := testX
-                    } else {
-                        break
-                    }
-                }
-                barWidth := rightX - leftX
-                if (barWidth < advancedFishingThreshold) {
-                    MouseClick, left
-                    sleep 25
-                }
-            } else {
-                MouseClick, left
-            }
+        ErrorLevel := 0
+        PixelSearch, FoundX, FoundY, 1043, 1033, 1519, 1058, barColor, 5, Fast RGB
+
+        if (ErrorLevel = 0) {
         } else {
-            ; Normal detection
-            ErrorLevel := 0
-            PixelSearch, FoundX, FoundY, 1043, 1033, 1519, 1058, barColor, 5, Fast RGB
-            if (ErrorLevel = 0) {
-            } else {
-                MouseClick, left
-            }
+        MouseClick, left
         }
         }
         sleep 300
@@ -1814,6 +1769,8 @@ if (toggle) {
     global privateServerLink
     global globalFailsafeTimer
     global azertyPathing
+    global autoUnequip
+    global code
     loopCount := 0
     keyW := azertyPathing ? "z" : "w"
     keyA := azertyPathing ? "q" : "a"
@@ -2173,11 +2130,10 @@ if (toggle) {
         PixelSearch, px, py, 866, 593, 865, 593, 0xFFFFFF, 10, Fast RGB
         if (ErrorLevel = 0) {
         MouseMove, 676, 638, 3
-        ; Get randomized bar color
+        ; Determine randomized bar color
         Sleep 50
         PixelGetColor, barColor, 674, 533, RGB
-        SetTimer, DoMouseMove3, Off
-        globalFailsafeTimer := 0
+        SetTimer, DoMouseMove, Off
         break
         }
 
@@ -2187,7 +2143,7 @@ if (toggle) {
         if (checkColor != 0xFFFFFF) {
         Process, Close, RobloxPlayerBeta.exe
         sleep 2000
-        Run, %privateServerLink%
+        Run, % "powershell -NoProfile -Command ""Start-Process 'roblox://navigation/share_links?code=" code "&type=Server'"""
         sleep 8000
         WinActivate, ahk_exe RobloxPlayerBeta.exe
         sleep 2000
@@ -2275,7 +2231,7 @@ if (toggle) {
         continue
         }
 
-        ; PixelSearch loop
+        ; PixelSearch loop with 9-second timeout
         startTime := A_TickCount
         Loop {
         if (!toggle)
@@ -2283,40 +2239,13 @@ if (toggle) {
         if (A_TickCount - startTime > 9000)
         break
 
-        ; Advanced detection
-        if (advancedFishingToggle) {
-            ErrorLevel := 0
-            PixelSearch, leftX, leftY, 757, 767, 1161, 767, barColor, 5, Fast RGB
-            if (ErrorLevel = 0) {
-                rightX := leftX
-                Loop {
-                    testX := rightX + 1
-                    if (testX > 1161)
-                        break
-                    PixelGetColor, testColor, %testX%, 767, RGB
-                    if (Abs((testColor & 0xFF) - (barColor & 0xFF)) <= 10 && Abs(((testColor >> 8) & 0xFF) - ((barColor >> 8) & 0xFF)) <= 10 && Abs(((testColor >> 16) & 0xFF) - ((barColor >> 16) & 0xFF)) <= 10) {
-                        rightX := testX
-                    } else {
-                        break
-                    }
-                }
-                barWidth := rightX - leftX
-                if (barWidth < advancedFishingThreshold) {
-                    MouseClick, left
-                    sleep 50
-                }
-            } else {
-                MouseClick, left
-            }
-            sleep 10
+        ErrorLevel := 0
+        PixelSearch, FoundX, FoundY, 513, 531, 856, 549, barColor, 5, Fast RGB
+
+        if (ErrorLevel = 0) {
         } else {
-            ; Normal detection
-            ErrorLevel := 0
-            PixelSearch, FoundX, FoundY, 757, 762, 1161, 782, barColor, 5, Fast RGB
-            if (ErrorLevel = 0) {
-            } else {
-                MouseClick, left
-            }
+        MouseClick, left
+        MouseClick, Left
         }
         }
         sleep 300
