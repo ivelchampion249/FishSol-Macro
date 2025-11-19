@@ -1,3 +1,4 @@
+#Requires AutoHotkey v1.1
 #NoEnv
 #SingleInstance Force
 SetWorkingDir %A_ScriptDir%
@@ -13,15 +14,32 @@ res := "1080p"
 maxLoopCount := 15
 fishingLoopCount := 15
 sellAllToggle := false
-advancedFishingToggle := false
+advancedFishingDetection := false
 pathingMode := "Vip Pathing"
 azertyPathing := false
 autoUnequip := false
+autoCloseChat := false
+strangeController := false
+biomeRandomizer := false
+failsafeWebhook := false
+pathingWebhook := false
+itemWebhook := false
+strangeControllerTime := 0
+biomeRandomizerTime := 360000
+strangeControllerInterval := 1260000
+biomeRandomizerInterval := 2160000
+elapsed := 0
+strangeControllerLastRun := 0
+biomeRandomizerLastRun := 0
 privateServerLink := ""
 globalFailsafeTimer := 0
 fishingFailsafeTime := 31
 pathingFailsafeTime := 61
 autoRejoinFailsafeTime := 320
+advancedFishingThreshold := 25
+webhookURL := ""
+biomesPrivateServerLink := ""
+biomeDetectionRunning := false
 
 if (FileExist(iniFilePath)) {
     IniRead, tempRes, %iniFilePath%, "Macro", "resolution"
@@ -59,10 +77,10 @@ if (FileExist(iniFilePath)) {
     {
         privateServerLink := tempPrivateServer
     }
-    IniRead, tempAdvancedFishing, %iniFilePath%, "Macro", "advancedFishingToggle"
-    if (tempAdvancedFishing != "ERROR")
+    IniRead, tempAdvancedDetection, %iniFilePath%, "Macro", "advancedFishingDetection"
+    if (tempAdvancedDetection != "ERROR")
     {
-        advancedFishingToggle := (tempAdvancedFishing = "true" || tempAdvancedFishing = "1")
+        advancedFishingDetection := (tempAdvancedDetection = "true" || tempAdvancedDetection = "1")
     }
     IniRead, tempFishingFailsafe, %iniFilePath%, "Macro", "fishingFailsafeTime"
     if (tempFishingFailsafe != "ERROR" && tempFishingFailsafe > 0)
@@ -94,9 +112,50 @@ if (FileExist(iniFilePath)) {
     {
         advancedFishingThreshold := tempAdvancedThreshold
     }
+    IniRead, tempStrangeController, %iniFilePath%, "Macro", "strangeController"
+    if (tempStrangeController != "ERROR")
+    {
+        strangeController := (tempStrangeController = "true" || tempStrangeController = "1")
+    }
+    IniRead, tempBiomeRandomizer, %iniFilePath%, "Macro", "biomeRandomizer"
+    if (tempBiomeRandomizer != "ERROR")
+    {
+        biomeRandomizer := (tempBiomeRandomizer = "true" || tempBiomeRandomizer = "1")
+    }
+    IniRead, tempAutoCloseChat, %iniFilePath%, "Macro", "autoCloseChat"
+    if (tempAutoCloseChat != "ERROR")
+    {
+        autoCloseChat := (tempAutoCloseChat = "true" || tempAutoCloseChat = "1")
+    }
+    IniRead, tempWebhook, %iniFilePath%, "Macro", "webhookURL"
+    if (tempWebhook != "ERROR")
+    {
+        webhookURL := tempWebhook
+    }
+    IniRead, tempBiomesPS, %iniFilePath%, "Biomes", "privateServerLink"
+    if (tempBiomesPS != "ERROR")
+    {
+        biomesPrivateServerLink := tempBiomesPS
+    }
+    IniRead, tempFsWebhook, %iniFilePath%, "Macro", "failsafeWebhook"
+    if (tempFsWebhook != "ERROR")
+    {
+        failsafeWebhook := (tempFsWebhook = "true" || tempFsWebhook = "1")
+    }
+    IniRead, tempPathingWebhook, %iniFilePath%, "Macro", "pathingWebhook"
+    if (tempPathingWebhook != "ERROR")
+    {
+        pathingWebhook := (tempPathingWebhook = "true" || tempPathingWebhook = "1")
+    }
+    IniRead, tempItemWebhook, %iniFilePath%, "Macro", "itemWebhook"
+    if (tempItemWebhook != "ERROR")
+    {
+        itemWebhook := (tempItemWebhook = "true" || tempItemWebhook = "1")
+    }
 }
 
-version := "v1.7.1"
+; checks plugin folder
+hasBiomesPlugin := FileExist(A_ScriptDir "\plugins\biomes.ahk")
 
 code := ""
 if RegExMatch(privateServerLink, "code=([^&]+)", m)
@@ -135,7 +194,7 @@ if (shuffle = 1) {
     dev1_discord := "Twitch"
     dev1_role := "Lead Developer"
     dev2_name := "ivelchampion249"
-    dev2_discord := "Youtube"
+    dev2_discord := "YouTube"
     dev2_role := "Original Creator"
     dev3_name := "cresqnt"
     dev3_discord := "Scope Development (other macros)"
@@ -148,14 +207,14 @@ if (shuffle = 1) {
     dev2_discord := "Scope Development (other macros)"
     dev2_role := "Frontend Developer"
     dev3_name := "ivelchampion249"
-    dev3_discord := "Youtube"
+    dev3_discord := "YouTube"
     dev3_role := "Original Creator"
 } else if (shuffle = 3) {
     dev1_name := "cresqnt"
     dev1_discord := "Scope Development (other macros)"
     dev1_role := "Frontend Developer"
     dev2_name := "ivelchampion249"
-    dev2_discord := "Youtube"
+    dev2_discord := "YouTube"
     dev2_role := "Original Creator"
     dev3_name := "maxstellar"
     dev3_discord := "Twitch"
@@ -168,11 +227,11 @@ if (shuffle = 1) {
     dev2_discord := "Twitch"
     dev2_role := "Lead Developer"
     dev3_name := "ivelchampion249"
-    dev3_discord := "Youtube"
+    dev3_discord := "YouTube"
     dev3_role := "Original Creator"
 } else if (shuffle = 5) {
     dev1_name := "ivelchampion249"
-    dev1_discord := "Youtube"
+    dev1_discord := "YouTube"
     dev1_role := "Original Creator"
     dev2_name := "maxstellar"
     dev2_discord := "Twitch"
@@ -182,7 +241,7 @@ if (shuffle = 1) {
     dev3_role := "Frontend Developer"
 } else {
     dev1_name := "ivelchampion249"
-    dev1_discord := "Youtube"
+    dev1_discord := "YouTube"
     dev1_role := "Original Creator"
     dev2_name := "cresqnt"
     dev2_discord := "Scope Development (other macros)"
@@ -222,7 +281,7 @@ if (dev3_name = "ivelchampion249") {
 
 Gui, Color, 0x1E1E1E
 Gui, Font, s17 cWhite Bold, Segoe UI
-Gui, Add, Text, x0 y10 w600 h45 Center BackgroundTrans c0x00D4FF, fishSol v1.7.1
+Gui, Add, Text, x0 y10 w600 h45 Center BackgroundTrans c0x00b466, fishSol v1.8-beta3
 
 Gui, Font, s9 cWhite Normal, Segoe UI
 
@@ -230,33 +289,35 @@ Gui, Color, 0x1E1E1E
 Gui, Add, Picture, x440 y600 w27 h19, %A_ScriptDir%\img\Discord.png
 Gui, Add, Picture, x533 y601 w18 h19, %A_ScriptDir%\img\Robux.png
 
-Gui, Add, Progress, x583 y595 w1 h52 BackgroundA0A0A0
-Gui, Add, Progress, x584 y595 w1 h52 Background696868
-Gui, Add, Progress, x315 y647 w270 h1 BackgroundA0A0A0
-Gui, Add, Progress, x315 y646 w269 h1 Background696868
-Gui, Add, Progress, x313 y603 w1 h45 BackgroundA0A0A0
-Gui, Add, Progress, x314 y603 w1 h45 Background696868
-Gui, Add, Progress, x574 y596 w9 h9 Background0x1E1E1E
-Gui, Add, Progress, x315 y596 w25 h9 Background0x1E1E1E
-Gui, Add, Progress, x564 y591 w1 h42 Background0xFFFFFF
-Gui, Add, Progress, x563 y590 w1 h42 Background0xA1A0A1
-Gui, Add, Progress, x333 y631 w230 h1 Background0xFFFFFF
-Gui, Add, Progress, x334 y632 w230 h1 Background0xA1A0A1
-Gui, Add, Progress, x333 y567 w1 h66 Background0xFFFFFF
-Gui, Add, Progress, x334 y566 w1 h67 Background0xA1A0A1
 
-Gui, Font, s11 cWhite Bold, Segoe UI
+Gui, Font, s11 cWhite Bold Underline, Segoe UI
 Gui, Add, Text, x425 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
 Gui, Add, Text, x325 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
 
 Gui, Font, s10 cWhite Normal, Segoe UI
-Gui, Add, Tab3, x15 y55 w570 h550 vMainTabs gTabChange c0xFFFFFF, Main|Misc|About
+
+; adds plugin to tab list
+tabList := "Main|Misc|Failsafes|Webhook"
+if (hasBiomesPlugin)
+    tabList .= "|Biomes"
+tabList .= "|Credits"
+
+Gui, Add, Tab3, x15 y55 w570 h600 vMainTabs gTabChange c0xFFFFFF, %tabList%
 
 Gui, Tab, Main
-Gui, Font, s9 cWhite Normal, Segoe UI
 
-Gui, Add, GroupBox, x30 y85 w260 h120 cWhite, Control Panel
-Gui, Font, s11 cWhite Bold
+Gui, Add, Picture, x14 y60 w574 h590, %A_ScriptDir%\gui\Main.png
+
+Gui, Color, 0x1E1E1E
+Gui, Add, Picture, x440 y600 w27 h19, %A_ScriptDir%\img\Discord.png
+Gui, Add, Picture, x533 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+
+Gui, Font, s11 cWhite Bold Underline, Segoe UI
+Gui, Add, Text, x425 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
+Gui, Add, Text, x325 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
+
+
+Gui, Font, s11 cWhite Normal Bold
 Gui, Add, Text, x45 y110 w60 h25 BackgroundTrans, Status:
 Gui, Add, Text, x98 y110 w150 h25 vStatusText BackgroundTrans c0xFF4444, Stopped
 
@@ -268,7 +329,9 @@ Gui, Add, Button, x205 y140 w70 h35 gCloseScript vStopBtn c0xFF4444 +0x8000, Sto
 Gui, Font, s8 c0xCCCCCC
 Gui, Add, Text, x45 y185 w240 h15 BackgroundTrans, Hotkeys: F1=Start - F2=Pause - F3=Stop
 
-Gui, Add, GroupBox, x305 y85 w260 h120 cWhite, Configuration
+
+
+Gui, Font, s10 cWhite Bold, Segoe UI
 Gui, Font, s10 cWhite Bold
 Gui, Add, Text, x320 y110 w80 h25 BackgroundTrans, Resolution:
 Gui, Add, DropDownList, x320 y135 w120 h200 vResolution gSelectRes, 1080p|1440p|1366x768
@@ -281,7 +344,7 @@ Gui, Add, Button, x450 y135 w100 h25 gToggleSellAll vSellAllBtn, Toggle Sell All
 Gui, Font, s8 c0xCCCCCC
 Gui, Add, Text, x450 y165 w100 h25 vSellAllStatus BackgroundTrans, OFF
 
-Gui, Add, GroupBox, x30 y215 w535 h120 cWhite, Loop Count Settings
+Gui, Font, s10 cWhite Bold, Segoe UI
 Gui, Font, s10 cWhite Bold
 Gui, Add, Text, x45 y240 w180 h25 BackgroundTrans, Fishing Loop Count:
 Gui, Add, Edit, x220 y238 w60 h25 vMaxLoopInput gUpdateLoopCount Number Background0xD3D3D3 cBlack, %maxLoopCount%
@@ -302,23 +365,32 @@ Gui, Font, s10 c0xCCCCCC Bold, Segoe UI
 Gui, Add, Text, x510 y303 w60 h25 vAzertyPathingStatus BackgroundTrans, OFF
 
 Gui, Font, s10 cWhite Bold
-Gui, Add, GroupBox, x30 y345 w205 h95 cWhite, Live Statistics
 
 Gui, Color, 0x1E1E1E
-Gui, Font, s11 cWhite Bold, Segoe UI
+Gui, Font, s10 cWhite Bold, Segoe UI
 
-Gui, Add, GroupBox, x250 y345 w315 h111 cWhite, Advanced Fishing Options
-Gui, Add, Text, x270 y370 w400 h30 BackgroundTrans, Advanced Fishing Detection:
 Gui, Font, s11 c0xFF2C00 Bold
-Gui, Add, Text, x340 y405 w150 h25 BackgroundTrans, [ COMING SOON ]
-Gui, Add, GroupBox, x30 y445 w535 h70 cWhite
-Gui, Add, Progress, x252 y435 w311 h25 Background0x1E1E1E
+Gui, Font, s10 cWhite Bold
+Gui, Add, Button, x270 y380 w80 h25 gToggleAdvancedFishingDetection vAdvancedFishingDetectionBtn, Toggle
+Gui, Font, s10 c0xCCCCCC Bold, Segoe UI
+Gui, Add, Text, x360 y384 w60 h25 vAdvancedFishingDetectionStatus BackgroundTrans, OFF
+
+Gui, Font, s9 cWhite Bold, Segoe UI
+Gui, Add, Text, x270 y415 w260 cWhite BackgroundTrans, Advanced Detection Threshold -
+Gui, Font, s9 cWhite Normal
+Gui, Add, Text, x270 y435 w270 h40 BackgroundTrans c0xCCCCCC, Customize how many pixels are left in the fishing range before clicking.
+Gui, Font, s10 cWhite Bold
+Gui, Add, Text, x400 y384 w80 h25 BackgroundTrans, Pixels:
+Gui, Font, s9 cWhite Bold
+Gui, Add, Text, x453 y416 w120 BackgroundTrans c0xFF4444, Max : 40 Pixels
+Gui, Font, s10 cWhite Bold
+Gui, Add, Edit, x455 y380 w75 h25 vAdvancedThresholdInput gUpdateAdvancedThreshold Number Background0xD3D3D3 cBlack, %advancedFishingThreshold%
 
 Gui, Font, s9 c0xCCCCCC Normal
-Gui, Add, Text, x50 y470 w515 h30 BackgroundTrans, Advanced Fishing Detection Uses a system that clicks slightly before the bar exits the fish range. Making the Catch-Rate higher than ever.
+Gui, Add, Text, x50 y470 w515 h30 BackgroundTrans, Advanced Fishing Detection uses a system that clicks slightly before the bar exits the fish range, making the catch rate higher than ever.
 
 Gui, Font, s9 c0x00D4FF Bold
-Gui, Add, Text, x272 y440 w515 h30 BackgroundTrans c0x00D4FF, [ Highly Recommended For Lower End Devices ]
+Gui, Add, Text, x307 y485 w515 h30 BackgroundTrans c0x00D4FF, [ Recommended For Lower End Devices ]
 
 Gui, Font, s11 cWhite Bold, Segoe UI
 Gui, Add, Text, x50 y375 w100 h30 BackgroundTrans, Runtime:
@@ -327,32 +399,73 @@ Gui, Add, Text, x120 y375 w120 h30 vRuntimeText BackgroundTrans c0x00DD00, 00:00
 Gui, Add, Text, x50 y405 w100 h30 BackgroundTrans, Cycles:
 Gui, Add, Text, x102 y405 w120 h30 vCyclesText BackgroundTrans c0x00DD00, 0
 
-Gui, Add, GroupBox, x30 y520 w535 h70 cWhite, Important
-Gui, Add, Progress, x334 y570 w230 h25 Background0x1E1E1E
-Gui, Add, Progress, x564 y570 w1 h35 Background0xFFFFFF
-Gui, Add, Progress, x563 y570 w1 h35 Background0xA1A0A1
-Gui, Add, Progress, x333 y590 w1 h16 Background0xFFFFFF
-Gui, Add, Progress, x334 y588 w1 h15 Background0xA1A0A1
-
 Gui, Font, s9 c0xCCCCCC Normal
 Gui, Add, Text, x50 y545 w500 h20 BackgroundTrans, Requirements: 100`% Windows scaling - Roblox in fullscreen mode
 Gui, Add, Text, x50 y563 w500 h20 BackgroundTrans, For best results, make sure you have good internet and avoid screen overlays
 
+
 Gui, Tab, Misc
 
-Gui, Add, Progress, x23 y99 w554 h2 Background871C00
-Gui, Add, Progress, x23 y100 w2 h32 Background871C00
-Gui, Add, Progress, x575 y100 w2 h32 Background871C00
-Gui, Add, Progress, x208 y99 w180 h27 Background0x1E1E1E
-Gui, Font, s12 cWhite Bold, Segoe UI
-Gui, Add, Text, x30 y90 w535 h30 Center BackgroundTrans c0xFF2C00,  [ ! Handle With Care ! ]
-
-Gui, Add, Progress, x23 y463 w554 h2 Background0x871C00
-Gui, Add, Progress, x23 y430 w2 h35 Background0x871C00
-Gui, Add, Progress, x575 y430 w2 h35 Background871C00
+Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Misc.png
 
 Gui, Font, s10 cWhite Bold, Segoe UI
-Gui, Add, GroupBox, x32 y110 w533 h225 cWhite, Auto-Rejoin Failsafe
+Gui, Font, s9 cWhite Normal
+Gui, Add, Text, x45 y135 h45 w250 BackgroundTrans c0xCCCCCC, Automatically unequips rolled auras every pathing cycle, preventing lag and pathing issues.
+Gui, Font, s10 cWhite Bold
+Gui, Add, Button, x45 y188 w80 h25 gToggleAutoUnequip vAutoUnequipBtn, Toggle
+Gui, Font, s10 c0xCCCCCC Bold, Segoe UI
+Gui, Add, Text, x140 y192 w60 h25 vAutoUnequipStatus BackgroundTrans, OFF
+Gui, Font, s10 cWhite Bold, Segoe UI
+
+Gui, Font, s11 cWhite Bold
+Gui, Add, Text, x45 y260 w150 h25 BackgroundTrans, Strange Controller:
+Gui, Add, Text, x45 y303 w190 h25 BackgroundTrans, Biome Randomizer:
+Gui, Font, s10 cWhite Bold
+Gui, Add, Button, x200 y270 w80 h25 gToggleStrangeController vStrangeControllerBtn, Toggle
+Gui, Add, Button, x200 y314 w80 h25 gToggleBiomeRandomizer vBiomeRandomizerBtn, Toggle
+Gui, Font, s10 c0xCCCCCC Bold, Segoe UI
+Gui, Add, Text, x290 y275 w60 h25 vStrangeControllerStatus BackgroundTrans, OFF
+Gui, Add, Text, x290 y319 w60 h25 vBiomeRandomizerStatus BackgroundTrans, OFF
+
+Gui, Add, Progress, x41 y270 w1 h27 Background696868
+Gui, Add, Progress, x190 y270 w1 h27 Background696868
+Gui, Add, Progress, x41 y296 w149 h1 Background696868
+Gui, Add, Progress, x184 y269 w7 h1 Background696868
+Gui, Font, s10 cWhite Normal
+Gui, Add, Text, x47 y278 w500 h40 BackgroundTrans c0xCCCCCC, Uses every 21 minutes.
+
+Gui, Font, s10 cWhite Normal
+Gui, Add, Text, x327 y275 w500 h15 BackgroundTrans, Automatically uses Strange Controller.
+
+Gui, Add, Progress, x41 y313 w1 h27 Background696868
+Gui, Add, Progress, x190 y313 w1 h27 Background696868
+Gui, Add, Progress, x41 y339 w149 h1 Background696868
+Gui, Add, Progress, x184 y313 w7 h1 Background696868
+Gui, Font, s10 cWhite Normal
+Gui, Add, Text, x47 y321 w500 h40 BackgroundTrans c0xCCCCCC, Uses every 36 minutes.
+
+Gui, Font, s10 cWhite Normal
+Gui, Add, Text, x327 y319 w500 h15 BackgroundTrans, Automatically uses Biome Randomizer.
+
+Gui, Font, s10 cWhite Bold, Segoe UI
+Gui, Font, s9 cWhite Normal
+Gui, Add, Text, x320 y135 w230 h60 BackgroundTrans c0xCCCCCC, Automatically closes chat every pathing cycle to ensure you don't get stuck in collection.
+Gui, Font, s10 cWhite Bold
+Gui, Add, Button, x320 y188 w80 h25 gToggleAutoCloseChat vAutoCloseChatBtn, Toggle
+Gui, Font, s10 c0xCCCCCC Bold, Segoe UI
+Gui, Add, Text, x415 y192 w60 h25 vAutoCloseChatStatus BackgroundTrans, OFF
+
+Gui, Color, 0x1E1E1E
+Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
+Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+
+Gui, Font, s11 cWhite Bold Underline, Segoe UI
+Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
+Gui, Add, Text, x330 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
+
+Gui, Tab, Failsafes
+
+Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Failsafes.png
 
 Gui, Font, s10 cWhite Normal
 Gui, Add, Text, x50 y140 w500 h40 BackgroundTrans c0xCCCCCC, If the fishing minigame is not detected for the specified time, the macro will`nautomatically rejoin using the private server link below.
@@ -372,7 +485,6 @@ Gui, Add, Text, x145 y275 w150 h25 BackgroundTrans, Seconds:
 Gui, Add, Edit, x218 y272 w150 h25 vAutoRejoinFailsafeInput gUpdateAutoRejoinFailsafe Number Background0xD3D3D3 cBlack, %autoRejoinFailsafeTime%
 
 Gui, Font, s10 cWhite Bold, Segoe UI
-Gui, Add, GroupBox, x32 y340 w260 h105 cWhite, Fishing Failsafe
 
 Gui, Font, s9 cWhite Normal
 Gui, Add, Text, x45 y370 w230 h40 BackgroundTrans c0xCCCCCC, Customize how long until the Fishing Failsafe triggers. (Default : 31)
@@ -382,7 +494,6 @@ Gui, Add, Text, x45 y413 w150 h35 BackgroundTrans, Seconds:
 Gui, Add, Edit, x125 y411 w150 h25 vFishingFailsafeInput gUpdateFishingFailsafe Number Background0xD3D3D3 cBlack, %fishingFailsafeTime%
 
 Gui, Font, s10 cWhite Bold, Segoe UI
-Gui, Add, GroupBox, x307 y340 w258 h105 cWhite, Pathing Failsafe
 
 Gui, Font, s9 cWhite Normal
 Gui, Add, Text, x320 y370 w230 h45 BackgroundTrans c0xCCCCCC, Customize how long until the Pathing Failsafe triggers. (Default : 61)
@@ -391,43 +502,101 @@ Gui, Font, s11 cWhite Bold
 Gui, Add, Text, x320 y413 w150 h35 BackgroundTrans, Seconds:
 Gui, Add, Edit, x400 y411 w150 h25 vPathingFailsafeInput gUpdatePathingFailsafe Number Background0xD3D3D3 cBlack, %pathingFailsafeTime%
 
-Gui, Font, s10 cWhite Bold, Segoe UI
-Gui, Add, GroupBox, x32 y475 w260 h115 cWhite, Auto-Unequip
-Gui, Font, s9 cWhite Normal
-Gui, Add, Text, x45 y495 h45 w250 BackgroundTrans c0xCCCCCC, Automatically unequip rolled auras every pathing cycle. Preventing lag and pathing issues.
+Gui, Color, 0x1E1E1E
+Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
+Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+
+Gui, Font, s11 cWhite Bold Underline, Segoe UI
+Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
+Gui, Add, Text, x330 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
+
+
+if (hasBiomesPlugin) {
+    Gui, Tab, Biomes
+
+    Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Biomes.png
+
+    Gui, Font, s9 cWhite Normal, Segoe UI
+    Gui, Add, Text, x50 y290 w500 h20 BackgroundTrans c0xCCCCCC, Choose which biomes are sent to Discord:
+
+    Gui, Font, s11 cWhite Bold, Segoe UI
+    Gui, Add, CheckBox, x50 y320 w140 h25 vBiomeWindy gSaveBiomeToggles Checked1 cWhite, Windy
+    Gui, Add, CheckBox, x50 y350 w140 h25 vBiomeSnowy gSaveBiomeToggles Checked1 cWhite, Snowy
+    Gui, Add, CheckBox, x50 y380 w140 h25 vBiomeRainy gSaveBiomeToggles Checked1 cWhite, Rainy
+    Gui, Add, CheckBox, x50 y410 w140 h25 vBiomeSandStorm gSaveBiomeToggles Checked1 cWhite, Sand Storm
+
+    Gui, Add, CheckBox, x250 y320 w140 h25 vBiomeHell gSaveBiomeToggles Checked1 cWhite, Hell
+    Gui, Add, CheckBox, x250 y350 w140 h25 vBiomeStarfall gSaveBiomeToggles Checked1 cWhite, Starfall
+    Gui, Add, CheckBox, x250 y380 w140 h25 vBiomeCorruption gSaveBiomeToggles Checked1 cWhite, Corruption
+    Gui, Add, CheckBox, x250 y410 w140 h25 vBiomeNull gSaveBiomeToggles Checked1 cWhite, Null
+
+    Gui, Add, CheckBox, x420 y320 w140 h25 vBiomePumpkinMoon gSaveBiomeToggles Checked1 cWhite, Pumpkin Moon
+    Gui, Add, CheckBox, x420 y350 w140 h25 vBiomeGraveyard gSaveBiomeToggles Checked1 cWhite, Graveyard
+    Gui, Add, CheckBox, x420 y380 w140 h25 vBiomeBloodRain gSaveBiomeToggles Checked1 cWhite, Blood Rain
+    Gui, Add, CheckBox, x420 y410 w140 h25 vBiomeNormal gSaveBiomeToggles Checked1 cWhite, Normal
+
+    Gui, Font, s14 cWhite Bold
+    Gui, Add, Text, x118 y460 c0x65FF65, Glitched
+    Gui, Add, Text, x+5 y460, and
+    Gui, Add, Text, x+5 y460 c0xFF7DFF, Dreamspace
+    Gui, Add, Text, x+5 y460, are always on.
+
+    Gui, Font, s10 cWhite Bold
+    Gui, Add, Text, x50 y155 w200 h25 BackgroundTrans, Private Server Link:
+    Gui, Add, Edit, x50 y185 w500 h25 vBiomesPrivateServerInput gUpdateBiomesPrivateServer Background0xD3D3D3 cBlack, %biomesPrivateServerLink%
+    Gui, Font, s8 c0xCCCCCC Normal
+    Gui, Add, Text, x50 y215 w500 h15 BackgroundTrans, Paste your Roblox private server link here for biome notifications.
+
+    Gui, Font, s10 cWhite Bold
+    Gui, Add, Button, x425 y505 w115 h40 gOpenPluginsFolder, Open Plugins Folder
+
+    Gui, Color, 0x1E1E1E
+    Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
+    Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+
+    Gui, Font, s11 cWhite Bold Underline, Segoe UI
+    Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
+    Gui, Add, Text, x330 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
+}
+
+Gui, Tab, Webhook
+
+Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Webhook.png
+
+Gui, Font, s10 cWhite Normal Bold
+Gui, Add, Text, x50 y125 w200 h25 BackgroundTrans, Discord Webhook URL:
+Gui, Add, Edit, x50 y150 w500 h25 vWebhookInput gUpdateWebhook Background0xD3D3D3 cBlack, %webhookURL%
+Gui, Font, s8 c0xCCCCCC Normal
+Gui, Add, Text, x50 y180 w500 h15 BackgroundTrans, Paste your Discord webhook URL here to be notified of actions happening in real time.
+
+Gui, Font, s10 cWhite Normal
+Gui, Add, Text, x60 y246 w500 h40 BackgroundTrans c0xCCCCCC, When toggled, this sends a message when a failsafe triggers.
+Gui, Add, Text, x60 y316 w500 h40 BackgroundTrans c0xCCCCCC, When toggled, this sends a message when the macro paths to auto-sell.
+Gui, Add, Text, x60 y386 w500 h40 BackgroundTrans c0xCCCCCC, When toggled, this sends a message when items are used (eg. Strange Controller, Biome Randomizer).
+
 Gui, Font, s10 cWhite Bold
-Gui, Add, Button, x45 y550 w80 h25 gToggleAutoUnequip vAutoUnequipBtn, Toggle
-Gui, Font, s10 c0xCCCCCC Bold, Segoe UI
-Gui, Add, Text, x140 y552 w60 h25 vAutoUnequipStatus BackgroundTrans, OFF
+Gui, Add, Button, x60 y216 w80 h25 gToggleFailsafeWebhook vFailsafeWebhookBtn, Toggle
+Gui, Add, Text, x150 y220 w60 h25 vfailsafeWebhookStatus BackgroundTrans, OFF
+Gui, Add, Button, x60 y286 w80 h25 gTogglePathingWebhook vPathingWebhookBtn, Toggle
+Gui, Add, Text, x150 y290 w60 h25 vpathingWebhookStatus BackgroundTrans, OFF
+Gui, Add, Button, x60 y356 w80 h25 gToggleItemWebhook vItemWebhookBtn, Toggle
+Gui, Add, Text, x150 y360 w60 h25 vitemWebhookStatus BackgroundTrans, OFF
+Gui, Font, s10 cWhite Normal
 
+Gui, Color, 0x1E1E1E
+Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
+Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\img\Robux.png
 
+Gui, Font, s11 cWhite Bold Underline, Segoe UI
+Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
+Gui, Add, Text, x330 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
 
-Gui, Font, s10 cWhite Bold, Segoe UI
-Gui, Add, GroupBox, x307 y475 w258 h115 cWhite, Advanced Detection
-Gui, Font, s9 cWhite Normal
-Gui, Add, Text, x320 y500 w230 h40 BackgroundTrans c0xCCCCCC, Customize how many pixels are left in the fishing range before clicking. (Max : 40)
-Gui, Font, s11 c0xFF2C00 Bold
-Gui, Add, Text, x370 y553 w150 h25 BackgroundTrans, [ COMING SOON ]
-Gui, Add, Progress, x335 y587 w228 h9 Background0x1E1E1E
-Gui, Add, Progress, x564 y589 w1 h16 Background0xFFFFFF
-Gui, Add, Progress, x563 y588 w1 h15 Background0xA1A0A1
-Gui, Add, Progress, x333 y589 w1 h16 Background0xFFFFFF
-Gui, Add, Progress, x334 y588 w1 h15 Background0xA1A0A1
+Gui, Tab, Credits
 
-Gui, Tab, About
-
-Gui, Add, Progress, x564 y589 w1 h16 Background0xFFFFFF
-Gui, Add, Progress, x563 y588 w1 h15 Background0xA1A0A1
-Gui, Add, Progress, x333 y589 w1 h16 Background0xFFFFFF
-Gui, Add, Progress, x334 y588 w1 h15 Background0xA1A0A1
-Gui, Add, Progress, x333 y588 w232 h1 Background0xFFFFFF
-Gui, Add, Progress, x334 y589 w231 h1 Background0xA1A0A1
-
-Gui, Font, s14 cWhite Bold, Segoe UI
-Gui, Add, Text, x30 y90 w535 h30 Center BackgroundTrans c0x00D4FF, fishSol Development Team
+Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Credits.png
 
 Gui, Add, Picture, x50 y130 w50 h50, %dev1_img%
-Gui, Font, s11 cWhite Bold
+Gui, Font, s11 cWhite Normal Bold
 if (dev1_name = "cresqnt") {
     Gui, Add, Text, x110 y135 w200 h20 BackgroundTrans c0x0088FF gDev1NameClick, %dev1_name%
 } else {
@@ -435,10 +604,11 @@ if (dev1_name = "cresqnt") {
 }
 Gui, Font, s9 c0xCCCCCC Normal
 Gui, Add, Text, x110 y155 w300 h15 BackgroundTrans, %dev1_role%
+Gui, Font, s9 c0xCCCCCC Normal Underline
 Gui, Add, Text, x110 y170 w300 h15 BackgroundTrans c0x0088FF gDev1LinkClick, %dev1_discord%
 
+Gui, Font, s11 cWhite Normal Bold
 Gui, Add, Picture, x50 y195 w50 h50, %dev2_img%
-Gui, Font, s11 cWhite Bold
 if (dev2_name = "cresqnt") {
     Gui, Add, Text, x110 y200 w200 h20 BackgroundTrans c0x0088FF gDev2NameClick, %dev2_name%
 } else {
@@ -446,10 +616,11 @@ if (dev2_name = "cresqnt") {
 }
 Gui, Font, s9 c0xCCCCCC Normal
 Gui, Add, Text, x110 y220 w300 h15 BackgroundTrans, %dev2_role%
+Gui, Font, s9 c0xCCCCCC Normal Underline
 Gui, Add, Text, x110 y235 w300 h15 BackgroundTrans c0x0088FF gDev2LinkClick, %dev2_discord%
 
 Gui, Add, Picture, x50 y260 w50 h50, %dev3_img%
-Gui, Font, s11 cWhite Bold
+Gui, Font, s11 cWhite Normal Bold
 if (dev3_name = "cresqnt") {
     Gui, Add, Text, x110 y265 w200 h20 BackgroundTrans c0x0088FF gDev3NameClick, %dev3_name%
 } else {
@@ -457,12 +628,10 @@ if (dev3_name = "cresqnt") {
 }
 Gui, Font, s9 c0xCCCCCC Normal
 Gui, Add, Text, x110 y285 w300 h15 BackgroundTrans, %dev3_role%
+Gui, Font, s9 c0xCCCCCC Normal Underline
 Gui, Add, Text, x110 y300 w300 h15 BackgroundTrans c0x0088FF gDev3LinkClick, %dev3_discord%
 
-Gui, Font, s8 c0x888888
-Gui, Add, Text, x50 y325 w480 h1 0x10 BackgroundTrans
-
-url := "https://raw.githubusercontent.com/ivelchampion249/FishSol-Macro/refs/heads/main/DONATORS.txt"  ; ← replace with your file URL
+url := "https://raw.githubusercontent.com/ivelchampion249/FishSol-Macro/refs/heads/main/DONATORS.txt"
 
 Http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
 Http.Open("GET", url, false)
@@ -470,18 +639,25 @@ Http.Send()
 
 content := Http.ResponseText
 
-Gui, Font, s10 cWhite Bold
+Gui, Font, s10 cWhite Normal Bold
 Gui, Add, Text, x50 y345 w200 h20 BackgroundTrans, Thank you to our donators!
 Gui, Font, s9 c0xCCCCCC Normal
-Gui, Add, Edit, x50 y370 w480 h95 vDonatorsList -Wrap +ReadOnly +VScroll -WantReturn -E0x200 Background0x2D2D2D c0xCCCCCC, %content%
-
-Gui, Font, s8 c0x888888
-Gui, Add, Text, x50 y490 w480 h1 0x10 BackgroundTrans
+Gui, Add, Edit, x50 y370 w480 h125 vDonatorsList -Wrap +ReadOnly +VScroll -WantReturn -E0x200 Background0x2D2D2D c0xCCCCCC, %content%
 
 Gui, Font, s8 c0xCCCCCC Normal
-Gui, Add, Text, x50 y500 w500 h15 BackgroundTrans, fishSol v1.7.1 - %randomMessage%
+Gui, Add, Text, x50 y518 w500 h15 BackgroundTrans, fishSol v1.8-beta3 - %randomMessage%
 
-Gui, Show, w600 h670, fishSol v1.7.1
+Gui, Show, w600 h670, fishSol v1.8-beta3
+
+Gui, Color, 0x1E1E1E
+Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
+Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+
+Gui, Font, s11 cWhite Bold Underline, Segoe UI
+Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
+Gui, Add, Text, x330 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
+
+LoadBiomeToggles()
 
 if (res = "1080p") {
     GuiControl, Choose, Resolution, 1
@@ -502,12 +678,12 @@ if (sellAllToggle) {
     GuiControl, +c0xFF4444, SellAllStatus
 }
 
-if (advancedFishingToggle) {
-    GuiControl,, AdvancedFishingStatus, ON
-    GuiControl, +c0x00DD00, AdvancedFishingStatus
+if (advancedFishingDetection) {
+    GuiControl,, AdvancedFishingDetectionStatus, ON
+    GuiControl, +c0x00DD00, AdvancedFishingDetectionStatus
 } else {
-    GuiControl,, AdvancedFishingStatus, OFF
-    GuiControl, +c0xFF4444, AdvancedFishingStatus
+    GuiControl,, AdvancedFishingDetectionStatus, OFF
+    GuiControl, +c0xFF4444, AdvancedFishingDetectionStatus
 }
 
 if (pathingMode = "Vip Pathing") {
@@ -537,9 +713,69 @@ if (autoUnequip) {
     GuiControl, +c0xFF4444, AutoUnequipStatus
 }
 
+if (autoCloseChat) {
+    GuiControl,, AutoCloseChatStatus, ON
+    GuiControl, +c0x00DD00, AutoCloseChatStatus
+} else {
+    GuiControl,, AutoCloseChatStatus, OFF
+    GuiControl, +c0xFF4444, AutoCloseChatStatus
+}
+
+if (strangeController) {
+    GuiControl,, StrangeControllerStatus, ON
+    GuiControl, +c0x00DD00, StrangeControllerStatus
+} else {
+    GuiControl,, StrangeControllerStatus, OFF
+    GuiControl, +c0xFF4444, StrangeControllerStatus
+}
+
+if (biomeRandomizer) {
+    GuiControl,, BiomeRandomizerStatus, ON
+    GuiControl, +c0x00DD00, BiomeRandomizerStatus
+} else {
+    GuiControl,, BiomeRandomizerStatus, OFF
+    GuiControl, +c0xFF4444, BiomeRandomizerStatus
+}
+
+if (failsafeWebhook) {
+    GuiControl,, failsafeWebhookStatus, ON
+    GuiControl, +c0x00DD00, failsafeWebhookStatus
+} else {
+    GuiControl,, failsafeWebhookStatus, OFF
+    GuiControl, +c0xFF4444, failsafeWebhookStatus
+}
+
+if (pathingWebhook) {
+    GuiControl,, pathingWebhookStatus, ON
+    GuiControl, +c0x00DD00, pathingWebhookStatus
+} else {
+    GuiControl,, pathingWebhookStatus, OFF
+    GuiControl, +c0xFF4444, pathingWebhookStatus
+}
+
+if (itemWebhook) {
+    GuiControl,, itemWebhookStatus, ON
+    GuiControl, +c0x00DD00, itemWebhookStatus
+} else {
+    GuiControl,, itemWebhookStatus, OFF
+    GuiControl, +c0xFF4444, itemWebhookStatus
+}
+
 return
 
 GuiClose:
+if (biomeDetectionRunning) {
+    DetectHiddenWindows, On
+    SetTitleMatchMode, 2
+
+    target := "biomes.ahk"
+    WinGet, id, ID, %target% ahk_class AutoHotkey
+    if (id) {
+        WinClose, ahk_id %id%
+    }
+    biomeDetectionRunning := false
+}
+try SendWebhook(":red_circle: Macro Stopped.", "14495300")
 ExitApp
 
 toggle := false
@@ -575,16 +811,16 @@ if (sellAllToggle) {
 }
 return
 
-ToggleAdvancedFishing:
-advancedFishingToggle := !advancedFishingToggle
-if (advancedFishingToggle) {
-    GuiControl,, AdvancedFishingStatus, ON
-    GuiControl, +c0x00DD00, AdvancedFishingStatus
-    IniWrite, true, %iniFilePath%, "Macro", "advancedFishingToggle"
+ToggleAdvancedFishingDetection:
+advancedFishingDetection := !advancedFishingDetection
+if (advancedFishingDetection) {
+    GuiControl,, AdvancedFishingDetectionStatus, ON
+    GuiControl, +c0x00DD00, AdvancedFishingDetectionStatus
+    IniWrite, true, %iniFilePath%, "Macro", "advancedFishingDetection"
 } else {
-    GuiControl,, AdvancedFishingStatus, OFF
-    GuiControl, +c0xFF4444, AdvancedFishingStatus
-    IniWrite, false, %iniFilePath%, "Macro", "advancedFishingToggle"
+    GuiControl,, AdvancedFishingDetectionStatus, OFF
+    GuiControl, +c0xFF4444, AdvancedFishingDetectionStatus
+    IniWrite, false, %iniFilePath%, "Macro", "advancedFishingDetection"
 }
 return
 
@@ -609,8 +845,85 @@ if (autoUnequip) {
     IniWrite, true, %iniFilePath%, "Macro", "autoUnequip"
 } else {
     GuiControl,, AutoUnequipStatus, OFF
-    GuiControl, +c0xFF4444, AutoUnequipStatus
     IniWrite, false, %iniFilePath%, "Macro", "autoUnequip"
+}
+return
+
+ToggleAutoCloseChat:
+autoCloseChat := !autoCloseChat
+if (autoCloseChat) {
+    GuiControl,, AutoCloseChatStatus, ON
+    GuiControl, +c0x00DD00, AutoCloseChatStatus
+    IniWrite, true, %iniFilePath%, "Macro", "autoCloseChat"
+} else {
+    GuiControl,, AutoCloseChatStatus, OFF
+    GuiControl, +c0xFF4444, AutoCloseChatStatus
+    IniWrite, false, %iniFilePath%, "Macro", "autoCloseChat"
+}
+return
+
+ToggleStrangeController:
+strangeController := !strangeController
+if (strangeController) {
+    GuiControl,, StrangeControllerStatus, ON
+    GuiControl, +c0x00DD00, StrangeControllerStatus
+    IniWrite, true, %iniFilePath%, "Macro", "strangeController"
+} else {
+    GuiControl,, StrangeControllerStatus, OFF
+    GuiControl, +c0xFF4444, StrangeControllerStatus
+    IniWrite, false, %iniFilePath%, "Macro", "strangeController"
+}
+return
+
+ToggleBiomeRandomizer:
+biomeRandomizer := !biomeRandomizer
+if (biomeRandomizer) {
+    GuiControl,, BiomeRandomizerStatus, ON
+    GuiControl, +c0x00DD00, BiomeRandomizerStatus
+    IniWrite, true, %iniFilePath%, "Macro", "biomeRandomizer"
+} else {
+    GuiControl,, BiomeRandomizerStatus, OFF
+    GuiControl, +c0xFF4444, BiomeRandomizerStatus
+    IniWrite, false, %iniFilePath%, "Macro", "biomeRandomizer"
+}
+return
+
+ToggleFailsafeWebhook:
+failsafeWebhook := !failsafeWebhook
+if (failsafeWebhook) {
+    GuiControl,, failsafeWebhookStatus, ON
+    GuiControl, +c0x00DD00, failsafeWebhookStatus
+    IniWrite, true, %iniFilePath%, "Macro", "failsafeWebhook"
+} else {
+    GuiControl,, failsafeWebhookStatus, OFF
+    GuiControl, +c0xFF4444, failsafeWebhookStatus
+    IniWrite, false, %iniFilePath%, "Macro", "failsafeWebhook"
+}
+return
+
+TogglePathingWebhook:
+pathingWebhook := !pathingWebhook
+if (pathingWebhook) {
+    GuiControl,, pathingWebhookStatus, ON
+    GuiControl, +c0x00DD00, pathingWebhookStatus
+    IniWrite, true, %iniFilePath%, "Macro", "pathingWebhook"
+} else {
+    GuiControl,, pathingWebhookStatus, OFF
+    GuiControl, +c0xFF4444, pathingWebhookStatus
+    IniWrite, false, %iniFilePath%, "Macro", "pathingWebhook"
+}
+return
+
+ToggleItemWebhook:
+itemWebhook := !itemWebhook
+if (itemWebhook) {
+    GuiControl,, itemWebhookStatus, ON
+    GuiControl, +c0x00DD00, itemWebhookStatus
+    IniWrite, true, %iniFilePath%, "Macro", "itemWebhook"
+} else {
+    GuiControl,, itemWebhookStatus, OFF
+    GuiControl, +c0xFF4444, itemWebhookStatus
+    IniWrite, false, %iniFilePath%, "Macro", "itemWebhook"
 }
 return
 
@@ -651,6 +964,295 @@ if (AdvancedThresholdInput >= 0 && AdvancedThresholdInput <= 40) {
     IniWrite, %advancedFishingThreshold%, %iniFilePath%, "Macro", "advancedFishingThreshold"
 }
 return
+
+UpdateWebhook:
+Gui, Submit, nohide
+webhookURL := WebhookInput
+IniWrite, %webhookURL%, %iniFilePath%, "Macro", "webhookURL"
+return
+
+UpdateBiomesPrivateServer:
+Gui, Submit, nohide
+biomesPrivateServerLink := BiomesPrivateServerInput
+IniWrite, %biomesPrivateServerLink%, %iniFilePath%, "Biomes", "privateServerLink"
+return
+
+LoadBiomeToggles() {
+    global
+    IniRead, BiomeNormal, %iniFilePath%, "Biomes", BiomeNormal, 1
+    IniRead, BiomeSandStorm, %iniFilePath%, "Biomes", BiomeSandStorm, 1
+    IniRead, BiomeHell, %iniFilePath%, "Biomes", BiomeHell, 1
+    IniRead, BiomeStarfall, %iniFilePath%, "Biomes", BiomeStarfall, 1
+    IniRead, BiomeCorruption, %iniFilePath%, "Biomes", BiomeCorruption, 1
+    IniRead, BiomeWindy, %iniFilePath%, "Biomes", BiomeWindy, 1
+    IniRead, BiomeSnowy, %iniFilePath%, "Biomes", BiomeSnowy, 1
+    IniRead, BiomeRainy, %iniFilePath%, "Biomes", BiomeRainy, 1
+    IniRead, BiomePumpkinMoon, %iniFilePath%, "Biomes", BiomePumpkinMoon, 1
+    IniRead, BiomeGraveyard, %iniFilePath%, "Biomes", BiomeGraveyard, 1
+    IniRead, BiomeBloodRain, %iniFilePath%, "Biomes", BiomeBloodRain, 1
+    IniRead, BiomeNull, %iniFilePath%, "Biomes", BiomeNull, 1
+
+    GuiControl,, BiomeNormal, %BiomeNormal%
+    GuiControl,, BiomeSandStorm, %BiomeSandStorm%
+    GuiControl,, BiomeHell, %BiomeHell%
+    GuiControl,, BiomeStarfall, %BiomeStarfall%
+    GuiControl,, BiomeCorruption, %BiomeCorruption%
+    GuiControl,, BiomeWindy, %BiomeWindy%
+    GuiControl,, BiomeSnowy, %BiomeSnowy%
+    GuiControl,, BiomeRainy, %BiomeRainy%
+    GuiControl,, BiomePumpkinMoon, %BiomePumpkinMoon%
+    GuiControl,, BiomeGraveyard, %BiomeGraveyard%
+    GuiControl,, BiomeBloodRain, %BiomeBloodRain%
+    GuiControl,, BiomeNull, %BiomeNull%
+}
+
+SaveBiomeToggles:
+Gui, Submit, NoHide
+IniWrite, %BiomeNormal%, %iniFilePath%, "Biomes", BiomeNormal
+IniWrite, %BiomeSandStorm%, %iniFilePath%, "Biomes", BiomeSandStorm
+IniWrite, %BiomeHell%, %iniFilePath%, "Biomes", BiomeHell
+IniWrite, %BiomeStarfall%, %iniFilePath%, "Biomes", BiomeStarfall
+IniWrite, %BiomeCorruption%, %iniFilePath%, "Biomes", BiomeCorruption
+IniWrite, %BiomeWindy%, %iniFilePath%, "Biomes", BiomeWindy
+IniWrite, %BiomeSnowy%, %iniFilePath%, "Biomes", BiomeSnowy
+IniWrite, %BiomeRainy%, %iniFilePath%, "Biomes", BiomeRainy
+IniWrite, %BiomePumpkinMoon%, %iniFilePath%, "Biomes", BiomePumpkinMoon
+IniWrite, %BiomeGraveyard%, %iniFilePath%, "Biomes", BiomeGraveyard
+IniWrite, %BiomeBloodRain%, %iniFilePath%, "Biomes", BiomeBloodRain
+IniWrite, %BiomeNull%, %iniFilePath%, "Biomes", BiomeNull
+return
+
+; webhooks!
+SendWebhook(title, color := "16777215") {
+    global webhookURL
+    if (!InStr(webhookURL, "discord")) {
+        return
+    }
+    time := A_NowUTC
+    timestamp := SubStr(time,1,4) "-" SubStr(time,5,2) "-" SubStr(time,7,2) "T" SubStr(time,9,2) ":" SubStr(time,11,2) ":" SubStr(time,13,2) ".000Z"
+
+    json := "{"
+    . """embeds"": ["
+    . "{"
+    . "    ""title"": """ title ""","
+    . "    ""color"": " color ","
+    . "    ""footer"": {""text"": ""fishSol v1.8"", ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},"
+    . "    ""timestamp"": """ timestamp """"
+    . "  }"
+    . "],"
+    . """content"": """""
+    . "}"
+
+    http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    http.Open("POST", webhookURL, false)
+    http.SetRequestHeader("Content-Type", "application/json")
+    http.Send(json)
+}
+
+
+; SC toggle
+RunStrangeController() {
+    global res
+    global itemWebhook
+    ; 1080p
+    if (res = "1080p") {
+        sleep 300
+        MouseMove, 46, 520, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1279, 342, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1104, 368, 3
+        sleep 300
+        MouseClick, Left
+        Clipboard := "Strange Controller"
+        sleep 300
+        Send, ^v
+        sleep 300
+        MouseMove, 848, 479, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 682, 578, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1413, 297, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+    }
+    ; 1440p
+    else if (res = "1440p") {
+        sleep 300
+        MouseMove, 52, 693, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1704, 452, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1473, 489, 3
+        sleep 300
+        MouseClick, Left
+        Clipboard := "Strange Controller"
+        sleep 300
+        Send, ^v
+        sleep 300
+        MouseMove, 1144, 643, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 920, 774, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1896, 403, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+    }
+    ; 1366x768
+    else if (res = "1366x768") {
+        sleep 300
+        MouseMove, 42, 376, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 911, 242, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 785, 262, 3
+        sleep 300
+        MouseClick, Left
+        Clipboard := "Biome Randomizer"
+        sleep 300
+        Send, ^v
+        sleep 300
+        MouseMove, 616, 347, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 496, 422, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1017, 214, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+    }
+    if (itemWebhook) {
+        try SendWebhook(":joystick: Strange Controller was used.", "3225405")
+    }
+}
+
+; BR Toggle
+RunBiomeRandomizer() {
+    global res
+    global itemWebhook
+    ; 1080p
+    if (res = "1080p") {
+        sleep 300
+        MouseMove, 46, 520, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1279, 342, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1104, 368, 3
+        sleep 300
+        MouseClick, Left
+        Clipboard := "Biome Randomizer"
+        sleep 300
+        Send, ^v
+        sleep 300
+        MouseMove, 848, 479, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 682, 578, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1413, 297, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+    }
+    ; 1440p
+    else if (res = "1440p") {
+        sleep 300
+        MouseMove, 52, 693, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1704, 452, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1473, 489, 3
+        sleep 300
+        MouseClick, Left
+        Clipboard := "Biome Randomizer"
+        sleep 300
+        Send, ^v
+        sleep 300
+        MouseMove, 1144, 643, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 920, 774, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1896, 403, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+    }
+    ; 1366x768
+    else if (res = "1366x768") {
+        sleep 300
+        MouseMove, 42, 376, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 911, 242, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 785, 262, 3
+        sleep 300
+        MouseClick, Left
+        Clipboard := "Biome Randomizer"
+        sleep 300
+        Send, ^v
+        sleep 300
+        MouseMove, 616, 347, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 496, 422, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+        MouseMove, 1017, 214, 3
+        sleep 300
+        MouseClick, Left
+        sleep 300
+    }
+    if (itemWebhook) {
+        try SendWebhook(":joystick: Biome Randomizer was used.", "3225405")
+    }
+}
 
 UpdateGUI:
 if (toggle) {
@@ -713,15 +1315,22 @@ if (!toggle) {
         fishingLoopCount := FishingLoopInput
     }
     toggle := true
+    if (hasBiomesPlugin) {
+        Run, "%A_ScriptDir%\plugins\biomes.ahk"
+        biomeDetectionRunning := true
+    }
     if (startTick = "") {
         startTick := A_TickCount
     }
     if (cycleCount = "") {
         cycleCount := 0
     }
+    strangeControllerLastRun := 0
+    biomeRandomizerLastRun := 0
     IniWrite, %res%, %iniFilePath%, "Macro", "resolution"
     IniWrite, %maxLoopCount%, %iniFilePath%, "Macro", "maxLoopCount"
     IniWrite, %fishingLoopCount%, %iniFilePath%, "Macro", "fishingLoopCount"
+
     WinActivate, ahk_exe RobloxPlayerBeta.exe
     ManualGUIUpdate()
     SetTimer, UpdateGUI, 1000
@@ -732,21 +1341,48 @@ if (!toggle) {
     } else if (res = "1366x768") {
         SetTimer, DoMouseMove3, 100
     }
+    try SendWebhook(":green_circle: Macro Started!", "7909721")
 }
 Return
 
 F2::
-toggle := false
-firstLoop := true
-SetTimer, DoMouseMove, Off
-SetTimer, DoMouseMove2, Off
-SetTimer, DoMouseMove3, Off
-SetTimer, UpdateGUI, Off
-ManualGUIUpdate()
-ToolTip
+if (toggle) {
+    if (biomeDetectionRunning) {
+        DetectHiddenWindows, On
+        SetTitleMatchMode, 2
+
+        target := "biomes.ahk"
+        WinGet, id, ID, %target% ahk_class AutoHotkey
+        if (id) {
+            WinClose, ahk_id %id%
+        }
+        biomeDetectionRunning := false
+    }
+    toggle := false
+    firstLoop := true
+    SetTimer, DoMouseMove, Off
+    SetTimer, DoMouseMove2, Off
+    SetTimer, DoMouseMove3, Off
+    SetTimer, UpdateGUI, Off
+    ManualGUIUpdate()
+    ToolTip
+    try SendWebhook(":yellow_circle: Macro Paused", "16632664")
+}
 Return
 
 F3::
+if (biomeDetectionRunning) {
+    DetectHiddenWindows, On
+    SetTitleMatchMode, 2
+
+    target := "biomes.ahk"
+    WinGet, id, ID, %target% ahk_class AutoHotkey
+    if (id) {
+        WinClose, ahk_id %id%
+    }
+    biomeDetectionRunning := false
+}
+try SendWebhook(":red_circle: Macro Stopped.", "14495300")
 ExitApp
 
 ;1080p
@@ -757,18 +1393,58 @@ if (toggle) {
     global globalFailsafeTimer
     global azertyPathing
     global autoUnequip
+    global autoCloseChat
     global code
+    global strangeController
+    global biomeRandomizer
+    global strangeControllerTime
+    global biomeRandomizerTime
+    global strangeControllerInterval
+    global biomeRandomizerInterval
+    global strangeControllerLastRun
+    global biomeRandomizerLastRun
+    global startTick
+    global failsafeWebhook
+    global pathingWebhook
     loopCount := 0
     keyW := azertyPathing ? "z" : "w"
     keyA := azertyPathing ? "q" : "a"
+    restartPathing := false
     Loop {
-        restartPathing := false
         if (!toggle) {
             break
         }
 
+        ; SC Toggle
+        if (strangeController) {
+            elapsed := A_TickCount - startTick
+            if (strangeControllerLastRun = 0 && elapsed >= strangeControllerTime) {
+                RunStrangeController()
+                strangeControllerLastRun := elapsed
+            } else if (strangeControllerLastRun > 0 && (elapsed - strangeControllerLastRun) >= strangeControllerInterval) {
+                RunStrangeController()
+                strangeControllerLastRun := elapsed
+            }
+        }
+
+        ; BR Toggle
+        if (biomeRandomizer) {
+            elapsed := A_TickCount - startTick
+            if (biomeRandomizerLastRun = 0 && elapsed >= biomeRandomizerTime) {
+                RunBiomeRandomizer()
+                biomeRandomizerLastRun := elapsed
+            } else if (biomeRandomizerLastRun > 0 && (elapsed - biomeRandomizerLastRun) >= biomeRandomizerInterval) {
+                RunBiomeRandomizer()
+                biomeRandomizerLastRun := elapsed
+            }
+        }
+
         loopCount++
-        if (loopCount > maxLoopCount) {
+        if (loopCount > maxLoopCount || restartPathing) {
+        restartPathing := false
+        if (pathingWebhook) {
+            try SendWebhook(":moneybag: Macro started pathing to auto-sell!", "16636040")
+        }
         Send, {Esc}
         Sleep, 650
         Send, R
@@ -793,6 +1469,15 @@ if (toggle) {
             MouseMove, 1425, 303, 3
             sleep 300
             Click, Left
+            sleep 300
+        }
+        if (autoCloseChat) {
+            sleep 300
+            Send {/}
+            sleep 300
+            MouseMove, 149, 40, 3
+            sleep 300
+            MouseClick, Left
             sleep 300
         }
         MouseMove, 47, 467, 3
@@ -823,7 +1508,7 @@ if (toggle) {
             sleep 300
             Send {d Down}
             sleep 240
-            Send {d Up
+            Send {d Up}
             sleep 150
             Send {%keyW% Down}
             sleep 1450
@@ -831,7 +1516,7 @@ if (toggle) {
             sleep 300
             Send {s Down}
             sleep 300
-            Send {S Up}
+            Send {s Up}
             sleep 300
             Send {Space Down}
             sleep 25
@@ -904,7 +1589,7 @@ if (toggle) {
             sleep 300
             Send {d Down}
             sleep 180
-            Send {d Up
+            Send {d Up}
             sleep 150
             Send {%keyW% Down}
             sleep 1100
@@ -1021,7 +1706,7 @@ if (toggle) {
             sleep 200
             Send {s Down}
             sleep 120
-            Send {S Up}
+            Send {s Up}
             sleep 100
             Send {d Down}
             sleep 280
@@ -1129,58 +1814,31 @@ if (toggle) {
         PixelGetColor, checkColor, 1175, 837, RGB
         if (checkColor != 0xFFFFFF) {
         Process, Close, RobloxPlayerBeta.exe
-        sleep 2000
+        sleep 500
         Run, % "powershell -NoProfile -Command ""Start-Process 'roblox://navigation/share_links?code=" code "&type=Server'"""
-        sleep 8000
+        sleep 5000
         WinActivate, ahk_exe RobloxPlayerBeta.exe
-        sleep 2000
-
-        ; Skip button
-        sleep 13000
-        MouseMove, 960, 540, 3
-        sleep 350
-        MouseClick, Left
-        sleep 2000
-        startButtonSearch := A_TickCount
-        Loop {
-        ErrorLevel := 0
-        PixelSearch, px, py, 894, 811, 1013, 848, 0xFFFFFF, 3, Fast RGB
-        if (ErrorLevel = 0) {
-        MouseMove, 960, 825, 3
-        sleep 350
-        MouseClick, Left
-        break
-        }
-        if (A_TickCount - startButtonSearch > 30000) {
-        break
-        }
-        sleep 100
-        }
-
-        ; Start Button
         sleep 7000
-        startButtonSearch2 := A_TickCount
+        MouseMove, 960, 540, 3
+        sleep 200
+        MouseClick, Left
+        sleep 6000
+
+        ; Start button
+        sleep 1000
         Loop {
         ErrorLevel := 0
-        PixelSearch, px, py, 814, 839, 962, 892, 0xFFFFFF, 3, Fast RGB
+        PixelSearch, px, py, 205, 1019, 325, 978, 0x82ff95, 5, Fast RGB
         if (ErrorLevel = 0) {
-        MouseMove, 960, 870, 3
+        sleep 1000
+        MouseMove, 267, 1000, 3
         sleep 350
         MouseClick, Left
         break
         }
-        if (A_TickCount - startButtonSearch2 > 30000) {
-        break
-        }
-        sleep 100
         }
 
-        sleep 2500
-        Send {F11}
-        sleep 2500
-
-        ; Reset timer after rejoining
-        globalFailsafeTimer := A_TickCount
+        sleep 3000
         restartPathing := true
         break
         }
@@ -1204,10 +1862,16 @@ if (toggle) {
         sleep 300
         MouseClick, Left
         fishingFailsafeRan := true
+        if (failsafeWebhook) {
+            try SendWebhook(":grey_question: Fishing failsafe was triggered.", "13424349")
+        }
         }
         ; Pathing Failsafe
         if (A_TickCount - startWhitePixelSearch > (pathingFailsafeTime * 1000)) {
         restartPathing := true
+        if (failsafeWebhook) {
+            try SendWebhook(":feet: Pathing failsafe was triggered.", "6693139")
+        }
         break
         }
         if (!toggle) {
@@ -1219,7 +1883,7 @@ if (toggle) {
         continue
         }
 
-        ; PixelSearch loop with 9-second timeout
+        ; PixelSearch loop
         startTime := A_TickCount
         Loop {
         if (!toggle)
@@ -1227,12 +1891,40 @@ if (toggle) {
         if (A_TickCount - startTime > 9000)
         break
 
-        ErrorLevel := 0
-        PixelSearch, FoundX, FoundY, 757, 762, 1161, 782, barColor, 5, Fast RGB
-
-        if (ErrorLevel = 0) {
+        ; Advanced detection
+        if (advancedFishingDetection) {
+            ErrorLevel := 0
+            PixelSearch, leftX, leftY, 757, 767, 1161, 767, barColor, 5, Fast RGB
+            if (ErrorLevel = 0) {
+                rightX := leftX
+                Loop {
+                    testX := rightX + 1
+                    if (testX > 1161)
+                        break
+                    PixelGetColor, testColor, %testX%, 767, RGB
+                    if (Abs((testColor & 0xFF) - (barColor & 0xFF)) <= 10 && Abs(((testColor >> 8) & 0xFF) - ((barColor >> 8) & 0xFF)) <= 10 && Abs(((testColor >> 16) & 0xFF) - ((barColor >> 16) & 0xFF)) <= 10) {
+                        rightX := testX
+                    } else {
+                        break
+                    }
+                }
+                barWidth := rightX - leftX
+                if (barWidth < advancedFishingThreshold) {
+                    MouseClick, left
+                    sleep 25
+                }
+            } else {
+                MouseClick, left
+            }
+            sleep 10
         } else {
-        MouseClick, left
+            ; Normal detection
+            ErrorLevel := 0
+            PixelSearch, FoundX, FoundY, 757, 762, 1161, 782, barColor, 5, Fast RGB
+            if (ErrorLevel = 0) {
+            } else {
+                MouseClick, left
+            }
         }
         }
         sleep 300
@@ -1264,18 +1956,58 @@ if (toggle) {
     global globalFailsafeTimer
     global azertyPathing
     global autoUnequip
+    global autoCloseChat
     global code
+    global strangeController
+    global biomeRandomizer
+    global strangeControllerTime
+    global biomeRandomizerTime
+    global strangeControllerInterval
+    global biomeRandomizerInterval
+    global strangeControllerLastRun
+    global biomeRandomizerLastRun
+    global startTick
+    global failsafeWebhook
+    global pathingWebhook
     loopCount := 0
     keyW := azertyPathing ? "z" : "w"
     keyA := azertyPathing ? "q" : "a"
+    restartPathing := false
     Loop {
-        restartPathing := false
         if (!toggle) {
             break
         }
 
+        ; SC Toggle
+        if (strangeController) {
+            elapsed := A_TickCount - startTick
+            if (strangeControllerLastRun = 0 && elapsed >= strangeControllerTime) {
+                RunStrangeController()
+                strangeControllerLastRun := elapsed
+            } else if (strangeControllerLastRun > 0 && (elapsed - strangeControllerLastRun) >= strangeControllerInterval) {
+                RunStrangeController()
+                strangeControllerLastRun := elapsed
+            }
+        }
+
+        ; BR Toggle
+        if (biomeRandomizer) {
+            elapsed := A_TickCount - startTick
+            if (biomeRandomizerLastRun = 0 && elapsed >= biomeRandomizerTime) {
+                RunBiomeRandomizer()
+                biomeRandomizerLastRun := elapsed
+            } else if (biomeRandomizerLastRun > 0 && (elapsed - biomeRandomizerLastRun) >= biomeRandomizerInterval) {
+                RunBiomeRandomizer()
+                biomeRandomizerLastRun := elapsed
+            }
+        }
+
         loopCount++
-        if (loopCount > maxLoopCount) {
+        if (loopCount > maxLoopCount || restartPathing) {
+        restartPathing := false
+        if (pathingWebhook) {
+            try SendWebhook(":moneybag: Macro started pathing to auto-sell!", "16636040")
+        }
         Send, {Esc}
         Sleep, 650
         Send, R
@@ -1300,6 +2032,15 @@ if (toggle) {
             MouseMove, 1882, 395, 3
             sleep 300
             Click, Left
+            sleep 300
+        }
+        if (autoCloseChat) {
+            sleep 300
+            Send {/}
+            sleep 300
+            MouseMove, 151, 38, 3
+            sleep 300
+            MouseClick, Left
             sleep 300
         }
         MouseMove, 52, 621, 3
@@ -1330,7 +2071,7 @@ if (toggle) {
             sleep 300
             Send {d Down}
             sleep 240
-            Send {d Up
+            Send {d Up}
             sleep 150
             Send {%keyW% Down}
             sleep 1450
@@ -1338,7 +2079,7 @@ if (toggle) {
             sleep 300
             Send {s Down}
             sleep 300
-            Send {S Up}
+            Send {s Up}
             sleep 300
             Send {Space Down}
             sleep 25
@@ -1411,7 +2152,7 @@ if (toggle) {
             sleep 300
             Send {d Down}
             sleep 180
-            Send {d Up
+            Send {d Up}
             sleep 150
             Send {%keyW% Down}
             sleep 1100
@@ -1419,7 +2160,7 @@ if (toggle) {
             sleep 300
             Send {s Down}
             sleep 300
-            Send {S Up}
+            Send {s Up}
             sleep 300
             Send {Space Down}
             sleep 25
@@ -1528,7 +2269,7 @@ if (toggle) {
             sleep 200
             Send {s Down}
             sleep 120
-            Send {S Up}
+            Send {s Up}
             sleep 100
             Send {d Down}
             sleep 280
@@ -1636,55 +2377,35 @@ if (toggle) {
         PixelGetColor, checkColor, 1535, 1120, RGB
         if (checkColor != 0xFFFFFF) {
         Process, Close, RobloxPlayerBeta.exe
-        sleep 2000
+        sleep 500
         Run, % "powershell -NoProfile -Command ""Start-Process 'roblox://navigation/share_links?code=" code "&type=Server'"""
-        sleep 8000
+        sleep 5000
         WinActivate, ahk_exe RobloxPlayerBeta.exe
-        sleep 2000
+        sleep 6000
 
         ; Skip button
-        sleep 13000
+        sleep 1000
         MouseMove, 1280, 720, 3
-        sleep 2000
-        startButtonSearch := A_TickCount
-        Loop {
-        ErrorLevel := 0
-        PixelSearch, px, py, 1193, 1127, 1362, 1182, 0xFFFFFF, 3, Fast RGB
-        if (ErrorLevel = 0) {
-        MouseMove, 1280, 1150, 3
-        sleep 350
+        sleep 200
         MouseClick, Left
-        break
-        }
-        if (A_TickCount - startButtonSearch > 30000) {
-        break
-        }
-        sleep 100
-        }
+        sleep 6000
 
         ; Start button
-        sleep 7000
-        startButtonSearch2 := A_TickCount
+        sleep 1000
         Loop {
         ErrorLevel := 0
-        PixelSearch, px, py, 1074, 1169, 1289, 1251, 0xFFFFFF, 3, Fast RGB
+        PixelSearch, px, py, 295, 1364, 445, 1311, 0x82ff95, 5, Fast RGB
         if (ErrorLevel = 0) {
-        MouseMove, 1280, 1113, 3
+        sleep 1000
+        MouseMove, 347, 1329, 3
         sleep 350
         MouseClick, Left
-        break
-        }
-        if (A_TickCount - startButtonSearch2 > 30000) {
         break
         }
         sleep 100
         }
 
-        sleep 2500
-        Send {F11}
-        sleep 2500
-
-        globalFailsafeTimer := A_TickCount
+        sleep 3000
         restartPathing := true
         break
         }
@@ -1708,11 +2429,17 @@ if (toggle) {
         sleep 300
         MouseClick, Left
         fishingFailsafeRan := true
+        if (failsafeWebhook) {
+            try SendWebhook(":grey_question: Fishing failsafe was triggered.", "13424349")
+        }
         }
 
         ; Pathing Failsafe
         if (A_TickCount - startWhitePixelSearch > (pathingFailsafeTime * 1000)) {
         restartPathing := true
+        if (failsafeWebhook) {
+            try SendWebhook(":feet: Pathing failsafe was triggered.", "6693139")
+        }
         break
         }
 
@@ -1725,6 +2452,7 @@ if (toggle) {
         continue
         }
 
+
         ; PixelSearch loop
         startTime := A_TickCount
         Loop {
@@ -1733,12 +2461,39 @@ if (toggle) {
         if (A_TickCount - startTime > 9000)
         break
 
-        ErrorLevel := 0
-        PixelSearch, FoundX, FoundY, 1043, 1033, 1519, 1058, barColor, 5, Fast RGB
-
-        if (ErrorLevel = 0) {
+        ; Advanced detection
+        if (advancedFishingDetection) {
+            ErrorLevel := 0
+            PixelSearch, leftX, leftY, 1043, 1033, 1519, 1033, barColor, 5, Fast RGB
+            if (ErrorLevel = 0) {
+                rightX := leftX
+                Loop {
+                    testX := rightX + 1
+                    if (testX > 1519)
+                        break
+                    PixelGetColor, testColor, %testX%, 1033, RGB
+                    if (Abs((testColor & 0xFF) - (barColor & 0xFF)) <= 10 && Abs(((testColor >> 8) & 0xFF) - ((barColor >> 8) & 0xFF)) <= 10 && Abs(((testColor >> 16) & 0xFF) - ((barColor >> 16) & 0xFF)) <= 10) {
+                        rightX := testX
+                    } else {
+                        break
+                    }
+                }
+                barWidth := rightX - leftX
+                if (barWidth < advancedFishingThreshold) {
+                    MouseClick, left
+                    sleep 25
+                }
+            } else {
+                MouseClick, left
+            }
         } else {
-        MouseClick, left
+            ; Normal detection
+            ErrorLevel := 0
+            PixelSearch, FoundX, FoundY, 1043, 1033, 1519, 1058, barColor, 5, Fast RGB
+            if (ErrorLevel = 0) {
+            } else {
+                MouseClick, left
+            }
         }
         }
         sleep 300
@@ -1770,18 +2525,58 @@ if (toggle) {
     global globalFailsafeTimer
     global azertyPathing
     global autoUnequip
+    global autoCloseChat
     global code
+    global strangeController
+    global biomeRandomizer
+    global strangeControllerTime
+    global biomeRandomizerTime
+    global strangeControllerInterval
+    global biomeRandomizerInterval
+    global strangeControllerLastRun
+    global biomeRandomizerLastRun
+    global startTick
+    global failsafeWebhook
+    global pathingWebhook
     loopCount := 0
     keyW := azertyPathing ? "z" : "w"
     keyA := azertyPathing ? "q" : "a"
+    restartPathing := false
     Loop {
-        restartPathing := false
         if (!toggle) {
             break
         }
 
+        ; SC Toggle
+        if (strangeController) {
+            elapsed := A_TickCount - startTick
+            if (strangeControllerLastRun = 0 && elapsed >= strangeControllerTime) {
+                RunStrangeController()
+                strangeControllerLastRun := elapsed
+            } else if (strangeControllerLastRun > 0 && (elapsed - strangeControllerLastRun) >= strangeControllerInterval) {
+                RunStrangeController()
+                strangeControllerLastRun := elapsed
+            }
+        }
+
+        ; BR Toggle
+        if (biomeRandomizer) {
+            elapsed := A_TickCount - startTick
+            if (biomeRandomizerLastRun = 0 && elapsed >= biomeRandomizerTime) {
+                RunBiomeRandomizer()
+                biomeRandomizerLastRun := elapsed
+            } else if (biomeRandomizerLastRun > 0 && (elapsed - biomeRandomizerLastRun) >= biomeRandomizerInterval) {
+                RunBiomeRandomizer()
+                biomeRandomizerLastRun := elapsed
+            }
+        }
+
         loopCount++
-        if (loopCount > maxLoopCount) {
+        if (loopCount > maxLoopCount || restartPathing) {
+        restartPathing := false
+        if (pathingWebhook) {
+            try SendWebhook(":moneybag: Macro started pathing to auto-sell!", "16636040")
+        }
         Send, {Esc}
         Sleep, 650
         Send, R
@@ -1806,6 +2601,15 @@ if (toggle) {
             MouseMove, 1016, 218, 3
             sleep 300
             Click, Left
+            sleep 300
+        }
+        if (autoCloseChat) {
+            sleep 300
+            Send {/}
+            sleep 300
+            MouseMove, 151, 42, 3
+            sleep 300
+            MouseClick, Left
             sleep 300
         }
         MouseMove, 26, 325, 3
@@ -1836,7 +2640,7 @@ if (toggle) {
             sleep 300
             Send {d Down}
             sleep 240
-            Send {d Up
+            Send {d Up}
             sleep 150
             Send {%keyW% Down}
             sleep 1450
@@ -1844,7 +2648,7 @@ if (toggle) {
             sleep 300
             Send {s Down}
             sleep 300
-            Send {S Up}
+            Send {s Up}
             sleep 300
             Send {Space Down}
             sleep 25
@@ -1917,7 +2721,7 @@ if (toggle) {
             sleep 300
             Send {d Down}
             sleep 180
-            Send {d Up
+            Send {d Up}
             sleep 150
             Send {%keyW% Down}
             sleep 1100
@@ -1925,7 +2729,7 @@ if (toggle) {
             sleep 300
             Send {s Down}
             sleep 300
-            Send {S Up}
+            Send {s Up}
             sleep 300
             Send {Space Down}
             sleep 25
@@ -2034,7 +2838,7 @@ if (toggle) {
             sleep 200
             Send {s Down}
             sleep 120
-            Send {S Up}
+            Send {s Up}
             sleep 100
             Send {d Down}
             sleep 280
@@ -2142,57 +2946,31 @@ if (toggle) {
         PixelGetColor, checkColor, 865, 593, RGB
         if (checkColor != 0xFFFFFF) {
         Process, Close, RobloxPlayerBeta.exe
-        sleep 2000
+        sleep 500
         Run, % "powershell -NoProfile -Command ""Start-Process 'roblox://navigation/share_links?code=" code "&type=Server'"""
-        sleep 8000
+        sleep 5000
         WinActivate, ahk_exe RobloxPlayerBeta.exe
-        sleep 2000
-
-        ; Skip button
-        sleep 13000
+        sleep 7000
         MouseMove, 683, 384, 3
-        sleep 350
+        sleep 200
         MouseClick, Left
-        sleep 2000
-        startButtonSearch := A_TickCount
-        Loop {
-        ErrorLevel := 0
-        PixelSearch, px, py, 639, 567, 722, 590, 0xFFFFFF, 3, Fast RGB
-        if (ErrorLevel = 0) {
-        MouseMove, 683, 576, 3
-        sleep 350
-        MouseClick, Left
-        break
-        }
-        if (A_TickCount - startButtonSearch > 30000) {
-        break
-        }
-        sleep 100
-        }
+        sleep 6000
 
         ; Start button
-        sleep 7000
-        startButtonSearch2 := A_TickCount
+        sleep 1000
         Loop {
         ErrorLevel := 0
-        PixelSearch, px, py, 582, 589, 688, 624, 0xFFFFFF, 3, Fast RGB
+        PixelSearch, px, py, 160, 734, 244, 708, 0x82ff95, 5, Fast RGB
         if (ErrorLevel = 0) {
-        MouseMove, 683, 610, 3
+        sleep 1000
+        MouseMove, 200, 715, 3
         sleep 350
         MouseClick, Left
         break
         }
-        if (A_TickCount - startButtonSearch2 > 30000) {
-        break
-        }
-        sleep 100
         }
 
-        sleep 2500
-        Send {F11}
-        sleep 2500
-
-        globalFailsafeTimer := A_TickCount
+        sleep 3000
         restartPathing := true
         break
         }
@@ -2216,10 +2994,16 @@ if (toggle) {
         sleep 300
         MouseClick, Left
         fishingFailsafeRan := true
+        if (failsafeWebhook) {
+            try SendWebhook(":grey_question: Fishing failsafe was triggered.", "13424349")
+        }
         }
         ; Pathing Failsafe
         if (A_TickCount - startWhitePixelSearch > (pathingFailsafeTime * 1000)) {
         restartPathing := true
+        if (failsafeWebhook) {
+            try SendWebhook(":feet: Pathing failsafe was triggered.", "6693139")
+        }
         break
         }
         if (!toggle) {
@@ -2231,7 +3015,7 @@ if (toggle) {
         continue
         }
 
-        ; PixelSearch loop with 9-second timeout
+        ; PixelSearch loop
         startTime := A_TickCount
         Loop {
         if (!toggle)
@@ -2239,13 +3023,41 @@ if (toggle) {
         if (A_TickCount - startTime > 9000)
         break
 
-        ErrorLevel := 0
-        PixelSearch, FoundX, FoundY, 513, 531, 856, 549, barColor, 5, Fast RGB
+        ; Advanced detection
+        if (advancedFishingDetection) {
+            ErrorLevel := 0
+            PixelSearch, leftX, leftY, 513, 531, 856, 549, barColor, 5, Fast RGB
+            if (ErrorLevel = 0) {
+                rightX := leftX
+                Loop {
+                    testX := rightX + 1
+                    if (testX > 856)
+                        break
+                    PixelGetColor, testColor, %testX%, 531, RGB
+                    if (Abs((testColor & 0xFF) - (barColor & 0xFF)) <= 10 && Abs(((testColor >> 8) & 0xFF) - ((barColor >> 8) & 0xFF)) <= 10 && Abs(((testColor >> 16) & 0xFF) - ((barColor >> 16) & 0xFF)) <= 10) {
+                        rightX := testX
+                    } else {
+                        break
+                    }
 
-        if (ErrorLevel = 0) {
+                }
+                barWidth := rightX - leftX
+                if (barWidth < advancedFishingThreshold) {
+                    MouseClick, left
+                    sleep 25
+                }
+            } else {
+                MouseClick, left
+            }
+            sleep 10
         } else {
-        MouseClick, left
-        MouseClick, Left
+            ; Normal detection
+            ErrorLevel := 0
+            PixelSearch, FoundX, FoundY, 513, 531, 856, 549, barColor, 5, Fast RGB
+            if (ErrorLevel = 0) {
+            } else {
+                MouseClick, left
+            }
         }
         }
         sleep 300
@@ -2280,6 +3092,10 @@ if (!toggle) {
         fishingLoopCount := FishingLoopInput
     }
     toggle := true
+    if (hasBiomesPlugin) {
+        Run, "%A_ScriptDir%\plugins\biomes.ahk"
+        biomeDetectionRunning := true
+    }
     if (startTick = "") {
         startTick := A_TickCount
     }
@@ -2296,6 +3112,7 @@ if (!toggle) {
     } else if (res = "1366x768") {
         SetTimer, DoMouseMove3, 100
     }
+    try SendWebhook(":green_circle: Macro Started!", "7909721")
 }
 return
 
@@ -2309,6 +3126,10 @@ StartScript(res) {
             fishingLoopCount := FishingLoopInput
         }
         toggle := true
+        if (hasBiomesPlugin) {
+            Run, "%A_ScriptDir%\plugins\biomes.ahk"
+            biomeDetectionRunning := true
+        }
         if (startTick = "") {
             startTick := A_TickCount
         }
@@ -2325,11 +3146,24 @@ StartScript(res) {
         } else if (res = "1366x768") {
             SetTimer, DoMouseMove3, 100
         }
+        try SendWebhook(":green_circle: Macro Started!", "7909721")
     }
     return
 }
 
 PauseScript:
+if (toggle) {
+if (biomeDetectionRunning) {
+    DetectHiddenWindows, On
+    SetTitleMatchMode, 2
+
+    target := "biomes.ahk"
+    WinGet, id, ID, %target% ahk_class AutoHotkey
+    if (id) {
+        WinClose, ahk_id %id%
+    }
+    biomeDetectionRunning := false
+}
 toggle := false
 firstLoop := true
 SetTimer, DoMouseMove, Off
@@ -2338,9 +3172,23 @@ SetTimer, DoMouseMove3, Off
 SetTimer, UpdateGUI, Off
 ManualGUIUpdate()
 ToolTip
+try SendWebhook(":yellow_circle: Macro Paused", "16632664")
+}
 return
 
 CloseScript:
+if (biomeDetectionRunning) {
+    DetectHiddenWindows, On
+    SetTitleMatchMode, 2
+
+    target := "biomes.ahk"
+    WinGet, id, ID, %target% ahk_class AutoHotkey
+    if (id) {
+        WinClose, ahk_id %id%
+    }
+    biomeDetectionRunning := false
+}
+try SendWebhook(":red_circle: Macro Stopped.", "14495300")
 ExitApp
 return
 
@@ -2406,10 +3254,13 @@ if (dev3_name = "maxstellar") {
 return
 
 DonateClick:
-Run, https://www.roblox.com/games/130758835005479/FishSol-Donations#!/store
+Run, https://www.roblox.com/games/106268429577845/fishSol-Donations#!/store
 return
 
 NeedHelpClick:
 Run, https://discord.gg/nPvA54ShTm
 return
 
+OpenPluginsFolder:
+Run, %A_ScriptDir%\plugins
+return
