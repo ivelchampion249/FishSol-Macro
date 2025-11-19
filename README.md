@@ -14,6 +14,9 @@
 2. Download the [latest release](https://github.com/ivelchampion249/FishSol-Macro/releases/latest) of fishSol, and extract the .zip file into an empty folder
 3. Run fishSol through the .ahk file by double-clicking it, or right-clicking it and selecting "Run script"
 
+## Plugins
+Download your desired plugin from the [release](https://github.com/ivelchampion249/FishSol-Macro/releases/latest) or from the plugins folder in the source code, and drag it into the plugins folder. A tab for the plugin should automatically show up when you restart the macro.
+
 ## Tutorial
 Watch this YouTube tutorial to set up the macro! https://youtu.be/6aSNqj3PBpU
 <br>
