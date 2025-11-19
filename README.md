@@ -15,8 +15,9 @@
 3. Run fishSol through the .ahk file by double-clicking it, or right-clicking it and selecting "Run script"
 
 ## Tutorial
-Watch this YouTube tutorial to set up the macro!
-https://youtu.be/6aSNqj3PBpU
+Watch this YouTube tutorial to set up the macro! https://youtu.be/6aSNqj3PBpU
+<br>
+Watch this YouTube tutorial about the new features: https://www.youtu.be/piHhcXpckSk
 
 ## Features
 - Auto-Fish
