@@ -7,7 +7,7 @@ SetWorkingDir %A_ScriptDir%
 prevBiome := "None"
 prevState := "None"
 iniFilePath := A_ScriptDir "\..\settings.ini"
-biomeColors := { "NORMAL":16777215, "SAND STORM":16040572, "HELL":6033945, "STARFALL":6784224, "CORRUPTION":9454335, "NULL":0, "GLITCHED":6684517, "WINDY":9566207, "SNOWY":12908022, "RAINY":4425215, "DREAMSPACE":16743935, "PUMPKIN MOON":13983497, "GRAVEYARD":16777215, "BLOOD RAIN":16711680 }
+biomeColors := { "NORMAL":16777215, "SAND STORM":16040572, "HELL":6033945, "STARFALL":6784224, "CORRUPTION":9454335, "NULL":0, "GLITCHED":6684517, "WINDY":9566207, "SNOWY":12908022, "RAINY":4425215, "DREAMSPACE":16743935, "PUMPKIN MOON":13983497, "GRAVEYARD":16777215, "BLOOD RAIN":16711680, "CYBERSPACE":2904999 }
 EnvGet, LocalAppData, LOCALAPPDATA
 
 if (FileExist(iniFilePath)) {
@@ -90,7 +90,7 @@ CheckBiome:
         biomeKey := "Biome" StrReplace(biome, " ", "")
         IniRead, isBiomeEnabled, %iniFilePath%, "Biomes", %biomeKey%, 1
 
-        if (isBiomeEnabled = 1 || biome = "GLITCHED" || biome = "DREAMSPACE") {
+        if (isBiomeEnabled = 1 || biome = "GLITCHED" || biome = "DREAMSPACE" || biome = "CYBERSPACE") {
             prevBiome := biome
             biome_url := StrReplace(biome, " ", "_")
             thumbnail_url := "https://maxstellar.github.io/biome_thumb/" biome_url ".png"
@@ -100,7 +100,7 @@ CheckBiome:
             time := A_NowUTC
             timestamp := SubStr(time,1,4) "-" SubStr(time,5,2) "-" SubStr(time,7,2) "T" SubStr(time,9,2) ":" SubStr(time,11,2) ":" SubStr(time,13,2) ".000Z"
 
-            if (biome = "GLITCHED" || biome = "DREAMSPACE") {
+            if (biome = "GLITCHED" || biome = "DREAMSPACE" || biome = "CYBERSPACE") {
                 content := "@everyone"
             } else {
                 content := ""
