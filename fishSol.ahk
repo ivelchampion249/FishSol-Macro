@@ -24,6 +24,10 @@ biomeRandomizer := false
 failsafeWebhook := false
 pathingWebhook := false
 itemWebhook := false
+crafterToggle := false
+autoCrafterDetection := false
+autoCrafterLastCheck := 0
+autoCrafterCheckInterval := 2000
 strangeControllerTime := 0
 biomeRandomizerTime := 360000
 strangeControllerInterval := 1260000
@@ -40,6 +44,7 @@ advancedFishingThreshold := 25
 webhookURL := ""
 biomesPrivateServerLink := ""
 biomeDetectionRunning := false
+hasCrafterPlugin := FileExist(A_ScriptDir "\plugins\potions.ahk")
 
 if (FileExist(iniFilePath)) {
     IniRead, tempRes, %iniFilePath%, "Macro", "resolution"
@@ -152,10 +157,21 @@ if (FileExist(iniFilePath)) {
     {
         itemWebhook := (tempItemWebhook = "true" || tempItemWebhook = "1")
     }
+    IniRead, tempCrafter, %iniFilePath%, "Macro", "crafterToggle"
+    if (tempCrafter != "ERROR")
+    {
+        crafterToggle := (tempCrafter = "true" || tempCrafter = "1")
+    }
+    IniRead, tempAutoCrafterDetection, %iniFilePath%, "Macro", "autoCrafterDetection"
+    if (tempAutoCrafterDetection != "ERROR")
+    {
+        autoCrafterDetection := (tempAutoCrafterDetection = "true" || tempAutoCrafterDetection = "1")
+    }
 }
 
 ; checks plugin folder
 hasBiomesPlugin := FileExist(A_ScriptDir "\plugins\biomes.ahk")
+hasCrafterPlugin := FileExist(A_ScriptDir "\plugins\potions.ahk")
 
 code := ""
 if RegExMatch(privateServerLink, "code=([^&]+)", m)
@@ -281,7 +297,7 @@ if (dev3_name = "ivelchampion249") {
 
 Gui, Color, 0x1E1E1E
 Gui, Font, s17 cWhite Bold, Segoe UI
-Gui, Add, Text, x0 y10 w600 h45 Center BackgroundTrans c0x00b466, fishSol v1.8-beta3
+Gui, Add, Text, x0 y10 w600 h45 Center BackgroundTrans c0x00D4FF, fishSol v1.9
 
 Gui, Font, s9 cWhite Normal, Segoe UI
 
@@ -300,6 +316,8 @@ Gui, Font, s10 cWhite Normal, Segoe UI
 tabList := "Main|Misc|Failsafes|Webhook"
 if (hasBiomesPlugin)
     tabList .= "|Biomes"
+if (hasCrafterPlugin)
+    tabList .= "|Crafter"
 tabList .= "|Credits"
 
 Gui, Add, Tab3, x15 y55 w570 h600 vMainTabs gTabChange c0xFFFFFF, %tabList%
@@ -517,35 +535,61 @@ if (hasBiomesPlugin) {
     Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Biomes.png
 
     Gui, Font, s9 cWhite Normal, Segoe UI
-    Gui, Add, Text, x50 y290 w500 h20 BackgroundTrans c0xCCCCCC, Choose which biomes are sent to Discord:
+    Gui, Add, Text, x50 y299 w500 h20 BackgroundTrans c0xCCCCCC, Choose which biomes are sent to Discord:
 
     Gui, Font, s11 cWhite Bold, Segoe UI
     Gui, Add, CheckBox, x50 y320 w140 h25 vBiomeWindy gSaveBiomeToggles Checked1 cWhite, Windy
     Gui, Add, CheckBox, x50 y350 w140 h25 vBiomeSnowy gSaveBiomeToggles Checked1 cWhite, Snowy
     Gui, Add, CheckBox, x50 y380 w140 h25 vBiomeRainy gSaveBiomeToggles Checked1 cWhite, Rainy
-    Gui, Add, CheckBox, x50 y410 w140 h25 vBiomeSandStorm gSaveBiomeToggles Checked1 cWhite, Sand Storm
 
     Gui, Add, CheckBox, x250 y320 w140 h25 vBiomeHell gSaveBiomeToggles Checked1 cWhite, Hell
     Gui, Add, CheckBox, x250 y350 w140 h25 vBiomeStarfall gSaveBiomeToggles Checked1 cWhite, Starfall
     Gui, Add, CheckBox, x250 y380 w140 h25 vBiomeCorruption gSaveBiomeToggles Checked1 cWhite, Corruption
-    Gui, Add, CheckBox, x250 y410 w140 h25 vBiomeNull gSaveBiomeToggles Checked1 cWhite, Null
 
-    Gui, Add, CheckBox, x420 y320 w140 h25 vBiomePumpkinMoon gSaveBiomeToggles Checked1 cWhite, Pumpkin Moon
-    Gui, Add, CheckBox, x420 y350 w140 h25 vBiomeGraveyard gSaveBiomeToggles Checked1 cWhite, Graveyard
-    Gui, Add, CheckBox, x420 y380 w140 h25 vBiomeBloodRain gSaveBiomeToggles Checked1 cWhite, Blood Rain
-    Gui, Add, CheckBox, x420 y410 w140 h25 vBiomeNormal gSaveBiomeToggles Checked1 cWhite, Normal
+    Gui, Add, CheckBox, x420 y380 w140 h25 vBiomeNormal gSaveBiomeToggles Checked1 cWhite, Normal
+    Gui, Add, CheckBox, x420 y320 w140 h25 vBiomeSandStorm gSaveBiomeToggles Checked1 cWhite, Sand Storm
+    Gui, Add, CheckBox, x420 y350 w140 h25 vBiomeNull gSaveBiomeToggles Checked1 cWhite, Null
 
     Gui, Font, s14 cWhite Bold
-    Gui, Add, Text, x118 y460 c0x65FF65, Glitched
-    Gui, Add, Text, x+5 y460, and
-    Gui, Add, Text, x+5 y460 c0xFF7DFF, Dreamspace
-    Gui, Add, Text, x+5 y460, are always on.
+    Gui, Add, Text, x65 y420 c0x65FF65, Glitched
+    Gui, Add, Text, x+1 y420, ,
+    Gui, Add, Text, x+5 y420 c0xFF7DFF, Dreamspace
+    Gui, Add, Text, x+5 y420, and
+    Gui, Add, Text, x+5 y420 c0x00ddff, Cyberspace
+    Gui, Add, Text, x+5 y420, are always on.
 
     Gui, Font, s10 cWhite Bold
     Gui, Add, Text, x50 y155 w200 h25 BackgroundTrans, Private Server Link:
     Gui, Add, Edit, x50 y185 w500 h25 vBiomesPrivateServerInput gUpdateBiomesPrivateServer Background0xD3D3D3 cBlack, %biomesPrivateServerLink%
     Gui, Font, s8 c0xCCCCCC Normal
     Gui, Add, Text, x50 y215 w500 h15 BackgroundTrans, Paste your Roblox private server link here for biome notifications.
+
+    Gui, Font, s10 cWhite Bold
+    Gui, Add, Button, x425 y465 w115 h40 gOpenPluginsFolder, Open Plugins Folder
+
+    Gui, Color, 0x1E1E1E
+    Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
+    Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+
+    Gui, Font, s11 cWhite Bold Underline, Segoe UI
+    Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
+    Gui, Add, Text, x330 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
+}
+
+if (hasCrafterPlugin) {
+    Gui, Tab, Crafter
+
+    Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Crafter.png
+
+    Gui, Font, s11 cWhite Bold, Segoe UI
+    Gui, Add, Text, x45 y135 w200 h25 BackgroundTrans, example text:
+    Gui, Font, s10 cWhite Bold
+    Gui, Add, Button, x250 y135 w80 h25 gToggleCrafter vCrafterBtn, Toggle
+    Gui, Font, s10 c0xCCCCCC Bold, Segoe UI
+    Gui, Add, Text, x340 y140 w60 h25 vCrafterStatus BackgroundTrans, OFF
+
+    Gui, Font, s9 cWhite Normal, Segoe UI
+    Gui, Add, Text, x45 y185 w500 h60 BackgroundTrans c0xCCCCCC, example text
 
     Gui, Font, s10 cWhite Bold
     Gui, Add, Button, x425 y505 w115 h40 gOpenPluginsFolder, Open Plugins Folder
@@ -631,23 +675,26 @@ Gui, Add, Text, x110 y285 w300 h15 BackgroundTrans, %dev3_role%
 Gui, Font, s9 c0xCCCCCC Normal Underline
 Gui, Add, Text, x110 y300 w300 h15 BackgroundTrans c0x0088FF gDev3LinkClick, %dev3_discord%
 
-url := "https://raw.githubusercontent.com/ivelchampion249/FishSol-Macro/refs/heads/main/DONATORS.txt"
+try {
+    url := "https://raw.githubusercontent.com/ivelchampion249/FishSol-Macro/refs/heads/main/DONATORS.txt"
 
-Http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-Http.Open("GET", url, false)
-Http.Send()
+    Http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    Http.Open("GET", url, false)
+    Http.Send()
 
-content := Http.ResponseText
-
+    content := Http.ResponseText
+} catch {
+    content := "Failed to grab donator list."
+}
 Gui, Font, s10 cWhite Normal Bold
 Gui, Add, Text, x50 y345 w200 h20 BackgroundTrans, Thank you to our donators!
 Gui, Font, s9 c0xCCCCCC Normal
 Gui, Add, Edit, x50 y370 w480 h125 vDonatorsList -Wrap +ReadOnly +VScroll -WantReturn -E0x200 Background0x2D2D2D c0xCCCCCC, %content%
 
 Gui, Font, s8 c0xCCCCCC Normal
-Gui, Add, Text, x50 y518 w500 h15 BackgroundTrans, fishSol v1.8-beta3 - %randomMessage%
+Gui, Add, Text, x50 y518 w500 h15 BackgroundTrans, fishSol v1.9 - %randomMessage%
 
-Gui, Show, w600 h670, fishSol v1.8-beta3
+Gui, Show, w600 h670, fishSol v1.9
 
 Gui, Color, 0x1E1E1E
 Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
@@ -759,6 +806,19 @@ if (itemWebhook) {
 } else {
     GuiControl,, itemWebhookStatus, OFF
     GuiControl, +c0xFF4444, itemWebhookStatus
+}
+
+if (hasCrafterPlugin) {
+    if (crafterToggle) {
+        GuiControl,, CrafterStatus, ON
+        GuiControl, +c0x00DD00, CrafterStatus
+        autoCrafterDetection := true
+        autoCrafterLastCheck := A_TickCount
+    } else {
+        GuiControl,, CrafterStatus, OFF
+        GuiControl, +c0xFF4444, CrafterStatus
+        autoCrafterDetection := false
+    }
 }
 
 return
@@ -927,6 +987,76 @@ if (itemWebhook) {
 }
 return
 
+ToggleCrafter:
+crafterToggle := !crafterToggle
+if (crafterToggle) {
+    GuiControl,, CrafterStatus, ON
+    GuiControl, +c0x00DD00, CrafterStatus
+    IniWrite, true, %iniFilePath%, "Macro", "crafterToggle"
+    autoCrafterDetection := true
+    autoCrafterLastCheck := A_TickCount
+    IniWrite, true, %iniFilePath%, "Macro", "autoCrafterDetection"
+} else {
+    GuiControl,, CrafterStatus, OFF
+    GuiControl, +c0xFF4444, CrafterStatus
+    IniWrite, false, %iniFilePath%, "Macro", "crafterToggle"
+    autoCrafterDetection := false
+    IniWrite, false, %iniFilePath%, "Macro", "autoCrafterDetection"
+}
+return
+
+; Auto Crafter
+RunAutoCrafter() {
+    global hasCrafterPlugin
+    global itemWebhook
+    global globalFailsafeTimer
+    global fishingFailsafeTime
+    global pathingFailsafeTime
+    global autoRejoinFailsafeTime
+
+    if (!hasCrafterPlugin) {
+        return
+    }
+
+    autoCrafterDetection := false
+
+    originalFishingFailsafeTime := fishingFailsafeTime
+    originalPathingFailsafeTime := pathingFailsafeTime
+    originalAutoRejoinFailsafeTime := autoRejoinFailsafeTime
+    originalGlobalFailsafeTimer := globalFailsafeTimer
+
+    fishingFailsafeTime := 999999
+    pathingFailsafeTime := 999999
+    autoRejoinFailsafeTime := 999999
+    globalFailsafeTimer := 0
+
+    Run, "%A_ScriptDir%\plugins\potions.ahk"
+
+    ; webhoook
+    if (itemWebhook) {
+        try SendWebhook(":tools: Auto Crafter activated!", "9932cc")
+    }
+
+    Sleep, 1000
+    Sleep, 5000
+
+    fishingFailsafeTime := originalFishingFailsafeTime
+    pathingFailsafeTime := originalPathingFailsafeTime
+    autoRejoinFailsafeTime := originalAutoRejoinFailsafeTime
+    globalFailsafeTimer := originalGlobalFailsafeTimer
+
+    Send, {Esc}
+    Sleep, 650
+    Send, R
+    Sleep, 650
+    Send, {Enter}
+    sleep 2600
+
+    ; Re-enable detection
+    autoCrafterDetection := true
+    autoCrafterLastCheck := A_TickCount
+}
+
 UpdatePrivateServer:
 Gui, Submit, nohide
 privateServerLink := PrivateServerInput
@@ -1028,25 +1158,27 @@ SendWebhook(title, color := "16777215") {
     if (!InStr(webhookURL, "discord")) {
         return
     }
-    time := A_NowUTC
-    timestamp := SubStr(time,1,4) "-" SubStr(time,5,2) "-" SubStr(time,7,2) "T" SubStr(time,9,2) ":" SubStr(time,11,2) ":" SubStr(time,13,2) ".000Z"
+    try {
+        time := A_NowUTC
+        timestamp := SubStr(time,1,4) "-" SubStr(time,5,2) "-" SubStr(time,7,2) "T" SubStr(time,9,2) ":" SubStr(time,11,2) ":" SubStr(time,13,2) ".000Z"
 
-    json := "{"
-    . """embeds"": ["
-    . "{"
-    . "    ""title"": """ title ""","
-    . "    ""color"": " color ","
-    . "    ""footer"": {""text"": ""fishSol v1.8"", ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},"
-    . "    ""timestamp"": """ timestamp """"
-    . "  }"
-    . "],"
-    . """content"": """""
-    . "}"
+        json := "{"
+        . """embeds"": ["
+        . "{"
+        . "    ""title"": """ title ""","
+        . "    ""color"": " color ","
+        . "    ""footer"": {""text"": ""fishSol v1.9"", ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},"
+        . "    ""timestamp"": """ timestamp """"
+        . "  }"
+        . "],"
+        . """content"": """""
+        . "}"
 
-    http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-    http.Open("POST", webhookURL, false)
-    http.SetRequestHeader("Content-Type", "application/json")
-    http.Send(json)
+        http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+        http.Open("POST", webhookURL, false)
+        http.SetRequestHeader("Content-Type", "application/json")
+        http.Send(json)
+    }
 }
 
 
@@ -1054,6 +1186,7 @@ SendWebhook(title, color := "16777215") {
 RunStrangeController() {
     global res
     global itemWebhook
+    tryCount := 0
     ; 1080p
     if (res = "1080p") {
         sleep 300
@@ -1076,10 +1209,37 @@ RunStrangeController() {
         sleep 300
         MouseClick, Left
         sleep 300
-        MouseMove, 682, 578, 3
-        sleep 300
-        MouseClick, Left
-        sleep 300
+
+        Loop {
+            PixelSearch, Px, Py, 571, 668, 571, 668, 0xf0a66f, 3, Fast RGB
+            if (!ErrorLevel || tryCount > 3) {
+                if (tryCount <= 3) {
+                    MouseMove, 682, 578, 3
+                    sleep 300
+                    MouseClick, Left
+                    sleep 300
+                }
+                break
+            } else {
+                tryCount++
+                MsgBox, % tryCount
+                MouseMove, 1279, 342, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+                MouseMove, 1104, 368, 3
+                sleep 300
+                MouseClick, Left
+                Clipboard := "Strange Controller"
+                sleep 300
+                Send, ^v
+                sleep 300
+                MouseMove, 848, 479, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+            }
+        }
         MouseMove, 1413, 297, 3
         sleep 300
         MouseClick, Left
@@ -1107,10 +1267,37 @@ RunStrangeController() {
         sleep 300
         MouseClick, Left
         sleep 300
-        MouseMove, 920, 774, 3
-        sleep 300
-        MouseClick, Left
-        sleep 300
+
+        Loop {
+            PixelSearch, Px, Py, 735, 873, 735, 873, 0xf0a66f, 3, Fast RGB
+            if (!ErrorLevel || tryCount > 3) {
+                if (tryCount <= 3) {
+                    MouseMove, 920, 774, 3
+                    sleep 300
+                    MouseClick, Left
+                    sleep 300
+                }
+                break
+            } else {
+                tryCount++
+                MsgBox, % tryCount
+                MouseMove, 1704, 452, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+                MouseMove, 1473, 489, 3
+                sleep 300
+                MouseClick, Left
+                Clipboard := "Strange Controller"
+                sleep 300
+                Send, ^v
+                sleep 300
+                MouseMove, 1144, 643, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+            }
+        }
         MouseMove, 1896, 403, 3
         sleep 300
         MouseClick, Left
@@ -1130,7 +1317,7 @@ RunStrangeController() {
         MouseMove, 785, 262, 3
         sleep 300
         MouseClick, Left
-        Clipboard := "Biome Randomizer"
+        Clipboard := "Strange Controller"
         sleep 300
         Send, ^v
         sleep 300
@@ -1138,10 +1325,36 @@ RunStrangeController() {
         sleep 300
         MouseClick, Left
         sleep 300
-        MouseMove, 496, 422, 3
-        sleep 300
-        MouseClick, Left
-        sleep 300
+
+        Loop {
+            PixelSearch, Px, Py, 429, 507, 429, 507, 0xeea66e, 3, Fast RGB
+            if (!ErrorLevel || tryCount > 3) {
+                if (tryCount <= 3) {
+                    MouseMove, 486, 413, 3
+                    sleep 300
+                    MouseClick, Left
+                    sleep 300
+                }
+                break
+            } else {
+                tryCount++
+                MouseMove, 911, 242, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+                MouseMove, 785, 262, 3
+                sleep 300
+                MouseClick, Left
+                Clipboard := "Strange Controller"
+                sleep 300
+                Send, ^v
+                sleep 300
+                MouseMove, 616, 347, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+            }
+        }
         MouseMove, 1017, 214, 3
         sleep 300
         MouseClick, Left
@@ -1156,6 +1369,7 @@ RunStrangeController() {
 RunBiomeRandomizer() {
     global res
     global itemWebhook
+    tryCount := 0
     ; 1080p
     if (res = "1080p") {
         sleep 300
@@ -1178,10 +1392,36 @@ RunBiomeRandomizer() {
         sleep 300
         MouseClick, Left
         sleep 300
-        MouseMove, 682, 578, 3
-        sleep 300
-        MouseClick, Left
-        sleep 300
+
+        Loop {
+            PixelSearch, Px, Py, 663, 667, 663, 667, 0x3ffe7a, 3, Fast RGB
+            if (!ErrorLevel || tryCount > 3) {
+                if (tryCount <= 3) {
+                    MouseMove, 682, 578, 3
+                    sleep 300
+                    MouseClick, Left
+                    sleep 300
+                }
+                break
+            } else {
+                tryCount++
+                MouseMove, 1279, 342, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+                MouseMove, 1104, 368, 3
+                sleep 300
+                MouseClick, Left
+                Clipboard := "Biome Randomizer"
+                sleep 300
+                Send, ^v
+                sleep 300
+                MouseMove, 848, 479, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+            }
+        }
         MouseMove, 1413, 297, 3
         sleep 300
         MouseClick, Left
@@ -1209,10 +1449,36 @@ RunBiomeRandomizer() {
         sleep 300
         MouseClick, Left
         sleep 300
-        MouseMove, 920, 774, 3
-        sleep 300
-        MouseClick, Left
-        sleep 300
+
+        Loop {
+            PixelSearch, Px, Py, 827, 856, 827, 856, 0x3ffe7a, 3, Fast RGB
+            if (!ErrorLevel || tryCount > 3) {
+                if (tryCount <= 2) {
+                    MouseMove, 920, 774, 3
+                    sleep 300
+                    MouseClick, Left
+                    sleep 300
+                }
+                break
+            } else {
+                tryCount++
+                MouseMove, 1704, 452, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+                MouseMove, 1473, 489, 3
+                sleep 300
+                MouseClick, Left
+                Clipboard := "Biome Randomizer"
+                sleep 300
+                Send, ^v
+                sleep 300
+                MouseMove, 1144, 643, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+            }
+        }
         MouseMove, 1896, 403, 3
         sleep 300
         MouseClick, Left
@@ -1240,10 +1506,36 @@ RunBiomeRandomizer() {
         sleep 300
         MouseClick, Left
         sleep 300
-        MouseMove, 496, 422, 3
-        sleep 300
-        MouseClick, Left
-        sleep 300
+
+        Loop {
+            PixelSearch, Px, Py, 363, 554, 363, 554, 0x6b0700, 3, Fast RGB
+            if (!ErrorLevel || tryCount > 3) {
+                if (tryCount <= 3) {
+                    MouseMove, 486, 413, 3
+                    sleep 300
+                    MouseClick, Left
+                    sleep 300
+                }
+                break
+            } else {
+                tryCount++
+                MouseMove, 911, 242, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+                MouseMove, 785, 262, 3
+                sleep 300
+                MouseClick, Left
+                Clipboard := "Biome Randomizer"
+                sleep 300
+                Send, ^v
+                sleep 300
+                MouseMove, 616, 347, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
+            }
+        }
         MouseMove, 1017, 214, 3
         sleep 300
         MouseClick, Left
@@ -1406,6 +1698,11 @@ if (toggle) {
     global startTick
     global failsafeWebhook
     global pathingWebhook
+    global hasCrafterPlugin
+    global crafterToggle
+    global autoCrafterDetection
+    global autoCrafterLastCheck
+    global autoCrafterCheckInterval
     loopCount := 0
     keyW := azertyPathing ? "z" : "w"
     keyA := azertyPathing ? "q" : "a"
@@ -1436,6 +1733,18 @@ if (toggle) {
             } else if (biomeRandomizerLastRun > 0 && (elapsed - biomeRandomizerLastRun) >= biomeRandomizerInterval) {
                 RunBiomeRandomizer()
                 biomeRandomizerLastRun := elapsed
+            }
+        }
+
+        ; Auto Crafter Detection (copy and pasted, need to change the coords)
+        if (hasCrafterPlugin && crafterToggle && autoCrafterDetection) {
+            currentTime := A_TickCount
+            if (currentTime - autoCrafterLastCheck >= autoCrafterCheckInterval) {
+                autoCrafterLastCheck := currentTime
+                PixelSearch, Px, Py, 2203, 959, 2203, 959, 0x6eb4ff, 3, RGB
+                if (!ErrorLevel) {
+                    RunAutoCrafter()
+                }
             }
         }
 
@@ -1597,7 +1906,7 @@ if (toggle) {
             sleep 300
             Send {s Down}
             sleep 300
-            Send {S Up}
+            Send {s Up}
             sleep 300
             Send {Space Down}
             sleep 25
@@ -1811,6 +2120,11 @@ if (toggle) {
 
         ; Auto Rejoin Failsafe
         if (A_TickCount - globalFailsafeTimer > (autoRejoinFailsafeTime * 1000) && privateServerLink != "") {
+        code := ""
+        if RegExMatch(privateServerLink, "code=([^&]+)", m)
+        {
+            code := m1
+        }
         PixelGetColor, checkColor, 1175, 837, RGB
         if (checkColor != 0xFFFFFF) {
         Process, Close, RobloxPlayerBeta.exe
@@ -1840,6 +2154,7 @@ if (toggle) {
 
         sleep 3000
         restartPathing := true
+        try SendWebhook(":repeat: Auto-Rejoin failsafe was triggered.", "3426654")
         break
         }
         }
@@ -1969,6 +2284,11 @@ if (toggle) {
     global startTick
     global failsafeWebhook
     global pathingWebhook
+    global hasCrafterPlugin
+    global crafterToggle
+    global autoCrafterDetection
+    global autoCrafterLastCheck
+    global autoCrafterCheckInterval
     loopCount := 0
     keyW := azertyPathing ? "z" : "w"
     keyA := azertyPathing ? "q" : "a"
@@ -1999,6 +2319,18 @@ if (toggle) {
             } else if (biomeRandomizerLastRun > 0 && (elapsed - biomeRandomizerLastRun) >= biomeRandomizerInterval) {
                 RunBiomeRandomizer()
                 biomeRandomizerLastRun := elapsed
+            }
+        }
+
+        ; Auto Crafter Detection
+        if (hasCrafterPlugin && crafterToggle && autoCrafterDetection) {
+            currentTime := A_TickCount
+            if (currentTime - autoCrafterLastCheck >= autoCrafterCheckInterval) {
+                autoCrafterLastCheck := currentTime
+                PixelSearch, Px, Py, 2203, 959, 2203, 959, 0x6eb4ff, 3, RGB
+                if (!ErrorLevel) {
+                    RunAutoCrafter()
+                }
             }
         }
 
@@ -2374,6 +2706,11 @@ if (toggle) {
 
         ; Auto Rejoin Failsafe
         if (A_TickCount - globalFailsafeTimer > (autoRejoinFailsafeTime * 1000) && privateServerLink != "") {
+        code := ""
+        if RegExMatch(privateServerLink, "code=([^&]+)", m)
+        {
+            code := m1
+        }
         PixelGetColor, checkColor, 1535, 1120, RGB
         if (checkColor != 0xFFFFFF) {
         Process, Close, RobloxPlayerBeta.exe
@@ -2407,6 +2744,7 @@ if (toggle) {
 
         sleep 3000
         restartPathing := true
+        try SendWebhook(":repeat: Auto-Rejoin failsafe was triggered.", "3426654")
         break
         }
         }
@@ -2538,6 +2876,11 @@ if (toggle) {
     global startTick
     global failsafeWebhook
     global pathingWebhook
+    global hasCrafterPlugin
+    global crafterToggle
+    global autoCrafterDetection
+    global autoCrafterLastCheck
+    global autoCrafterCheckInterval
     loopCount := 0
     keyW := azertyPathing ? "z" : "w"
     keyA := azertyPathing ? "q" : "a"
@@ -2568,6 +2911,18 @@ if (toggle) {
             } else if (biomeRandomizerLastRun > 0 && (elapsed - biomeRandomizerLastRun) >= biomeRandomizerInterval) {
                 RunBiomeRandomizer()
                 biomeRandomizerLastRun := elapsed
+            }
+        }
+
+        ; Auto Crafter Detection (copy and pasted, need to change the coords)
+        if (hasCrafterPlugin && crafterToggle && autoCrafterDetection) {
+            currentTime := A_TickCount
+            if (currentTime - autoCrafterLastCheck >= autoCrafterCheckInterval) {
+                autoCrafterLastCheck := currentTime
+                PixelSearch, Px, Py, 2203, 959, 2203, 959, 0x6eb4ff, 3, RGB
+                if (!ErrorLevel) {
+                    RunAutoCrafter()
+                }
             }
         }
 
@@ -2943,37 +3298,43 @@ if (toggle) {
 
         ; Auto Rejoin Failsafe
         if (A_TickCount - globalFailsafeTimer > (autoRejoinFailsafeTime * 1000) && privateServerLink != "") {
-        PixelGetColor, checkColor, 865, 593, RGB
-        if (checkColor != 0xFFFFFF) {
-        Process, Close, RobloxPlayerBeta.exe
-        sleep 500
-        Run, % "powershell -NoProfile -Command ""Start-Process 'roblox://navigation/share_links?code=" code "&type=Server'"""
-        sleep 5000
-        WinActivate, ahk_exe RobloxPlayerBeta.exe
-        sleep 7000
-        MouseMove, 683, 384, 3
-        sleep 200
-        MouseClick, Left
-        sleep 6000
+            code := ""
+            if RegExMatch(privateServerLink, "code=([^&]+)", m)
+            {
+                code := m1
+            }
+            PixelGetColor, checkColor, 865, 593, RGB
+            if (checkColor != 0xFFFFFF) {
+            Process, Close, RobloxPlayerBeta.exe
+            sleep 500
+            Run, % "powershell -NoProfile -Command ""Start-Process 'roblox://navigation/share_links?code=" code "&type=Server'"""
+            sleep 5000
+            WinActivate, ahk_exe RobloxPlayerBeta.exe
+            sleep 7000
+            MouseMove, 683, 384, 3
+            sleep 200
+            MouseClick, Left
+            sleep 6000
 
-        ; Start button
-        sleep 1000
-        Loop {
-        ErrorLevel := 0
-        PixelSearch, px, py, 160, 734, 244, 708, 0x82ff95, 5, Fast RGB
-        if (ErrorLevel = 0) {
-        sleep 1000
-        MouseMove, 200, 715, 3
-        sleep 350
-        MouseClick, Left
-        break
-        }
-        }
+            ; Start button
+            sleep 1000
+            Loop {
+            ErrorLevel := 0
+            PixelSearch, px, py, 160, 734, 244, 708, 0x82ff95, 5, Fast RGB
+            if (ErrorLevel = 0) {
+            sleep 1000
+            MouseMove, 200, 715, 3
+            sleep 350
+            MouseClick, Left
+            break
+            }
+            }
 
-        sleep 3000
-        restartPathing := true
-        break
-        }
+            sleep 3000
+            restartPathing := true
+            try SendWebhook(":repeat: Auto-Rejoin failsafe was triggered.", "3426654")
+            break
+            }
         }
 
         ; Fishing Failsafe
