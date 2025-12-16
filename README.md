@@ -20,7 +20,7 @@ Download your desired plugin from the [release](https://github.com/ivelchampion2
 ## Tutorial
 Watch this YouTube tutorial to set up the macro! https://youtu.be/6aSNqj3PBpU
 <br>
-Watch this YouTube tutorial about the new features: https://www.youtu.be/piHhcXpckSk
+Watch this YouTube tutorial about the new features: https://youtu.be/piHhcXpckSk
 
 ## Features
 - Auto-Fish
