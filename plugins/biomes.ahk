@@ -4,15 +4,24 @@
 #Persistent
 SetWorkingDir %A_ScriptDir%
 
-prevBiome := "None"
-prevState := "None"
-iniFilePath := A_ScriptDir "\..\settings.ini"
-biomeColors := { "NORMAL":16777215, "SAND STORM":16040572, "HELL":6033945, "STARFALL":6784224, "CORRUPTION":9454335, "NULL":0, "GLITCHED":6684517, "WINDY":9566207, "SNOWY":12908022, "RAINY":4425215, "DREAMSPACE":16743935, "PUMPKIN MOON":13983497, "GRAVEYARD":16777215, "BLOOD RAIN":16711680, "CYBERSPACE":2904999 }
+global prevBiome := "None"
+global prevState := "None"
+global iniFilePath := A_ScriptDir "\..\settings.ini"
+       ; ~10 KB (adjust if needed)
+global maxReadBytes := 1024*10
+       ;  256 B (adjust if needed)
+global maxReadBytes := 256
+global lastFileSize := 0
+global useAltMode := False
+
+global biomeColors := { "NORMAL":16777215, "SAND STORM":16040572, "HELL":6033945, "STARFALL":6784224, "CORRUPTION":9454335, "NULL":0, "GLITCHED":6684517, "WINDY":9566207, "SNOWY":12908022, "RAINY":4425215, "DREAMSPACE":16743935, "PUMPKIN MOON":13983497, "GRAVEYARD":16777215, "BLOOD RAIN":16711680, "CYBERSPACE":2904999, "AURORA":10040319, "HEAVEN":16308389 }
 EnvGet, LocalAppData, LOCALAPPDATA
 
 if (FileExist(iniFilePath)) {
-    IniRead, tempWebhook, %iniFilePath%, "Macro", "webhookURL"
-    IniRead, tempPSLink, %iniFilePath%, "Biomes", "privateServerLink"
+    IniRead, tempWebhook, %iniFilePath%, "Macro",  "webhookURL"
+    IniRead, tempPSLink, %iniFilePath%,  "Biomes", "privateServerLink"
+    IniRead, useAltMode, %iniFilePath%,  "Biomes", "UseAlternateLogMode", 0
+
     if (tempWebhook != "ERROR" && tempPSLink != "ERROR")
     {
         webhookURL := tempWebhook
@@ -30,6 +39,8 @@ SetTimer, CheckBiome, 1000
 return
 
 ProcessExist(Name) {
+    if WinExist(Name)
+        return True
     for process in ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process")
         if (process.Name = Name)
             return true
@@ -59,10 +70,16 @@ CheckBiome:
     file := FileOpen(newestFile, "r")
     if !IsObject(file)
         return
-
     ; Read only the last ~10 KB (adjust if needed)
     size := file.Length
-    chunkSize := 10240
+    if useAltMode
+    {
+        chunkSize := max(min(size - lastFileSize, minReadBytes), maxReadBytes) ; calculate byte offset from lastFileSize and file.length, keeping it between a min and max value.
+        lastFileSize = size ; push new size to lastFileSize variable  ; if we never go below 256B or above 10KB (adjust if needed)
+    }
+    else
+        chunkSize := 10240
+
     if (size > chunkSize)
         file.Seek(-chunkSize, 2) ; 2 = from end of file
     content := file.Read()
@@ -112,7 +129,7 @@ CheckBiome:
             . "    ""description"": ""> ### Biome Started - " biome "\n> ### [Join Server](" privateServerLink ")"","
             . "    ""color"": " color ","
             . "    ""thumbnail"": {""url"": """ thumbnail_url """},"
-            . "    ""footer"": {""text"": ""fishSol v1.8"", ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},"
+            . "    ""footer"": {""text"": ""fishSol v1.9.6"", ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},"
             . "    ""timestamp"": """ timestamp """"
             . "  }"
             . "],"
@@ -123,6 +140,8 @@ CheckBiome:
             http.Open("POST", webhookURL, false)
             http.SetRequestHeader("Content-Type", "application/json")
             http.Send(json)
+            ; output response and error to file
+            Response := http.ResponseText
         }
     }
     if (state && state != "In Main Menu" && state != "Equipped _None_" && state != "" && state != prevState)
@@ -137,7 +156,7 @@ CheckBiome:
             . """embeds"": ["
             . "  {"
             . "    ""description"": ""> ### Aura Equipped - " auraName ""","
-            . "    ""footer"": {""text"": ""fishSol v1.8"", ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},"
+            . "    ""footer"": {""text"": ""fishSol v1.9.6"", ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},"
             . "    ""timestamp"": """ timestamp """"
             . "  }"
             . "],"
