@@ -2196,17 +2196,21 @@ RunStrangeController() {
         Loop 10
         {
             ErrorLevel := 0
+            sleep 1000
             PixelSearch, px, py, 504, 614, 568, 626, 0xFF2312, 5, Fast RGB
             LastStrangeController1 := ErrorLevel = 0
             
             ErrorLevel := 0
             PixelSearch, px, py, 570, 662, 659, 675, 0xFFB176, 5, Fast RGB
             LastStrangeController2 := ErrorLevel = 0
-            if (!(LastStrangeController1 and LastStrangeController2)) {
+            if (LastStrangeController1 and LastStrangeController2) {
+                MouseMove, 685, 580, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
                 break
             } else {
-                tryCount++
-                MsgBox, % tryCount
+                ; retries the controller/randomizer
                 MouseMove, 1279, 342, 3
                 sleep 300
                 MouseClick, Left
@@ -2254,17 +2258,21 @@ RunStrangeController() {
 
         Loop 10 {
             ErrorLevel := 0
+            sleep 1000
             PixelSearch, px, py, 667, 821, 732, 831, 0xFF2312, 5, Fast RGB
             LastStrangeController1 := ErrorLevel = 0
             
             ErrorLevel := 0
             PixelSearch, px, py, 735, 869, 823, 878, 0xFFB176, 5, Fast RGB
             LastStrangeController2 := ErrorLevel = 0
-            if (!(LastStrangeController1 and LastStrangeController2)) {
+            if (LastStrangeController1 and LastStrangeController2) {
+                MouseMove, 910, 775, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
                 break
             } else {
-                tryCount++
-                MsgBox, % tryCount
+                ; retries the controller/randomizer
                 MouseMove, 1704, 452, 3
                 sleep 300
                 MouseClick, Left
@@ -2312,16 +2320,21 @@ RunStrangeController() {
 
         Loop 10 {
             ErrorLevel := 0
+            sleep 1000
             PixelSearch, px, py, 361, 439, 428, 451, 0xFF2312, 5, Fast RGB
             LastStrangeController1 := ErrorLevel = 0
             
             ErrorLevel := 0
             PixelSearch, px, py, 427, 501, 519, 514, 0xFFB176, 5, Fast RGB
             LastStrangeController2 := ErrorLevel = 0
-            if (!(LastStrangeController1 and LastStrangeController2)) {
+            if (LastStrangeController1 and LastStrangeController2) {
+                MouseMove, 480, 410, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
                 break
             } else {
-                tryCount++
+                ; retries the controller/randomizer
                 MouseMove, 911, 242, 3
                 sleep 300
                 MouseClick, Left
@@ -2379,16 +2392,21 @@ RunBiomeRandomizer() {
 
         Loop 10 {
             ErrorLevel := 0
+            sleep 1000
             PixelSearch, px, py, 504, 614, 603, 626, 0x5CFFE8, 5, Fast RGB
             BiomeRandomiser1 := ErrorLevel = 0
             
             ErrorLevel := 0
             PixelSearch, px, py, 603, 614, 670, 628, 0xFF2312, 5, Fast RGB
             BiomeRandomiser2 := ErrorLevel = 0
-            if (!(BiomeRandomiser1 and BiomeRandomiser2)) {
+            if (BiomeRandomiser1 and BiomeRandomiser2) {
+                MouseMove, 685, 580, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
                 break
             } else {
-                tryCount++
+                ; retries the controller/randomizer
                 MouseMove, 1279, 342, 3
                 sleep 300
                 MouseClick, Left
@@ -2436,16 +2454,21 @@ RunBiomeRandomizer() {
 
         Loop 10 {
             ErrorLevel := 0
+            sleep 1000
             PixelSearch, px, py, 667, 821, 766, 831, 0x5CFFE8, 5, Fast RGB
             BiomeRandomiser1 := ErrorLevel = 0
             
             ErrorLevel := 0
             PixelSearch, px, py, 768, 820, 835, 834, 0xFF2312, 5, Fast RGB
             BiomeRandomiser2 := ErrorLevel = 0
-            if (!(BiomeRandomiser1 and BiomeRandomiser2)) {
+            if (BiomeRandomiser1 and BiomeRandomiser2) {
+                MouseMove, 910, 775, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
                 break
             } else {
-                tryCount++
+                ; retries the controller/randomizer
                 MouseMove, 1704, 452, 3
                 sleep 300
                 MouseClick, Left
@@ -2493,16 +2516,21 @@ RunBiomeRandomizer() {
 
         Loop 10 {
             ErrorLevel := 0
+            sleep 1000
             PixelSearch, px, py, 362, 438, 462, 450, 0x5CFFE8, 5, Fast RGB
             BiomeRandomiser1 := ErrorLevel = 0
             
             ErrorLevel := 0
             PixelSearch, px, py, 350, 454, 417, 467, 0xFF2312, 5, Fast RGB
             BiomeRandomiser2 := ErrorLevel = 0
-            if (!(BiomeRandomiser1 and BiomeRandomiser2)) {
+            if (BiomeRandomiser1 and BiomeRandomiser2) {
+                MouseMove, 480, 410, 3
+                sleep 300
+                MouseClick, Left
+                sleep 300
                 break
             } else {
-                tryCount++
+                ; retries the controller/randomizer
                 MouseMove, 911, 242, 3
                 sleep 300
                 MouseClick, Left
@@ -4856,6 +4884,8 @@ Return
 ;EXPERIMENTAL CONTROL DISABLER
 DisableControl:
     ToolTip, F2 To Pause. F3 to Stop, 150, 20
+Return
+; temp disabled key disabling
     hotkey, W, On
     hotkey, A, On
     hotkey, S, On
@@ -4908,8 +4938,8 @@ RunResize()
     size := getClosest(A_ScreenWidth, A_ScreenHeight)
     W := size[1]
     H := size[2]
-    W := 1366
-    H := 768
+    ; W := 1920
+    ; H := 1080
     setRes := size[3]
     WinSet, Style, -0xC40000, %WinName%
     WinMove, %WinName%,, %X%, %Y%, %W%, %H%
