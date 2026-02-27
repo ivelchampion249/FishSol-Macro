@@ -10,56 +10,9 @@ CoordMode, Mouse,   Screen
 CoordMode, Pixel,   Screen
 CoordMode, ToolTip, Screen
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;   BASIC SYSTEM CHECKS   ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;check if all files are extracted
-if ((not FileExist("./img/Discord.png")) or A_ScriptFullPath ~= "\.zip")
-{
-    MsgBox, % "Please Extract the Zip file!"
-    ExitApp
-}
-
-;basic screen dpi check
-if A_ScreenDPI != 96
-{
-    RunWait, "ms-settings:display"
-    WinMove, % "ahk_exe ApplicationFrameHost.exe", 0, 0, A_ScreenWidth, A_ScreenHeight
-    MouseMove, % A_ScreenWidth/2, % A_ScreenHeight/2
-    WinActivate, % "ahk_exe ApplicationFrameHost.exe"
-    MsgBox, % "Please set ""Scale"" to 100%"
-    OnMessage(0x7E, "DpiChange")
-    Loop ;wait until screen dpi is fixed
-    {
-        if A_INDEX = 5
-            ExitApp
-        Sleep 60000
-    }
-    until A_ScreenDPI2 != 96
-    Sleep 1000
-    MsgBox,,,  % "Screen Scale is now 100%, Thank you!", 3000
-    Reload
-}
-
-;is roblox active
-if not WinExist("ahk_exe" . A_Space . "RobloxPlayerBeta.exe")
-{
-    
-    while not WinExist("ahk_exe" . A_Space . "RobloxPlayerBeta.exe")
-    {
-        if A_INDEX = 5
-            ExitApp
-        Else
-            Msgbox,,, % "Please Open Roblox!", 3000
-        Sleep 60000
-    }
-}
-
+SystemChecks()
+OnExit, CloseScript
 iniFilePath := A_ScriptDir "\settings.ini"
-
-RunResize()
-
 
 iconFilePath := A_ScriptDir "\img\icon.ico"
 if (FileExist(iconFilePath)) {
@@ -69,10 +22,6 @@ if (FileExist(iconFilePath)) {
 VERSION_NUMBER := "v1.9.6"
 
 res := "1080p"
-
-if setRes
-    res := setRes
-;
 
 maxLoopCount := 15
 fishingLoopCount := 15
@@ -138,6 +87,8 @@ if (FileExist(iniFilePath)) {
     if (tempRes != "ERROR")
     {
         res := tempRes
+
+        SystemChecks_SetResFromValue(res)
     }
     IniRead, tempMaxLoop, %iniFilePath%, "Macro", "maxLoopCount"
     if (tempMaxLoop != "ERROR" && tempMaxLoop > 0)
@@ -323,8 +274,8 @@ Devs := [{dev_name:"maxstellar"
          , bonk_sfx        : "img\bonk.mp3"
          , bonked          : A_ScriptDir . "\img\nadir_bonk.png"
          , unbonked        : A_ScriptDir . "\img\nadir_unbonk.png"
-         , dev_color       : "c0xFFAB12"} ] ; ]
-    ;    ,{  dev_name        : "kibb1es"
+         , dev_color       : "c0xFFAB12"} ]
+    ;    ,{  dev_name        : "kibbles"
     ;      , link_location   : "[]"
     ;      , dev_description : "[]"
     ;      , dev_img         : A_ScriptDir . "\img\[].png"
@@ -835,6 +786,8 @@ if (res = "1080p") {
     GuiControl, Choose, Resolution, 1
     res := "1080p"
 }
+
+SystemChecks_SetResFromValue(res)
 
 if (sellAllToggle) {
     GuiControl,, SellAllStatus, ON
@@ -2683,18 +2636,18 @@ F2::
 Return
 
 F3::
-if (biomeDetectionRunning) {
-    DetectHiddenWindows, On
-    SetTitleMatchMode, 2
+    if (biomeDetectionRunning) {
+        DetectHiddenWindows, On
+        SetTitleMatchMode, 2
 
-    target := "biomes.ahk"
-    WinGet, id, ID, %target% ahk_class AutoHotkey
-    if (id) {
-        WinClose, ahk_id %id%
+        target := "biomes.ahk"
+        WinGet, id, ID, %target% ahk_class AutoHotkey
+        if (id) {
+            WinClose, ahk_id %id%
+        }
+        biomeDetectionRunning := false
     }
-    biomeDetectionRunning := false
-}
-try SendWebhook(":red_circle: Macro Stopped.", "14495300")
+    try SendWebhook(":red_circle: Macro Stopped.", "14495300")
 ExitApp
 
 ;1080p
@@ -2716,7 +2669,7 @@ DoMouseMove:
         global biomeRandomizerInterval
         global strangeControllerLastRun
         global biomeRandomizerLastRun
-;
+        ;
         global startTick
         global failsafeWebhook
         global pathingWebhook
@@ -3354,7 +3307,7 @@ DoMouseMove2:
         global biomeRandomizerInterval
         global strangeControllerLastRun
         global biomeRandomizerLastRun
-;
+        ;
         global startTick
         global failsafeWebhook
         global pathingWebhook
@@ -4743,23 +4696,23 @@ PauseScript:
             DetectHiddenWindows, On
             SetTitleMatchMode, 2
 
-    target := "biomes.ahk"
-    WinGet, id, ID, %target% ahk_class AutoHotkey
-    if (id) {
-        WinClose, ahk_id %id%
+            target := "biomes.ahk"
+            WinGet, id, ID, %target% ahk_class AutoHotkey
+            if (id) {
+                WinClose, ahk_id %id%
+            }
+            biomeDetectionRunning := false
+        }
+        toggle := false
+        firstLoop := true
+        SetTimer, DoMouseMove, Off
+        SetTimer, DoMouseMove2, Off
+        SetTimer, DoMouseMove3, Off
+        SetTimer, UpdateGUI, Off
+        ManualGUIUpdate()
+        ToolTip
+        try SendWebhook(":yellow_circle: Macro Paused", "16632664")
     }
-    biomeDetectionRunning := false
-}
-toggle := false
-firstLoop := true
-SetTimer, DoMouseMove, Off
-SetTimer, DoMouseMove2, Off
-SetTimer, DoMouseMove3, Off
-SetTimer, UpdateGUI, Off
-ManualGUIUpdate()
-ToolTip
-try SendWebhook(":yellow_circle: Macro Paused", "16632664")
-}
 return
 
 CloseScript:
@@ -4775,6 +4728,9 @@ CloseScript:
         biomeDetectionRunning := false
     }
     try SendWebhook(":red_circle: Macro Stopped.", "14495300")
+
+    WinName := "ahk_exe" . A_Space . "RobloxPlayerBeta.exe"
+    WinSet, Style, %old_style%, %WinName%
     ExitApp
 return
 
@@ -4783,6 +4739,7 @@ SelectRes:
     res := Resolution
     IniWrite, %res%, %iniFilePath%, "Macro", "resolution"
     ManualGUIUpdate()
+    SystemChecks_SetResFromValue(res)
 return
 
 SelectPathing:
@@ -4844,16 +4801,20 @@ DoLinkClick:
 return
 
 DonateClick:
-Run, https://www.roblox.com/games/106268429577845/fishSol-Donations#!/store
+    Run, https://www.roblox.com/games/106268429577845/fishSol-Donations#!/store
 return
 
 NeedHelpClick:
-Run, https://discord.gg/nPvA54ShTm
+    Run, https://discord.gg/nPvA54ShTm
 return
 
 OpenPluginsFolder:
-Run, %A_ScriptDir%\plugins
+    Run, %A_ScriptDir%\plugins
 return
+
+TestWebhook:
+    WebHookTest()
+Return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;   BASIC SYSTEM CHECKS   ;
@@ -4874,6 +4835,7 @@ CONTROL_STUFF:
     I::
     O::
     \::
+    /::
     LButton::
     RButton::
     MButton::
@@ -4898,6 +4860,7 @@ Return
     hotkey, I, On
     hotkey, O, On
     hotkey, \, On
+    hotkey, /, On
     hotkey, LButton, On
     hotkey, RButton, On
     hotkey, MButton, On
@@ -4921,6 +4884,7 @@ EnableControl:
     hotkey, I, Off
     hotkey, O, Off
     hotkey, \, Off
+    hotkey, /, Off
     hotkey, LButton, Off
     hotkey, RButton, Off
     hotkey, MButton, Off
@@ -4929,76 +4893,37 @@ EnableControl:
     BlockInput, Off
 Return
 
-RunResize()
-{
-    global setRes, iniFilePath
-    WinName := "ahk_exe" . A_Space . "RobloxPlayerBeta.exe"
-    X := 0
-    Y := 0
-    size := getClosest(A_ScreenWidth, A_ScreenHeight)
-    W := size[1]
-    H := size[2]
-    ; W := 1920
-    ; H := 1080
-    setRes := size[3]
-    WinSet, Style, -0xC40000, %WinName%
-    WinMove, %WinName%,, %X%, %Y%, %W%, %H%
-    WinGetPos, X, Y, W, H, %WinName%
-    IniWrite, %setRes%, %iniFilePath%, "Macro", "resolution"
-}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;; EGGS STUFF ;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-getClosest(W, H)
-{
-    StandarScreenSizesW := [1366, 1920, 2560]
-    StandarScreenSizesH := [768,  1080, 1440]
-    SSS := ["1366x768",  "1080p", "1440p"]
-    Ratio := W/H
-    if (Ratio >= 1) ;use W
-    {
-        for i, v in StandarScreenSizesW
-        {
-            if ((W-1) > v)
-                Continue
-            Else
-                return [v,StandarScreenSizesH[i],SSS[i]]
-        }
-        if (W > StandarScreenSizesW[StandarScreenSizesW.Length()])
-            return [StandarScreenSizesW[StandarScreenSizesW.Length()],StandarScreenSizesH[StandarScreenSizesW.Length()],SSS[StandarScreenSizesW.Length()]]
-    }
-    Else ; if monitor is vertical
-    {
-        for i, v in StandarScreenSizesH
-        {
-            if ((W-1) > v)
-                Continue
-            Else
-                return [StandarScreenSizesW[i],v,SSS[i]]
-        }
-        if (W > StandarScreenSizesH[StandarScreenSizesH.Length()])
-            return [StandarScreenSizesW[StandarScreenSizesH.Length()],StandarScreenSizesH[StandarScreenSizesH.Length()],SSS[StandarScreenSizesW.Length()]]
-    }
-    if (W < StandarScreenSizesW[1])
-        msgbox % "Please Contact the Dev!`nYou have a resolution that is lower then our lowest choice!"
-    return [StandarScreenSizesW[1],StandarScreenSizesH[1],SSS[1]]
-}
+Bonk:
+    SetTimer, ResetBonkFunc, Off
+    GuiControl,, BonkImage , % Devs[4].bonked
+    SoundPlay, % Devs[4].bonk_sfx
+    while GetKeyState("LButton", "P") ;wait until LButton is up
+        sleep 1
+    GuiControl,, BonkImage , % Devs[4].unbonked
+    SetTimer, ResetBonkFunc, -3000
+return
 
-DpiChange( wParam, lParam)
-{
-    global A_ScreenDPI2
-    DPI_AWARENESS_CONTEXT := DllCall("User32.dll\GetThreadDpiAwarenessContext", "ptr")
-    DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
-    SysGet, monNum, MonitorPrimary
-    DllCall("Shcore\GetScaleFactorForMonitor", "Ptr", Window.EnumMonitors()[monNum], "UIntP", scale)
-    A_ScreenDPI2 := Round(96 * (scale / 100),0)
-    DllCall("SetThreadDpiAwarenessContext", "ptr", DPI_AWARENESS_CONTEXT, "ptr")
-}
+ResetBonkFunc:
+    GuiControl,, BonkImage , % Devs[4].dev_img
+Return
 
-TestWebhook:
+;;;;;;;;;;;;;;;;;;;;;;
+; Troubleshoot stuff ;
+;;;;;;;;;;;;;;;;;;;;;;
+
+
+WebHookTest()
+{
+    global
     Output := RunWebhookTest()
     GuiControl, , TestWebhookFeedback, % Output
     if Output ~= "Success!"
         GuiControl, Disable, TestWebhookButton
-Return
+}
 
 RunWebhookTest()
 {
@@ -5047,20 +4972,146 @@ RunWebhookTest()
     return "Success!"
 }
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;; EGGS STUFF ;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;
+RunResize()
+{
+    global setRes, iniFilePath, old_style
+    WinName := "ahk_exe" . A_Space . "RobloxPlayerBeta.exe"
+    X := 0
+    Y := 0
+    size := getClosest(A_ScreenWidth, A_ScreenHeight)
+    W := size[1]
+    H := size[2]
+    ; W := 1920
+    ; H := 1080
+    setRes := size[3]
+    WinGet, old_style, Style, %WinName%
+    WinSet, Style, -0xC40000, %WinName%
+    WinMove, %WinName%,, %X%, %Y%, %W%, %H%
+    WinGetPos, X, Y, W, H, %WinName%
+    IniWrite, %setRes%, %iniFilePath%, "Macro", "resolution"
+}
 
-Bonk:
-    SetTimer, ResetBonkFunc, Off
-    GuiControl,, BonkImage , % Devs[4].bonked
-    SoundPlay, % Devs[4].bonk_sfx
-    while GetKeyState("LButton", "P") ;wait until LButton is up
-        sleep 1
-    GuiControl,, BonkImage , % Devs[4].unbonked
-    SetTimer, ResetBonkFunc, -3000
-return
+getClosest(W, H)
+{
+    StandardScreenSizesW := [1366, 1920, 2560]
+    StandardScreenSizesH := [768,  1080, 1440]
+    SSS := ["1366x768",  "1080p", "1440p"]
+    Ratio := W/H
+    if (Ratio >= 1) ;use W
+    {
+        for i, v in StandardScreenSizesW
+        {
+            if ((W-1) > v)
+                Continue
+            Else
+                return [v,StandardScreenSizesH[i],SSS[i]]
+        }
+        if (W > StandardScreenSizesW[StandardScreenSizesW.Length()])
+            return [StandardScreenSizesW[StandardScreenSizesW.Length()],StandardScreenSizesH[StandardScreenSizesW.Length()],SSS[StandardScreenSizesW.Length()]]
+    }
+    Else ; if monitor is vertical
+    {
+        for i, v in StandardScreenSizesH
+        {
+            if ((W-1) > v)
+                Continue
+            Else
+                return [StandardScreenSizesW[i],v,SSS[i]]
+        }
+        if (W > StandardScreenSizesH[StandardScreenSizesH.Length()])
+            return [StandardScreenSizesW[StandardScreenSizesH.Length()],StandardScreenSizesH[StandardScreenSizesH.Length()],SSS[StandardScreenSizesW.Length()]]
+    }
+    if (W < StandardScreenSizesW[1])
+        msgbox % "Please Contact the Dev!`nYou have a resolution that is lower then our lowest choice!"
+    return [StandardScreenSizesW[1],StandardScreenSizesH[1],SSS[1]]
+}
 
-ResetBonkFunc:
-    GuiControl,, BonkImage , % Devs[4].dev_img
-Return
+DpiChange( wParam, lParam)
+{
+    global A_ScreenDPI2
+    DPI_AWARENESS_CONTEXT := DllCall("User32.dll\GetThreadDpiAwarenessContext", "ptr")
+    DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
+    SysGet, monNum, MonitorPrimary
+    DllCall("Shcore\GetScaleFactorForMonitor", "Ptr", Window.EnumMonitors()[monNum], "UIntP", scale)
+    A_ScreenDPI2 := Round(96 * (scale / 100),0)
+    DllCall("SetThreadDpiAwarenessContext", "ptr", DPI_AWARENESS_CONTEXT, "ptr")
+}
+
+SystemChecks()
+{
+    global
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;   BASIC SYSTEM CHECKS   ;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    ;check if all files are extracted
+    if ((not FileExist("./img/Discord.png")) or A_ScriptFullPath ~= "\.zip")
+    {
+        MsgBox, % "Please Extract the Zip file!"
+        ExitApp
+    }
+
+    ;basic screen dpi check
+    if A_ScreenDPI != 96
+    {
+        RunWait, "ms-settings:display"
+        WinMove, % "ahk_exe ApplicationFrameHost.exe", 0, 0, A_ScreenWidth, A_ScreenHeight
+        MouseMove, % A_ScreenWidth/2, % A_ScreenHeight/2
+        WinActivate, % "ahk_exe ApplicationFrameHost.exe"
+        MsgBox, % "Please set ""Scale"" to 100%"
+        OnMessage(0x7E, "DpiChange")
+        Loop ;wait until screen dpi is fixed
+        {
+            if A_INDEX = 5 * 60
+                ExitApp
+            Sleep 1000
+        }
+        until A_ScreenDPI2 != 96
+        Sleep 1000
+        MsgBox,,,  % "Screen Scale is now 100%, Thank you!", 3000
+        Reload
+    }
+
+    ;is roblox active
+    if not WinExist("ahk_exe" . A_Space . "RobloxPlayerBeta.exe")
+    {
+        
+        while not WinExist("ahk_exe" . A_Space . "RobloxPlayerBeta.exe")
+        {
+            if A_INDEX = 5 * 60
+                ExitApp
+            Else
+                Msgbox,,, % "Please Open Roblox!", 3000
+            Sleep 1000
+        }
+        WinGet, old_style, Style, %WinName%
+    }
+}
+
+SystemChecks_SetRes()
+{
+    global
+    if setRes
+        res := setRes
+}
+
+SystemChecks_SetResFromValue(in_res)
+{
+    global
+    StandardScreenSizesW := [1366, 1920, 2560]
+    StandardScreenSizesH := [768,  1080, 1440]
+    SSS := ["1366x768",  "1080p", "1440p"]
+
+    if in_res ~= SSS[1]
+        out := 1
+
+    if in_res ~= SSS[2]
+        out := 2
+
+    if in_res ~= SSS[3]
+        out := 3
+    
+    WinName := "ahk_exe" . A_Space . "RobloxPlayerBeta.exe"
+    WinSet, Style, -0xC40000, %WinName%
+    WinMove, %WinName%,, 0, 0, % StandardScreenSizesW[out], % StandardScreenSizesH[out]
+}
