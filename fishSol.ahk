@@ -14,12 +14,12 @@ SystemChecks()
 OnExit, CloseScript
 iniFilePath := A_ScriptDir "\settings.ini"
 
-iconFilePath := A_ScriptDir "\img\icon.ico"
+iconFilePath := A_ScriptDir "\assets\img\icon.ico"
 if (FileExist(iconFilePath)) {
     Menu, Tray, Icon, %iconFilePath%
 }
 
-VERSION_NUMBER := "v1.9.6"
+VERSION_NUMBER := "v1.9.6D"
 
 res := "1080p"
 
@@ -76,6 +76,7 @@ biomesPrivateServerLink := ""
 biomeDetectionRunning := false
 auroraDetection := false
 hasCrafterPlugin := FileExist(A_ScriptDir "\plugins\auto crafter.ahk")
+MsUntilCheckInMenuInput := 0
 
 toggle := false
 firstLoop := true
@@ -205,6 +206,12 @@ if (FileExist(iniFilePath)) {
     {
         autoCrafterDetection := (tempAutoCrafterDetection = "true" || tempAutoCrafterDetection = "1")
     }
+    ;ms
+    IniRead, tempMsUntilCheckInMenuInput, %iniFilePath%, "Macro", "MsUntilCheckInMenuInput"
+    if (MsUntilCheckInMenuInput != "ERROR" && tempMsUntilCheckInMenuInput >= 0 && tempMsUntilCheckInMenuInput <= 9999)
+    {
+        MsUntilCheckInMenuInput := tempMsUntilCheckInMenuInput + 0
+    }
 }
 
 ; checks plugin folder
@@ -252,33 +259,33 @@ randomMessage := randomMessages[messageRand]
 Devs := [{dev_name:"maxstellar"
          , link_location:"Twitch"
          , dev_description:"Lead Developer"
-         , dev_img: A_ScriptDir . "\img\maxstellar.png"
+         , dev_img: A_ScriptDir . "\assets\img\maxstellar.png"
          , dev_link:"https://www.twitch.tv/maxstellar"}
         ,{dev_name:"ivelchampion249"
          , link_location:"YouTube"
          , dev_description:"Original Creator"
-         , dev_img: A_ScriptDir . "\img\Ivel.png"
+         , dev_img: A_ScriptDir . "\assets\img\Ivel.png"
          , dev_link:"https://www.youtube.com/@ivelchampion"}
        ,{dev_name:"cresqnt"
          , link_location:"Scope Development (other macros)"
          , dev_description:"Frontend Developer"
-         , dev_img: A_ScriptDir . "\img\cresqnt.png"
+         , dev_img: A_ScriptDir . "\assets\img\cresqnt.png"
          , dev_link:"https://scopedevelopment.tech"
          , dev_website:"https://cresqnt.com"
          , dev_color : "c0x0088FF"}
        ,{  dev_name        : "Nadir Rift"
          , link_location   : "Twitch"
          , dev_description : "General Programmer"
-         , dev_img         : A_ScriptDir . "\img\nadir.png"
+         , dev_img         : A_ScriptDir . "\assets\img\nadir.png"
          , dev_link        : "https://www.twitch.tv/nadirrift"
-         , bonk_sfx        : "img\bonk.mp3"
-         , bonked          : A_ScriptDir . "\img\nadir_bonk.png"
-         , unbonked        : A_ScriptDir . "\img\nadir_unbonk.png"
+         , bonk_sfx        : A_ScriptDir . "\assets\sfx\bonk.mp3"
+         , bonked          : A_ScriptDir . "\assets\img\nadir_bonk.png"
+         , unbonked        : A_ScriptDir . "\assets\img\nadir_unbonk.png"
          , dev_color       : "c0xFFAB12"} ]
     ;    ,{  dev_name        : "kibbles"
     ;      , link_location   : "[]"
     ;      , dev_description : "[]"
-    ;      , dev_img         : A_ScriptDir . "\img\[].png"
+    ;      , dev_img         : A_ScriptDir . "\assets\img\[].png"
     ;      , dev_link        : "[]" }]
 ;
 
@@ -310,8 +317,8 @@ Gui, Add, Text, x0 y10 w600 h45 Center BackgroundTrans c0x00D4FF, fishSol %VERSI
 Gui, Font, s9 cWhite Normal, Segoe UI
 
 Gui, Color, 0x1E1E1E
-Gui, Add, Picture, x440 y600 w27 h19, %A_ScriptDir%\img\Discord.png
-Gui, Add, Picture, x533 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+Gui, Add, Picture, x440 y600 w27 h19, %A_ScriptDir%\assets\img\Discord.png
+Gui, Add, Picture, x533 y601 w18 h19, %A_ScriptDir%\assets\img\Robux.png
 
 
 Gui, Font, s11 cWhite Bold Underline, Segoe UI
@@ -334,11 +341,11 @@ Gui, Add, Tab3, x15 y55 w570 h600 vMainTabs gTabChange c0xFFFFFF, %tabList%
 
 Gui, Tab, Main
 
-Gui, Add, Picture, x14 y60 w574 h590, %A_ScriptDir%\gui\Main.png
+Gui, Add, Picture, x14 y60 w574 h590, %A_ScriptDir%\assets\gui\Main.png
 
 Gui, Color, 0x1E1E1E
-Gui, Add, Picture, x440 y600 w27 h19, %A_ScriptDir%\img\Discord.png
-Gui, Add, Picture, x533 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+Gui, Add, Picture, x440 y600 w27 h19, %A_ScriptDir%\assets\img\Discord.png
+Gui, Add, Picture, x533 y601 w18 h19, %A_ScriptDir%\assets\img\Robux.png
 
 Gui, Font, s11 cWhite Bold Underline, Segoe UI
 Gui, Add, Text, x425 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
@@ -431,10 +438,10 @@ Gui, Font, s9 c0xCCCCCC Normal
 Gui, Add, Text, x50 y545 w500 h20 BackgroundTrans, Requirements: 100`% Windows scaling - Roblox in fullscreen mode
 Gui, Add, Text, x50 y563 w500 h20 BackgroundTrans, For best results, make sure you have good internet and avoid screen overlays
 
-
+;;;;;;;;;MISC TAB;;;;;;;;;
 Gui, Tab, Misc
 
-Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Misc.png
+Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\assets\gui\Misc.png
 
 Gui, Font, s10 cWhite Bold, Segoe UI
 Gui, Font, s9 cWhite Normal
@@ -484,16 +491,28 @@ Gui, Font, s10 c0xCCCCCC Bold, Segoe UI
 Gui, Add, Text, x415 y192 w60 h25 vAutoCloseChatStatus BackgroundTrans, OFF
 
 Gui, Color, 0x1E1E1E
-Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
-Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\assets\img\Discord.png
+Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\assets\img\Robux.png
+
 
 Gui, Font, s11 cWhite Bold Underline, Segoe UI
 Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
 Gui, Add, Text, x330 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
 
+
+;add lag prevention in ms here
+Gui, Font, s9 cWhite Normal
+Gui, Font, s11 cWhite Bold
+Gui, Add, Text, x41 y400 w150 h25 BackgroundTrans, Miliseconds:
+Gui, Font, s10 cWhite Bold
+Gui, Add, Edit, x200 y400 w120 h25 vMsUntilCheckInMenuInput gUpdateMsCheck +HwndHANDLE_MsUntilCheckInMenuInput Limit4 Number Background0xD3D3D3 cBlack, %MsUntilCheckInMenuInput%
+Gui, Font, s10 cWhite Normal
+Gui, Add, Text, x327 y400 w500 h25 BackgroundTrans, Time in MS to wait for ui in the case of lag.
+
+;;;;;;;;;Failsafes TAB;;;;;;;;;
 Gui, Tab, Failsafes
 
-Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Failsafes.png
+Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\assets\gui\Failsafes.png
 
 Gui, Font, s10 cWhite Normal
 Gui, Add, Text, x50 y140 w500 h40 BackgroundTrans c0xCCCCCC, If the fishing minigame is not detected for the specified time, the macro will`nautomatically rejoin using the private server link below.
@@ -531,8 +550,8 @@ Gui, Add, Text, x320 y413 w150 h35 BackgroundTrans, Seconds:
 Gui, Add, Edit, x400 y411 w150 h25 vPathingFailsafeInput gUpdatePathingFailsafe Number Background0xD3D3D3 cBlack, %pathingFailsafeTime%
 
 Gui, Color, 0x1E1E1E
-Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
-Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\assets\img\Discord.png
+Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\assets\img\Robux.png
 
 Gui, Font, s11 cWhite Bold Underline, Segoe UI
 Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
@@ -542,7 +561,7 @@ Gui, Add, Text, x330 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpCli
 if (hasBiomesPlugin) {
     Gui, Tab, Biomes
 
-    Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Biomes.png
+    Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\assets\gui\Biomes.png
 
     Gui, Font, s9 cWhite Normal, Segoe UI
     Gui, Add, Text, x50 y299 w500 h20 BackgroundTrans c0xCCCCCC, Choose which biomes are sent to Discord:
@@ -580,8 +599,8 @@ if (hasBiomesPlugin) {
     Gui, Add, Button, x425 y490 w115 h40 gOpenPluginsFolder, Open Plugins Folder
 
     Gui, Color, 0x1E1E1E
-    Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
-    Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+    Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\assets\img\Discord.png
+    Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\assets\img\Robux.png
 
     Gui, Font, s11 cWhite Bold Underline, Segoe UI
     Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
@@ -591,7 +610,7 @@ if (hasBiomesPlugin) {
 if (hasCrafterPlugin) {
     Gui, Tab, Crafter
 
-    Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Crafter.png
+    Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\assets\gui\Crafter.png
 
     Gui, Font, s11 cWhite Bold, Segoe UI
     Gui, Add, Text, x45 y135 w200 h25 BackgroundTrans, example text:
@@ -607,8 +626,8 @@ if (hasCrafterPlugin) {
     Gui, Add, Button, x425 y505 w115 h40 gOpenPluginsFolder, Open Plugins Folder
 
     Gui, Color, 0x1E1E1E
-    Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
-    Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+    Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\assets\img\Discord.png
+    Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\assets\img\Robux.png
 
     Gui, Font, s11 cWhite Bold Underline, Segoe UI
     Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
@@ -617,7 +636,7 @@ if (hasCrafterPlugin) {
 
 Gui, Tab, Webhook
 
-Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Webhook.png
+Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\assets\gui\Webhook.png
 
 Gui, Font, s10 cWhite Normal Bold
 Gui, Add, Text, x50 y125 w200 h25 BackgroundTrans, Discord Webhook URL:
@@ -641,8 +660,8 @@ Gui, Add, Button, x60 y356 w80 h25 gToggleItemWebhook vItemWebhookBtn, Toggle
 Gui, Add, Text, x150 y360 w60 h25 vitemWebhookStatus BackgroundTrans, OFF
 
 Gui, Color, 0x1E1E1E
-Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
-Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\assets\img\Discord.png
+Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\assets\img\Robux.png
 
 Gui, Font, s11 cWhite Bold Underline, Segoe UI
 Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
@@ -683,7 +702,7 @@ Gui, Add, Text, x330 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpCli
 ;
 
 Gui, Tab, Credits
-Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Credits.png
+Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\assets\gui\Credits.png
 
 
 loop % (3)
@@ -767,8 +786,8 @@ Gui, Add, Text, x50 y518 w500 h15 BackgroundTrans, fishSol %VERSION_NUMBER% - %r
 Gui, Show, w600 h670, fishSol %VERSION_NUMBER%
 
 Gui, Color, 0x1E1E1E
-Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
-Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\img\Robux.png
+Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\assets\img\Discord.png
+Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\assets\img\Robux.png
 
 Gui, Font, s11 cWhite Bold Underline, Segoe UI
 Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
@@ -1081,49 +1100,49 @@ ToggleCrafter:
 return
 
 ;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
 ;
 
 ToggleAutoCrafter:
@@ -1332,20 +1351,20 @@ RunAutoCrafter1440p() {
     success := false
     loopCount := 0
     Loop {
-    sleep 100
-    if (loopCount > 40) {
-    break
-    }
-    PixelGetColor, screenColor, 2509, 1389, RGB
-    if (screenColor = 0x000000) {
-    success := true
-    }
-    loopCount++
+        sleep 100
+        if (loopCount > 40) {
+            break
+        }
+        PixelGetColor, screenColor, 2509, 1389, RGB
+        if (screenColor = 0x000000) {
+            success := true
+        }
+        loopCount++
     }
     if (success) {
-    sleep, 500
+        sleep, 500
     } else {
-    reset := true
+        reset := true
     }
 
     ; potion crafting
@@ -1363,6 +1382,7 @@ RunAutoCrafter1440p() {
     MouseMove, 1271, 448, 3
     Sleep, 250
     MouseClick, Left
+    gosub DoUIWait
     Sleep, 250
     Send, ^v
     Sleep, 250
@@ -1375,16 +1395,20 @@ RunAutoCrafter1440p() {
     }
     sleep 250
     MouseClick, Left
+    gosub DoUIWait
     Sleep, 250
     MouseMove, 769, 769, 3
     Sleep, 250
     MouseClick, Left
+    gosub DoUIWait
     Sleep, 300
     MouseMove, 954, 840, 3
     Sleep, 250
     MouseClick, Left
+    gosub DoUIWait
     Sleep, 200
     MouseClick, Left
+    gosub DoUIWait
     sleep 125
     Clipboard := "250"
     sleep 125
@@ -1393,22 +1417,28 @@ RunAutoCrafter1440p() {
     MouseMove, 1064, 839, 3
     Sleep, 250
     MouseClick, Left
+    gosub DoUIWait
     Sleep, 200
     MouseClick, Left
+    gosub DoUIWait
     Sleep, 250
     MouseMove, 1064, 910, 3
     sleep 250
     Mouseclick, Left
+    gosub DoUIWait
     sleep 250
     Mouseclick, Left
+    gosub DoUIWait
     sleep 250
     MouseMove, 1064, 984, 3
     sleep 250
     MouseClick, Left
+    gosub DoUIWait
     sleep 250
     MouseMove, 1885, 396, 3
     Sleep, 250
     MouseClick, Left
+    gosub DoUIWait
     Sleep, 300
 }
 
@@ -1470,522 +1500,522 @@ RunAutoCrafter768p() {
 }
 
 ;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
 ;
 
 UpdatePrivateServer:
@@ -2129,14 +2159,17 @@ RunStrangeController() {
         MouseMove, 46, 520, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1279, 342, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1104, 368, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         Clipboard := "Strange Controller"
         sleep 300
         Send, ^v
@@ -2144,6 +2177,7 @@ RunStrangeController() {
         MouseMove, 848, 479, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
 
         Loop 10
@@ -2160,6 +2194,7 @@ RunStrangeController() {
                 MouseMove, 685, 580, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 break
             } else {
@@ -2167,10 +2202,12 @@ RunStrangeController() {
                 MouseMove, 1279, 342, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 MouseMove, 1104, 368, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 Clipboard := "Strange Controller"
                 sleep 300
                 Send, ^v
@@ -2178,12 +2215,14 @@ RunStrangeController() {
                 MouseMove, 848, 479, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
             }
         }
         MouseMove, 1413, 297, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
     }
     ; 1440p
@@ -2192,14 +2231,17 @@ RunStrangeController() {
         MouseMove, 52, 693, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1704, 452, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1473, 489, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         Clipboard := "Strange Controller"
         sleep 300
         Send, ^v
@@ -2207,6 +2249,7 @@ RunStrangeController() {
         MouseMove, 1144, 643, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
 
         Loop 10 {
@@ -2222,6 +2265,7 @@ RunStrangeController() {
                 MouseMove, 910, 775, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 break
             } else {
@@ -2229,10 +2273,12 @@ RunStrangeController() {
                 MouseMove, 1704, 452, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 MouseMove, 1473, 489, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 Clipboard := "Strange Controller"
                 sleep 300
                 Send, ^v
@@ -2240,12 +2286,14 @@ RunStrangeController() {
                 MouseMove, 1144, 643, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
             }
         }
         MouseMove, 1896, 403, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
     }
     ; 1366x768
@@ -2254,14 +2302,17 @@ RunStrangeController() {
         MouseMove, 42, 376, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 911, 242, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 785, 262, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         Clipboard := "Strange Controller"
         sleep 300
         Send, ^v
@@ -2269,6 +2320,7 @@ RunStrangeController() {
         MouseMove, 616, 347, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
 
         Loop 10 {
@@ -2284,6 +2336,7 @@ RunStrangeController() {
                 MouseMove, 480, 410, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 break
             } else {
@@ -2291,10 +2344,12 @@ RunStrangeController() {
                 MouseMove, 911, 242, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 MouseMove, 785, 262, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 Clipboard := "Strange Controller"
                 sleep 300
                 Send, ^v
@@ -2302,12 +2357,14 @@ RunStrangeController() {
                 MouseMove, 616, 347, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
             }
         }
         MouseMove, 1017, 214, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
     }
     if (itemWebhook) {
@@ -2326,14 +2383,17 @@ RunBiomeRandomizer() {
         MouseMove, 46, 520, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1279, 342, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1104, 368, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         Clipboard := "Biome Randomizer"
         sleep 300
         Send, ^v
@@ -2341,6 +2401,7 @@ RunBiomeRandomizer() {
         MouseMove, 848, 479, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
 
         Loop 10 {
@@ -2356,6 +2417,7 @@ RunBiomeRandomizer() {
                 MouseMove, 685, 580, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 break
             } else {
@@ -2363,10 +2425,12 @@ RunBiomeRandomizer() {
                 MouseMove, 1279, 342, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 MouseMove, 1104, 368, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 Clipboard := "Biome Randomizer"
                 sleep 300
                 Send, ^v
@@ -2374,12 +2438,14 @@ RunBiomeRandomizer() {
                 MouseMove, 848, 479, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
             }
         }
         MouseMove, 1413, 297, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
     }
     ; 1440p
@@ -2388,14 +2454,17 @@ RunBiomeRandomizer() {
         MouseMove, 52, 693, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1704, 452, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1473, 489, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         Clipboard := "Biome Randomizer"
         sleep 300
         Send, ^v
@@ -2403,6 +2472,7 @@ RunBiomeRandomizer() {
         MouseMove, 1144, 643, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
 
         Loop 10 {
@@ -2418,6 +2488,7 @@ RunBiomeRandomizer() {
                 MouseMove, 910, 775, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 break
             } else {
@@ -2425,10 +2496,12 @@ RunBiomeRandomizer() {
                 MouseMove, 1704, 452, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 MouseMove, 1473, 489, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 Clipboard := "Biome Randomizer"
                 sleep 300
                 Send, ^v
@@ -2436,12 +2509,14 @@ RunBiomeRandomizer() {
                 MouseMove, 1144, 643, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
             }
         }
         MouseMove, 1896, 403, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
     }
     ; 1366x768
@@ -2450,14 +2525,17 @@ RunBiomeRandomizer() {
         MouseMove, 42, 376, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 911, 242, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 785, 262, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         Clipboard := "Biome Randomizer"
         sleep 300
         Send, ^v
@@ -2465,6 +2543,7 @@ RunBiomeRandomizer() {
         MouseMove, 616, 347, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
 
         Loop 10 {
@@ -2480,6 +2559,7 @@ RunBiomeRandomizer() {
                 MouseMove, 480, 410, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 break
             } else {
@@ -2487,10 +2567,12 @@ RunBiomeRandomizer() {
                 MouseMove, 911, 242, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 MouseMove, 785, 262, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 Clipboard := "Biome Randomizer"
                 sleep 300
                 Send, ^v
@@ -2498,12 +2580,14 @@ RunBiomeRandomizer() {
                 MouseMove, 616, 347, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
             }
         }
         MouseMove, 1017, 214, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
     }
     if (itemWebhook) {
@@ -2561,7 +2645,7 @@ ManualGUIUpdate() {
 
 F1::
     Gosub, DisableControl ;EXPERIMENTAL CONTROL DISABLER
-
+    WinSet, Style, -0xC40000, % "ahk_exe" . A_Space . "RobloxPlayerBeta.exe"
     if (!res) {
         res := "1080p"
     }
@@ -2610,7 +2694,7 @@ Return
 
 F2::
     Gosub, EnableControl ;EXPERIMENTAL CONTROL DISABLER
-
+    WinSet, Style, 0x16CF0000, % "ahk_exe" . A_Space . "RobloxPlayerBeta.exe"
     if (toggle) {
         if (biomeDetectionRunning) {
             DetectHiddenWindows, On
@@ -2636,6 +2720,7 @@ F2::
 Return
 
 F3::
+    WinSet, Style, 0x16CF0000, % "ahk_exe" . A_Space . "RobloxPlayerBeta.exe"
     if (biomeDetectionRunning) {
         DetectHiddenWindows, On
         SetTitleMatchMode, 2
@@ -2701,25 +2786,25 @@ DoMouseMove:
             }
 
             ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
-            ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
+             ;
             ;
 
             ; BR Toggle
@@ -2766,6 +2851,7 @@ DoMouseMove:
                     MouseMove, 149, 40, 3
                     sleep 300
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 300
                 }
                 
@@ -2799,10 +2885,12 @@ DoMouseMove:
                 MouseMove, 47, 467, 3
                 sleep 220
                 Click, Left
+                gosub DoUIWait
                 sleep 220
                 MouseMove, 382, 126, 3
                 sleep 220
                 Click, Left
+                gosub DoUIWait
                 sleep 220
                 Loop, 80
                 {
@@ -2854,15 +2942,20 @@ DoMouseMove:
                     sleep 300
                     Send {e Up}
                     sleep 300
+                    ;[NOTE]
+                    ;ACCOUNT FOR POSSIBLE LAG WHEN OPENING UI!
                     MouseMove, 956, 803, 3
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     MouseMove, 956, 938, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 800
                     loopCount := 0
 
@@ -2870,6 +2963,7 @@ DoMouseMove:
                         MouseMove, 828, 404, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 400
                         PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
                         if ErrorLevel != 0
@@ -2881,10 +2975,12 @@ DoMouseMove:
                         }
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 300
                         MouseMove, 801, 626, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 1000
                         loopCount++
                     }
@@ -2892,6 +2988,7 @@ DoMouseMove:
                     MouseMove, 1458, 266, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     Send, {%keyA% Down}
                     sleep 1400
@@ -2941,12 +3038,15 @@ DoMouseMove:
                     MouseMove, 956, 803, 3
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     MouseMove, 956, 938, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 800
                     loopCount := 0
 
@@ -2954,6 +3054,7 @@ DoMouseMove:
                         MouseMove, 828, 404, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 400
                         PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
                         if ErrorLevel != 0
@@ -2965,10 +3066,12 @@ DoMouseMove:
                         }
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 300
                         MouseMove, 801, 626, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 1000
                         loopCount++
                     }
@@ -2976,6 +3079,7 @@ DoMouseMove:
                     MouseMove, 1458, 266, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     Send, {%keyA% Down}
                     sleep 1400
@@ -2990,14 +3094,17 @@ DoMouseMove:
                     MouseMove, 30, 406, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     MouseMove, 947, 335, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 100
                     MouseMove, 1102, 367, 3
                     sleep 100
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 100
                     ClipBoard := "Abyssal Hunter"
                     sleep 100
@@ -3012,6 +3119,7 @@ DoMouseMove:
                     }
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
 
                     ErrorLevel := 0
@@ -3020,12 +3128,14 @@ DoMouseMove:
                         MouseMove, 623, 634, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                     }
 
                     sleep 200
                     MouseMove, 1412, 296, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
 
                     Send, {%keyW% Down}
@@ -3076,12 +3186,15 @@ DoMouseMove:
                     MouseMove, 981, 805, 3
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     MouseMove, 967, 948, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 800
                     loopCount := 0
 
@@ -3089,6 +3202,7 @@ DoMouseMove:
                         MouseMove, 838, 413, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 400
                         PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
                         if ErrorLevel != 0
@@ -3100,10 +3214,12 @@ DoMouseMove:
                         }
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 300
                         MouseMove, 801, 626, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 1000
                         loopCount++
                     }
@@ -3111,6 +3227,7 @@ DoMouseMove:
                     MouseMove, 1469, 271, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     Send, {%keyA% Down}
                     sleep 800
@@ -3126,6 +3243,7 @@ DoMouseMove:
             MouseMove, 862, 843, 3
             Sleep 300
             MouseClick, Left
+            gosub DoUIWait
             sleep 300
             barColor := 0
             otherBarColor := 0
@@ -3161,6 +3279,7 @@ DoMouseMove:
                         MouseMove, 960, 540, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 6000
 
                         ; Start button
@@ -3173,6 +3292,7 @@ DoMouseMove:
                                 MouseMove, 267, 1000, 3
                                 sleep 350
                                 MouseClick, Left
+                                gosub DoUIWait
                                 break
                             }
                         }
@@ -3189,18 +3309,22 @@ DoMouseMove:
                     MouseMove, 1268, 941, 3
                     sleep 300
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 300
                     MouseMove, 1167, 476, 3
                     sleep 300
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 300
                     MouseMove, 1113, 342, 3
                     sleep 300
                     MouseClick, left
+                    gosub DoUIWait
                     sleep 300
                     MouseMove, 851, 832, 3
                     sleep 300
                     MouseClick, Left
+                    gosub DoUIWait
                     fishingFailsafeRan := true
                     if (failsafeWebhook) {
                         try SendWebhook(":grey_question: Fishing failsafe was triggered.", "13424349")
@@ -3251,10 +3375,12 @@ DoMouseMove:
                         barWidth := rightX - leftX
                         if (barWidth < advancedFishingThreshold) {
                             MouseClick, left
+                            gosub DoUIWait
                             sleep 25
                         }
                     } else {
                         MouseClick, left
+                        gosub DoUIWait
                     }
                     sleep 10
                 } else {
@@ -3264,6 +3390,7 @@ DoMouseMove:
                     if (ErrorLevel = 0) {
                     } else {
                         MouseClick, left
+                        gosub DoUIWait
                     }
                 }
             }
@@ -3282,6 +3409,7 @@ DoMouseMove:
             }
             */
             MouseClick, Left
+            gosub DoUIWait
             sleep 300
             cycleCount++
         }
@@ -3403,6 +3531,7 @@ DoMouseMove2:
                     MouseMove, 151, 38, 3
                     sleep 300
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 300
                 }
                 if (autoUnequip) {
@@ -3494,12 +3623,15 @@ DoMouseMove2:
                     MouseMove, 1308, 1073, 3
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     MouseMove, 1289, 1264, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 800
                     loopCount := 0
 
@@ -3507,6 +3639,7 @@ DoMouseMove2:
                         MouseMove, 1117, 550, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 400
                         PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
                         if ErrorLevel != 0
@@ -3518,10 +3651,12 @@ DoMouseMove2:
                         }
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 300
                         MouseMove, 1002, 831, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 1000
                         loopCount++
                     }
@@ -3529,6 +3664,7 @@ DoMouseMove2:
                     MouseMove, 1958, 361, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     Send, {%keyA% Down}
                     sleep 1400
@@ -3578,12 +3714,15 @@ DoMouseMove2:
                     MouseMove, 1308, 1073, 3
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     MouseMove, 1289, 1264, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 800
                     loopCount := 0
 
@@ -3591,6 +3730,7 @@ DoMouseMove2:
                         MouseMove, 1117, 550, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 400
                         PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
                         if ErrorLevel != 0
@@ -3602,10 +3742,12 @@ DoMouseMove2:
                         }
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 300
                         MouseMove, 1002, 831, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 1000
                         loopCount++
                     }
@@ -3613,6 +3755,7 @@ DoMouseMove2:
                     MouseMove, 1958, 361, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     Send, {%keyA% Down}
                     sleep 1400
@@ -3627,14 +3770,17 @@ DoMouseMove2:
                     MouseMove, 40, 541, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     MouseMove, 1262, 447, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 100
                     MouseMove, 1469, 489, 3
                     sleep 100
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 100
                     ClipBoard := "Abyssal Hunter"
                     sleep 100
@@ -3649,6 +3795,7 @@ DoMouseMove2:
                     }
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
 
                     ErrorLevel := 0
@@ -3657,12 +3804,14 @@ DoMouseMove2:
                         MouseMove, 830, 845, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                     }
 
                     sleep 200
                     MouseMove, 1883, 395, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
 
                     Send, {%keyW% Down}
@@ -3713,12 +3862,15 @@ DoMouseMove2:
                     MouseMove, 1308, 1073, 3
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     MouseMove, 1289, 1264, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 800
                     loopCount := 0
 
@@ -3726,6 +3878,7 @@ DoMouseMove2:
                         MouseMove, 1117, 550, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 400
                         PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
                         if ErrorLevel != 0
@@ -3737,10 +3890,12 @@ DoMouseMove2:
                         }
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 300
                         MouseMove, 1002, 831, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 1000
                         loopCount++
                     }
@@ -3748,6 +3903,7 @@ DoMouseMove2:
                     MouseMove, 1958, 361, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     Send, {%keyA% Down}
                     sleep 800
@@ -3763,6 +3919,7 @@ DoMouseMove2:
                 MouseMove, 1161, 1124, 3
                 Sleep 30
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 barColor := 0
                 otherBarColor := 0
@@ -3801,6 +3958,7 @@ DoMouseMove2:
                         MouseMove, 1280, 720, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 6000
 
                         ; Start button
@@ -3813,6 +3971,7 @@ DoMouseMove2:
                                 MouseMove, 347, 1329, 3
                                 sleep 350
                                 MouseClick, Left
+                                gosub DoUIWait
                                 break
                             }
                             sleep 100
@@ -3830,18 +3989,22 @@ DoMouseMove2:
                     MouseMove, 1690, 1224, 3
                     sleep 300
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 300
                     MouseMove, 1523, 649, 3
                     sleep 300
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 300
                     MouseMove, 1457, 491, 3
                     sleep 300
                     MouseClick, left
+                    gosub DoUIWait
                     sleep 300
                     MouseMove, 1163, 1126, 3
                     sleep 300
                     MouseClick, Left
+                    gosub DoUIWait
                     fishingFailsafeRan := true
                     if (failsafeWebhook) {
                         try SendWebhook(":grey_question: Fishing failsafe was triggered.", "13424349")
@@ -3895,10 +4058,12 @@ DoMouseMove2:
                         barWidth := rightX - leftX
                         if (barWidth < advancedFishingThreshold) {
                             MouseClick, left
+                            gosub DoUIWait
                             sleep 25
                         }
                     } else {
                         MouseClick, left
+                        gosub DoUIWait
                     }
                 } else {
                     ; Normal detection
@@ -3907,6 +4072,7 @@ DoMouseMove2:
                     if (ErrorLevel = 0) {
                     } else {
                         MouseClick, left
+                        gosub DoUIWait
                     }
                 }
             }
@@ -3925,6 +4091,7 @@ DoMouseMove2:
             }
             */
             MouseClick, Left
+            gosub DoUIWait
             sleep 300
             cycleCount++
         }
@@ -4069,6 +4236,7 @@ DoMouseMove3:
                     MouseMove, 151, 42, 3
                     sleep 300
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 300
                 }
 
@@ -4160,12 +4328,15 @@ DoMouseMove3:
                     MouseMove, 682, 563, 3
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     MouseMove, 682, 667, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 800
                     loopCount := 0
 
@@ -4173,6 +4344,7 @@ DoMouseMove3:
                         MouseMove, 586, 287, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 400
                         PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
                         if ErrorLevel != 0
@@ -4184,10 +4356,12 @@ DoMouseMove3:
                         }
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 300
                         MouseMove, 573, 447, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 1000
                         loopCount++
                     }
@@ -4195,6 +4369,7 @@ DoMouseMove3:
                     MouseMove, 1050, 197, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     Send, {%keyA% Down}
                     sleep 1400
@@ -4244,12 +4419,15 @@ DoMouseMove3:
                     MouseMove, 682, 563, 3
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 50
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     MouseMove, 682, 667, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 800
                     loopCount := 0
 
@@ -4257,6 +4435,7 @@ DoMouseMove3:
                         MouseMove, 586, 287, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 400
                         PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
                         if ErrorLevel != 0
@@ -4268,10 +4447,12 @@ DoMouseMove3:
                         }
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 300
                         MouseMove, 573, 447, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 1000
                         loopCount++
                     }
@@ -4279,6 +4460,7 @@ DoMouseMove3:
                     MouseMove, 1050, 197, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     Send, {%keyA% Down}
                     sleep 1400
@@ -4293,14 +4475,17 @@ DoMouseMove3:
                     MouseMove, 21, 289, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
                     MouseMove, 675, 239, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 100
                     MouseMove, 786, 261, 3
                     sleep 100
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 100
                     ClipBoard := "Abyssal Hunter"
                     sleep 100
@@ -4315,6 +4500,7 @@ DoMouseMove3:
                     }
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
 
                     ErrorLevel := 0
@@ -4323,12 +4509,14 @@ DoMouseMove3:
                         MouseMove, 444, 452, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                     }
 
                     sleep 200
                     MouseMove, 1007, 211, 3
                     sleep 200
                     MouseClick, Left
+                    gosub DoUIWait
                     sleep 200
 
                     Send, {%keyW% Down}
@@ -4379,12 +4567,15 @@ DoMouseMove3:
                         MouseMove, 699, 574, 3
                         sleep 50
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 50
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 200
                         MouseMove, 689, 676, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 800
                         loopCount := 0
 
@@ -4392,6 +4583,7 @@ DoMouseMove3:
                             MouseMove, 597, 294, 3
                             sleep 200
                             MouseClick, Left
+                            gosub DoUIWait
                             sleep 400
                             PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
                             if ErrorLevel != 0
@@ -4403,10 +4595,12 @@ DoMouseMove3:
                             }
                             sleep 200
                             MouseClick, Left
+                            gosub DoUIWait
                             sleep 300
                             MouseMove, 573, 447, 3
                             sleep 200
                             MouseClick, Left
+                            gosub DoUIWait
                             sleep 1000
                             loopCount++
                         }
@@ -4414,6 +4608,7 @@ DoMouseMove3:
                         MouseMove, 1047, 193, 3
                         sleep 200
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 200
                         Send, {%keyA% Down}
                         sleep 800
@@ -4429,6 +4624,7 @@ DoMouseMove3:
                 MouseMove, 603, 597, 3
                 Sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
                 barColor := 0
                 otherBarColor := 0
@@ -4464,6 +4660,7 @@ DoMouseMove3:
                             MouseMove, 683, 384, 3
                             sleep 200
                             MouseClick, Left
+                            gosub DoUIWait
                             sleep 6000
 
                             ; Start button
@@ -4476,6 +4673,7 @@ DoMouseMove3:
                                     MouseMove, 200, 715, 3
                                     sleep 350
                                     MouseClick, Left
+                                    gosub DoUIWait
                                     break
                                 }
                             }
@@ -4492,18 +4690,22 @@ DoMouseMove3:
                         MouseMove, 902, 668, 3
                         sleep 300
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 300
                         MouseMove, 858, 331, 3
                         sleep 300
                         MouseClick, Left
+                        gosub DoUIWait
                         sleep 300
                         MouseMove, 817, 210, 3
                         sleep 300
                         MouseClick, left
+                        gosub DoUIWait
                         sleep 300
                         MouseMove, 588, 588, 3
                         sleep 300
                         MouseClick, Left
+                        gosub DoUIWait
                         fishingFailsafeRan := true
                         if (failsafeWebhook) {
                             try SendWebhook(":grey_question: Fishing failsafe was triggered.", "13424349")
@@ -4555,10 +4757,12 @@ DoMouseMove3:
                             barWidth := rightX - leftX
                             if (barWidth < advancedFishingThreshold) {
                                 MouseClick, left
+                                gosub DoUIWait
                                 sleep 25
                             }
                         } else {
                             MouseClick, left
+                            gosub DoUIWait
                         }
                         sleep 10
                     } else {
@@ -4568,6 +4772,7 @@ DoMouseMove3:
                         if (ErrorLevel = 0) {
                         } else {
                             MouseClick, left
+                            gosub DoUIWait
                         }
                     }
                 }
@@ -4587,6 +4792,7 @@ DoMouseMove3:
             }
             */
             MouseClick, Left
+            gosub DoUIWait
             sleep 300
             cycleCount++
         }
@@ -4716,6 +4922,7 @@ PauseScript:
 return
 
 CloseScript:
+    WinSet, Style, 0x16CF0000, % "ahk_exe" . A_Space . "RobloxPlayerBeta.exe"
     if (biomeDetectionRunning) {
         DetectHiddenWindows, On
         SetTitleMatchMode, 2
@@ -4728,9 +4935,6 @@ CloseScript:
         biomeDetectionRunning := false
     }
     try SendWebhook(":red_circle: Macro Stopped.", "14495300")
-
-    WinName := "ahk_exe" . A_Space . "RobloxPlayerBeta.exe"
-    WinSet, Style, %old_style%, %WinName%
     ExitApp
 return
 
@@ -4814,6 +5018,24 @@ return
 
 TestWebhook:
     WebHookTest()
+Return
+
+DoUIWait:
+    if MsUntilCheckInMenuInput > 0
+        Sleep, %MsUntilCheckInMenuInput%
+Return
+
+UpdateMsCheck:
+    Gui, Submit, nohide
+    IniWrite, %MsUntilCheckInMenuInput%, %iniFilePath%, "Macro", "MsUntilCheckInMenuInput"
+    MsUntilCheckInMenuInput += 0
+    GuiControl,, MsUntilCheckInMenuInput, % MsUntilCheckInMenuInput
+
+    ;move cursor to end of GUI Edit
+    GuiControl, Focus, MsUntilCheckInMenuInput
+    SendMessage, 0xB1, -2, -1,, ahk_id %HANDLE_MsUntilCheckInMenuInput%
+    SendMessage, 0xB7,,,, ahk_id %HANDLE_MsUntilCheckInMenuInput%
+    ManualGUIUpdate()
 Return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -4974,7 +5196,7 @@ RunWebhookTest()
 
 RunResize()
 {
-    global setRes, iniFilePath, old_style
+    global setRes, iniFilePath
     WinName := "ahk_exe" . A_Space . "RobloxPlayerBeta.exe"
     X := 0
     Y := 0
@@ -4984,8 +5206,7 @@ RunResize()
     ; W := 1920
     ; H := 1080
     setRes := size[3]
-    WinGet, old_style, Style, %WinName%
-    WinSet, Style, -0xC40000, %WinName%
+    ; WinSet, Style, -0xC40000, %WinName%
     WinMove, %WinName%,, %X%, %Y%, %W%, %H%
     WinGetPos, X, Y, W, H, %WinName%
     IniWrite, %setRes%, %iniFilePath%, "Macro", "resolution"
@@ -5045,7 +5266,26 @@ SystemChecks()
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     ;check if all files are extracted
-    if ((not FileExist("./img/Discord.png")) or A_ScriptFullPath ~= "\.zip")
+    if not instr(FileExist("./assets"), "D")
+        FileCreateDir, % "./assets"
+    if not (instr(FileExist("./assets/img"), "D") and instr(FileExist("./assets/gui"), "D"))
+    {
+        ;copy legacy assets into new folder structure
+        ;if instr(FileExist("./gui"), "D")
+        ;    FileCopyDir, % "./gui", % "./assets/gui"
+        ;if instr(FileExist("./img"), "D")
+        ;    FileCopyDir, % "./img", % "./assets/img"
+
+        ;finally recheck if folders exists. later check for individual files specifical gui files
+        ;if not (instr(FileExist("./assets/img"), "D") and instr(FileExist("./assets/gui"), "D"))
+        ;{
+            MsgBox, % "Please Download Assets!"
+            ExitApp
+        ;}
+    }
+    
+                             ;regexmatch shorthand
+    if(A_ScriptFullPath ~= "\.zip")
     {
         MsgBox, % "Please Extract the Zip file!"
         ExitApp
@@ -5084,7 +5324,6 @@ SystemChecks()
                 Msgbox,,, % "Please Open Roblox!", 3000
             Sleep 1000
         }
-        WinGet, old_style, Style, %WinName%
     }
 }
 
@@ -5112,6 +5351,6 @@ SystemChecks_SetResFromValue(in_res)
         out := 3
     
     WinName := "ahk_exe" . A_Space . "RobloxPlayerBeta.exe"
-    WinSet, Style, -0xC40000, %WinName%
+    ;WinSet, Style, -0xC40000, %WinName%
     WinMove, %WinName%,, 0, 0, % StandardScreenSizesW[out], % StandardScreenSizesH[out]
 }
