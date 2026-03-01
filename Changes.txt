@@ -1,0 +1,25 @@
+1.9.6-A
+hopefully fixed sc/br with additional limits also
+tests for scale and prompts user to fix if not at 100%
+tests for game being open
+presets resolution and borderless for game to force it to be at a known state at startup
+BONK added
+webhook now has a test button that should help diagnose some issues
+autosell max updated to 56 but also has auto-end for when there's no more fish left [not tested at lowest resolution]
+!!Snowman pathing partially removed!!
+
+1.9.6-B
+disabled control disabler as it was extremely experimental
+
+1.9.6-C
+changes to fullscreening to allow restoring
+
+1.9.6-D
+moved fullscreening out of startup and into "Start"/"F1"
+F2/F3/Pause/Stop or Exiting The Appilcation will return roblox back to standard windowed mode
+file assets have been moved into ./assets/gui and ./assets/img to keep file structure clean
+Misc tab now contains a temporary value for delaying next action after a left click [values between 0-9999ms]
+
+1.9.6-E
+changes made to assets checker to add download function
+version number variable moved higher up in the script

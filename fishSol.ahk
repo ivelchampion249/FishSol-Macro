@@ -10,6 +10,8 @@ CoordMode, Mouse,   Screen
 CoordMode, Pixel,   Screen
 CoordMode, ToolTip, Screen
 
+VERSION_NUMBER := "v1.9.6E"
+
 SystemChecks()
 OnExit, CloseScript
 iniFilePath := A_ScriptDir "\settings.ini"
@@ -19,7 +21,6 @@ if (FileExist(iconFilePath)) {
     Menu, Tray, Icon, %iconFilePath%
 }
 
-VERSION_NUMBER := "v1.9.6D"
 
 res := "1080p"
 
@@ -668,37 +669,37 @@ Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick
 Gui, Add, Text, x330 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
 
 ;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
-;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
 ;
 
 Gui, Tab, Credits
@@ -913,14 +914,14 @@ if (hasCrafterPlugin) {
 }
 
 ;
-;
-;
-;
-;
-;
-;
-;
-;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
+ ;
 ;
 
 return
@@ -5265,30 +5266,46 @@ SystemChecks()
     ;   BASIC SYSTEM CHECKS   ;
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+                    ;regexmatch shorthand
+    if(A_ScriptFullPath ~= "\.zip")
+    {
+        MsgBox, % "Please Extract the Zip file!"
+        ExitApp
+    }
     ;check if all files are extracted
     if not instr(FileExist("./assets"), "D")
         FileCreateDir, % "./assets"
     if not (instr(FileExist("./assets/img"), "D") and instr(FileExist("./assets/gui"), "D"))
     {
-        ;copy legacy assets into new folder structure
-        ;if instr(FileExist("./gui"), "D")
-        ;    FileCopyDir, % "./gui", % "./assets/gui"
-        ;if instr(FileExist("./img"), "D")
-        ;    FileCopyDir, % "./img", % "./assets/img"
+        ; copy legacy assets into new folder structure
+        if instr(FileExist("./gui"), "D")
+            FileCopyDir, % "./gui", % "./assets/gui"
+        if instr(FileExist("./img"), "D")
+            FileCopyDir, % "./img", % "./assets/img"
+        
+        ; finally recheck if folders exists. later check for individual files specifical gui files
+        if not (instr(FileExist("./assets/img"), "D") and instr(FileExist("./assets/gui"), "D"))
+        {
+            ;extract version number without the v from version number
+            RegExMatch(VERSION_NUMBER, "\d+\.\d+\.\d+", vn)
+            
+            ;download assets zip file  ;change to MAIN github url later
+            UrlDownloadToFile, % "https://github.com/hybolic/FishSol-Macro/releases/download/v" . vn . "/assets.zip", % "./assets.zip"
 
-        ;finally recheck if folders exists. later check for individual files specifical gui files
-        ;if not (instr(FileExist("./assets/img"), "D") and instr(FileExist("./assets/gui"), "D"))
-        ;{
-            MsgBox, % "Please Download Assets!"
-            ExitApp
-        ;}
-    }
-    
-                             ;regexmatch shorthand
-    if(A_ScriptFullPath ~= "\.zip")
-    {
-        MsgBox, % "Please Extract the Zip file!"
-        ExitApp
+            ;check if file is valid
+            File := FileOpen("./assets.zip", "R")
+            first64 := File.Read(64)
+            File.Close()
+            if first64 ~= "Not Found"
+            {
+                ;file invalid
+                FileDelete, % "./assets.zip"
+            }
+
+            ;if file exists
+            if FileExist("./assets.zip") 
+                RunWait % "PowerShell.exe -Command Expand-Archive './assets.zip' -DestinationPath '" A_ScriptDir . "'",, Hide
+        }
     }
 
     ;basic screen dpi check
