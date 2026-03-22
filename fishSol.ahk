@@ -21,7 +21,6 @@ if (FileExist(iconFilePath)) {
     Menu, Tray, Icon, %iconFilePath%
 }
 
-
 res := "1080p"
 
 maxLoopCount := 15
@@ -250,7 +249,11 @@ randomMessages := ["Go catch some fish IRL sometime!"
                     , "oof"
                     , "Now with 100% more fishing!"
                     , "Gone fishing"
-                    , "No fish were harmed in the making of this macro"]
+                    , "No fish were harmed in the making of this macro"
+                    ;new random messages
+                    , "Don't Forget to thank the @Helpers!"
+                    , "Beat on Nadir he's stupid"
+                    , "Thanks for finding the text size issue @Ova <3"]
 ;
 
 Random, messageRand, 1, randomMessages.Length()
@@ -311,6 +314,7 @@ loop % Devs.Length()
     dev%A_Index%_color      := Devs[Randomised_DevOrder[A_INDEX]].dev_color
 }
 
+Gui, New
 Gui, Color, 0x1E1E1E
 Gui, Font, s17 cWhite Bold, Segoe UI
 Gui, Add, Text, x0 y10 w600 h45 Center BackgroundTrans c0x00D4FF, fishSol %VERSION_NUMBER%
@@ -769,19 +773,13 @@ loop % (Devs.Length() - 3)
     Gui, Add, Text, x280 y%yoff4% w200 h15 BackgroundTrans c0x0088FF gDev%AA_INDEX%LinkClick 0x202, %dev_discord%
 }
 
-url := "https://raw.githubusercontent.com/ivelchampion249/FishSol-Macro/refs/heads/main/DONATORS.txt"
-
-Http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-Http.Open("GET", url, false)
-Http.Send()
-content := RTrim(Http.ResponseText, " `t`n`r")
-
 Gui, Font, s10 cWhite Normal Bold
 Gui, Add, Text, x50 y345 w200 h20 BackgroundTrans, Thank you to our donators!
 Gui, Font, s9 c0xCCCCCC Normal
 Gui, Add, Edit, x50 y370 w480 h125 vDonatorsList -Wrap +ReadOnly +VScroll -WantReturn -E0x200 Background0x2D2D2D c0xCCCCCC, %content%
 
 Gui, Font, s8 c0xCCCCCC Normal
+Gui, Add, Text, x50 y518 w500 h15 BackgroundTrans, fishSol %VERSION_NUMBER% - %randomMessage%
 Gui, Add, Text, x50 y518 w500 h15 BackgroundTrans, fishSol %VERSION_NUMBER% - %randomMessage%
 
 Gui, Show, w600 h670, fishSol %VERSION_NUMBER%
@@ -924,6 +922,7 @@ if (hasCrafterPlugin) {
  ;
 ;
 
+SetTimer, DoDonatorsList, -1
 return
 
 GuiClose:
@@ -2682,6 +2681,25 @@ F1::
         WinActivate, ahk_exe RobloxPlayerBeta.exe
         ManualGUIUpdate()
         SetTimer, UpdateGUI, 1000
+
+        ;change text size to smallest THANKS TO @Ova for finding this issue
+        MouseMove, 100, 100
+        sleep 1000
+        send {esc}
+        sleep 200
+        send {tab}
+        sleep 200
+        loop 19
+        {
+            sleep 200
+            send {down}
+        }
+        loop 4
+        {
+            sleep 200
+            send {left}
+        }
+
         if (res = "1080p") {
             SetTimer, DoMouseMove, 100
         } else if (res = "1440p") {
@@ -2905,7 +2923,7 @@ DoMouseMove:
                     sleep 0
                 }
                 sleep 300
-
+                ; sell pathing
                 if (pathingMode = "Non Vip Pathing") {
                     ; Non VIP Pathing
                     Send, {%keyW% Down}
@@ -2943,62 +2961,7 @@ DoMouseMove:
                     sleep 300
                     Send {e Up}
                     sleep 300
-                    ;[NOTE]
-                    ;ACCOUNT FOR POSSIBLE LAG WHEN OPENING UI!
-                    MouseMove, 956, 803, 3
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    MouseMove, 956, 938, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 800
-                    loopCount := 0
-
-                    while (loopCount < sellAllToggle ? min(fishingLoopCount, 56) : fishingLoopCount) {
-                        MouseMove, 828, 404, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 400
-                        PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
-                        if ErrorLevel != 0
-                            break
-                        if (sellAllToggle) {
-                            MouseMove, 680, 804, 3
-                        } else {
-                            MouseMove, 512, 804, 3
-                        }
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 300
-                        MouseMove, 801, 626, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 1000
-                        loopCount++
-                    }
-
-                    MouseMove, 1458, 266, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    Send, {%keyA% Down}
-                    sleep 1400
-                    Send, {%keyA% Up}
-                    sleep 75
-                    Send, {%keyW% Down}
-                    sleep 3300
-                    Send, {%keyW% Up}
-                    loopCount := 0
+                    ;
                 } else if (pathingMode = "Vip Pathing") {
                     ; VIP Pathing
                     Send, {%keyW% Down}
@@ -3036,60 +2999,6 @@ DoMouseMove:
                     sleep 300
                     Send {e Up}
                     sleep 300
-                    MouseMove, 956, 803, 3
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    MouseMove, 956, 938, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 800
-                    loopCount := 0
-
-                    while (loopCount < sellAllToggle ? min(fishingLoopCount, 56) : fishingLoopCount) {
-                        MouseMove, 828, 404, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 400
-                        PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
-                        if ErrorLevel != 0
-                            break
-                        if (sellAllToggle) {
-                            MouseMove, 680, 804, 3
-                        } else {
-                            MouseMove, 512, 804, 3
-                        }
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 300
-                        MouseMove, 801, 626, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 1000
-                        loopCount++
-                    }
-
-                    MouseMove, 1458, 266, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    Send, {%keyA% Down}
-                    sleep 1400
-                    Send, {%keyA% Up}
-                    sleep 75
-                    Send, {%keyW% Down}
-                    sleep 2670
-                    Send, {%keyW% Up}
-                    loopCount := 0
                 } else if (pathingMode = "Abyssal Pathing") {
                     ; Abyssal Pathing
                     MouseMove, 30, 406, 3
@@ -3183,53 +3092,73 @@ DoMouseMove:
                     sleep 300
                     Send {e Up}
                     sleep 300
+                }
+                ; sell routine
+                MouseMove, 956, 803, 3
+                sleep 50
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 50
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 200
+                MouseMove, 956, 938, 3
+                sleep 200
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 800
+                loopCount := 0
 
-                    MouseMove, 981, 805, 3
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    MouseMove, 967, 948, 3
+                while (loopCount < sellAllToggle ? min(fishingLoopCount, 56) : fishingLoopCount) {
+                    MouseMove, 828, 404, 3
                     sleep 200
                     MouseClick, Left
                     gosub DoUIWait
-                    sleep 800
-                    loopCount := 0
-
-                    while (loopCount < sellAllToggle ? min(fishingLoopCount, 56) : fishingLoopCount) {
-                        MouseMove, 838, 413, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 400
-                        PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
-                        if ErrorLevel != 0
-                            break
-                        if (sellAllToggle) {
-                            MouseMove, 678, 810, 3
-                        } else {
-                            MouseMove, 525, 809, 3
-                        }
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 300
-                        MouseMove, 801, 626, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 1000
-                        loopCount++
+                    sleep 400
+                    PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
+                    if ErrorLevel != 0
+                        break
+                    if (sellAllToggle) {
+                        MouseMove, 680, 804, 3
+                    } else {
+                        MouseMove, 512, 804, 3
                     }
-
-                    MouseMove, 1469, 271, 3
                     sleep 200
                     MouseClick, Left
                     gosub DoUIWait
+                    sleep 300
+                    MouseMove, 801, 626, 3
                     sleep 200
+                    MouseClick, Left
+                    gosub DoUIWait
+                    sleep 1000
+                    loopCount++
+                }
+
+                MouseMove, 1458, 266, 3
+                sleep 200
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 200
+                
+                ;fish pathing
+                if (pathingMode = "Non Vip Pathing") {
+                    Send, {%keyA% Down}
+                    sleep 1400
+                    Send, {%keyA% Up}
+                    sleep 75
+                    Send, {%keyW% Down}
+                    sleep 3300
+                    Send, {%keyW% Up}
+                } else if (pathingMode = "Vip Pathing") {
+                    Send, {%keyA% Down}
+                    sleep 1400
+                    Send, {%keyA% Up}
+                    sleep 75
+                    Send, {%keyW% Down}
+                    sleep 2670
+                    Send, {%keyW% Up}
+                } else if (pathingMode = "Abyssal Pathing") {
                     Send, {%keyA% Down}
                     sleep 800
                     Send, {%keyA% Up}
@@ -3237,8 +3166,8 @@ DoMouseMove:
                     Send, {%keyW% Down}
                     sleep 1760
                     Send, {%keyW% Up}
-                    loopCount := 0
                 }
+                loopCount := 0
             }
 
             MouseMove, 862, 843, 3
@@ -3583,7 +3512,7 @@ DoMouseMove2:
                 }
                 sleep 300
 
-                ; Regular Pathing
+                ; path to sell
                 if (pathingMode = "Non Vip Pathing") {
                     ; Non VIP Pathing
                     Send, {%keyW% Down}
@@ -3621,60 +3550,6 @@ DoMouseMove2:
                     sleep 300
                     Send {e Up}
                     sleep 300
-                    MouseMove, 1308, 1073, 3
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    MouseMove, 1289, 1264, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 800
-                    loopCount := 0
-
-                    while (loopCount < sellAllToggle ? min(fishingLoopCount, 56) : fishingLoopCount) {
-                        MouseMove, 1117, 550, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 400
-                        PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
-                        if ErrorLevel != 0
-                            break
-                        if (sellAllToggle) {
-                            MouseMove, 904, 1080, 3
-                        } else {
-                            MouseMove, 700, 1078, 3
-                        }
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 300
-                        MouseMove, 1002, 831, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 1000
-                        loopCount++
-                    }
-
-                    MouseMove, 1958, 361, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    Send, {%keyA% Down}
-                    sleep 1400
-                    Send, {%keyA% Up}
-                    sleep 75
-                    Send, {%keyW% Down}
-                    sleep 3300
-                    Send, {%keyW% Up}
-                    loopCount := 0
                 } else if (pathingMode = "Vip Pathing") {
                     ; VIP Pathing
                     Send, {%keyW% Down}
@@ -3712,60 +3587,7 @@ DoMouseMove2:
                     sleep 300
                     Send {e Up}
                     sleep 300
-                    MouseMove, 1308, 1073, 3
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    MouseMove, 1289, 1264, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 800
-                    loopCount := 0
-
-                    while (loopCount < sellAllToggle ? min(fishingLoopCount, 56) : fishingLoopCount) {
-                        MouseMove, 1117, 550, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 400
-                        PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
-                        if ErrorLevel != 0
-                            break
-                        if (sellAllToggle) {
-                            MouseMove, 904, 1080, 3
-                        } else {
-                            MouseMove, 700, 1078, 3
-                        }
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 300
-                        MouseMove, 1002, 831, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 1000
-                        loopCount++
-                    }
-
-                    MouseMove, 1958, 361, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    Send, {%keyA% Down}
-                    sleep 1400
-                    Send, {%keyA% Up}
-                    sleep 75
-                    Send, {%keyW% Down}
-                    sleep 2670
-                    Send, {%keyW% Up}
-                    loopCount := 0
+                    ;
                 } else if (pathingMode = "Abyssal Pathing") {
                     ; Abyssal Pathing
                     MouseMove, 40, 541, 3
@@ -3859,53 +3681,73 @@ DoMouseMove2:
                     sleep 300
                     Send {e Up}
                     sleep 300
+                }
 
-                    MouseMove, 1308, 1073, 3
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    MouseMove, 1289, 1264, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 800
-                    loopCount := 0
+                ;sell routine
+                MouseMove, 1308, 1073, 3
+                sleep 50
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 50
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 200
+                MouseMove, 1289, 1264, 3
+                sleep 200
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 800
+                loopCount := 0
 
-                    while (loopCount < sellAllToggle ? min(fishingLoopCount, 56) : fishingLoopCount) {
-                        MouseMove, 1117, 550, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 400
-                        PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
-                        if ErrorLevel != 0
-                            break
-                        if (sellAllToggle) {
-                            MouseMove, 904, 1080, 3
-                        } else {
-                            MouseMove, 700, 1078, 3
-                        }
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 300
-                        MouseMove, 1002, 831, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 1000
-                        loopCount++
+                while (loopCount < sellAllToggle ? min(fishingLoopCount, 56) : fishingLoopCount) {
+                    MouseMove, 1117, 550, 3
+                    sleep 200
+                    MouseClick, Left
+                    gosub DoUIWait
+                    sleep 400
+                    PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
+                    if ErrorLevel != 0
+                        break
+                    if (sellAllToggle) {
+                        MouseMove, 904, 1080, 3
+                    } else {
+                        MouseMove, 700, 1078, 3
                     }
-
-                    MouseMove, 1958, 361, 3
                     sleep 200
                     MouseClick, Left
                     gosub DoUIWait
+                    sleep 300
+                    MouseMove, 1002, 831, 3
                     sleep 200
+                    MouseClick, Left
+                    gosub DoUIWait
+                    sleep 1000
+                    loopCount++
+                }
+
+                MouseMove, 1958, 361, 3
+                sleep 200
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 200
+                ;path to fish
+                if (pathingMode = "Non Vip Pathing") {
+                    Send, {%keyA% Down}
+                    sleep 1400
+                    Send, {%keyA% Up}
+                    sleep 75
+                    Send, {%keyW% Down}
+                    sleep 3300
+                    Send, {%keyW% Up}
+                } else if (pathingMode = "Vip Pathing") {
+                    Send, {%keyA% Down}
+                    sleep 1400
+                    Send, {%keyA% Up}
+                    sleep 75
+                    Send, {%keyW% Down}
+                    sleep 2670
+                    Send, {%keyW% Up}
+                } else if (pathingMode = "Abyssal Pathing") {
                     Send, {%keyA% Down}
                     sleep 800
                     Send, {%keyA% Up}
@@ -3913,8 +3755,8 @@ DoMouseMove2:
                     Send, {%keyW% Down}
                     sleep 1760
                     Send, {%keyW% Up}
-                    loopCount := 0
                 }
+                loopCount := 0
             }
                 ; Fishing Minigame
                 MouseMove, 1161, 1124, 3
@@ -4289,6 +4131,7 @@ DoMouseMove3:
                 }
                 sleep 300
 
+                ; sell pathing
                 if (pathingMode = "Non Vip Pathing") {
                     ; Non VIP Pathing
                     Send, {%keyW% Down}
@@ -4326,60 +4169,6 @@ DoMouseMove3:
                     sleep 300
                     Send {e Up}
                     sleep 300
-                    MouseMove, 682, 563, 3
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    MouseMove, 682, 667, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 800
-                    loopCount := 0
-
-                    while (loopCount < sellAllToggle ? min(fishingLoopCount, 56) : fishingLoopCount) {
-                        MouseMove, 586, 287, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 400
-                        PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
-                        if ErrorLevel != 0
-                            break
-                        if (sellAllToggle) {
-                            MouseMove, 486, 570, 3
-                        } else {
-                            MouseMove, 365, 570, 3
-                        }
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 300
-                        MouseMove, 573, 447, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 1000
-                        loopCount++
-                    }
-
-                    MouseMove, 1050, 197, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    Send, {%keyA% Down}
-                    sleep 1400
-                    Send, {%keyA% Up}
-                    sleep 75
-                    Send, {%keyW% Down}
-                    sleep 3300
-                    Send, {%keyW% Up}
-                    loopCount := 0
                 } else if (pathingMode = "Vip Pathing") {
                     ; VIP Pathing
                     Send, {%keyW% Down}
@@ -4417,60 +4206,6 @@ DoMouseMove3:
                     sleep 300
                     Send {e Up}
                     sleep 300
-                    MouseMove, 682, 563, 3
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 50
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    MouseMove, 682, 667, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 800
-                    loopCount := 0
-
-                    while (loopCount < sellAllToggle ? min(fishingLoopCount, 56) : fishingLoopCount) {
-                        MouseMove, 586, 287, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 400
-                        PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
-                        if ErrorLevel != 0
-                            break
-                        if (sellAllToggle) {
-                            MouseMove, 486, 570, 3
-                        } else {
-                            MouseMove, 365, 570, 3
-                        }
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 300
-                        MouseMove, 573, 447, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 1000
-                        loopCount++
-                    }
-
-                    MouseMove, 1050, 197, 3
-                    sleep 200
-                    MouseClick, Left
-                    gosub DoUIWait
-                    sleep 200
-                    Send, {%keyA% Down}
-                    sleep 1400
-                    Send, {%keyA% Up}
-                    sleep 75
-                    Send, {%keyW% Down}
-                    sleep 2670
-                    Send, {%keyW% Up}
-                    loopCount := 0
                 } else if (pathingMode = "Abyssal Pathing") {
                     ; Abyssal Pathing
                     MouseMove, 21, 289, 3
@@ -4555,71 +4290,92 @@ DoMouseMove3:
                     Send {space Down}
                     sleep 15
                     Send {d Down}
-                        sleep 150
-                        Send {space Up}
-                        sleep 580
-                        Send {d Up}
-                        sleep 100
-                        Send {e Down}
-                        sleep 300
-                        Send {e Up}
-                        sleep 300
+                    sleep 150
+                    Send {space Up}
+                    sleep 580
+                    Send {d Up}
+                    sleep 100
+                    Send {e Down}
+                    sleep 300
+                    Send {e Up}
+                    sleep 300
+                }
 
-                        MouseMove, 699, 574, 3
-                        sleep 50
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 50
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 200
-                        MouseMove, 689, 676, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 800
-                        loopCount := 0
+                ;sell routine
+                MouseMove, 682, 563, 3
+                sleep 50
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 50
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 200
+                MouseMove, 682, 667, 3
+                sleep 200
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 800
+                loopCount := 0
 
-                        while (loopCount < sellAllToggle ? min(fishingLoopCount, 56) : fishingLoopCount) {
-                            MouseMove, 597, 294, 3
-                            sleep 200
-                            MouseClick, Left
-                            gosub DoUIWait
-                            sleep 400
-                            PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
-                            if ErrorLevel != 0
-                                break
-                            if (sellAllToggle) {
-                                MouseMove, 484, 577, 3
-                            } else {
-                                MouseMove, 374, 576, 3
-                            }
-                            sleep 200
-                            MouseClick, Left
-                            gosub DoUIWait
-                            sleep 300
-                            MouseMove, 573, 447, 3
-                            sleep 200
-                            MouseClick, Left
-                            gosub DoUIWait
-                            sleep 1000
-                            loopCount++
-                        }
-
-                        MouseMove, 1047, 193, 3
-                        sleep 200
-                        MouseClick, Left
-                        gosub DoUIWait
-                        sleep 200
-                        Send, {%keyA% Down}
-                        sleep 800
-                        Send, {%keyA% Up}
-                        sleep 100
-                        Send, {%keyW% Down}
-                        sleep 1760
-                        Send, {%keyW% Up}
-                        loopCount := 0
+                while (loopCount < sellAllToggle ? min(fishingLoopCount, 56) : fishingLoopCount) {
+                    MouseMove, 586, 287, 3
+                    sleep 200
+                    MouseClick, Left
+                    gosub DoUIWait
+                    sleep 400
+                    PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
+                    if ErrorLevel != 0
+                        break
+                    if (sellAllToggle) {
+                        MouseMove, 486, 570, 3
+                    } else {
+                        MouseMove, 365, 570, 3
                     }
+                    sleep 200
+                    MouseClick, Left
+                    gosub DoUIWait
+                    sleep 300
+                    MouseMove, 573, 447, 3
+                    sleep 200
+                    MouseClick, Left
+                    gosub DoUIWait
+                    sleep 1000
+                    loopCount++
+                }
+
+                MouseMove, 1050, 197, 3
+                sleep 200
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 200
+                
+                ; fish pathing
+                if (pathingMode = "Non Vip Pathing") {
+                    Send, {%keyA% Down}
+                    sleep 1400
+                    Send, {%keyA% Up}
+                    sleep 75
+                    Send, {%keyW% Down}
+                    sleep 3300
+                    Send, {%keyW% Up}
+                } else if (pathingMode = "Vip Pathing") {
+                    Send, {%keyA% Down}
+                    sleep 1400
+                    Send, {%keyA% Up}
+                    sleep 75
+                    Send, {%keyW% Down}
+                    sleep 2670
+                    Send, {%keyW% Up}
+                } else if (pathingMode = "Abyssal Pathing") {
+                    Send, {%keyA% Down}
+                    sleep 800
+                    Send, {%keyA% Up}
+                    sleep 100
+                    Send, {%keyW% Down}
+                    sleep 1760
+                    Send, {%keyW% Up}
+                }
+                loopCount := 0
                 }
 
                 MouseMove, 603, 597, 3
@@ -5203,7 +4959,7 @@ RunResize()
     Y := 0
     size := getClosest(A_ScreenWidth, A_ScreenHeight)
     W := size[1]
-    H := size[2]
+    H := size[2]Strange ControllerBiome Randomizer
     ; W := 1920
     ; H := 1080
     setRes := size[3]
@@ -5285,27 +5041,7 @@ SystemChecks()
         
         ; finally recheck if folders exists. later check for individual files specifical gui files
         if not (instr(FileExist("./assets/img"), "D") and instr(FileExist("./assets/gui"), "D"))
-        {
-            ;extract version number without the v from version number
-            RegExMatch(VERSION_NUMBER, "\d+\.\d+\.\d+", vn)
-            
-            ;download assets zip file  ;change to MAIN github url later
-            UrlDownloadToFile, % "https://github.com/hybolic/FishSol-Macro/releases/download/v" . vn . "/assets.zip", % "./assets.zip"
-
-            ;check if file is valid
-            File := FileOpen("./assets.zip", "R")
-            first64 := File.Read(64)
-            File.Close()
-            if first64 ~= "Not Found"
-            {
-                ;file invalid
-                FileDelete, % "./assets.zip"
-            }
-
-            ;if file exists
-            if FileExist("./assets.zip") 
-                RunWait % "PowerShell.exe -Command Expand-Archive './assets.zip' -DestinationPath '" A_ScriptDir . "'",, Hide
-        }
+            CheckForAssetUpdate()
     }
 
     ;basic screen dpi check
@@ -5330,6 +5066,7 @@ SystemChecks()
     }
 
     ;is roblox active
+    return
     if not WinExist("ahk_exe" . A_Space . "RobloxPlayerBeta.exe")
     {
         
@@ -5371,3 +5108,50 @@ SystemChecks_SetResFromValue(in_res)
     ;WinSet, Style, -0xC40000, %WinName%
     WinMove, %WinName%,, 0, 0, % StandardScreenSizesW[out], % StandardScreenSizesH[out]
 }
+
+CheckForAssetUpdate()
+{
+    ;extract version number without the v from version number
+    RegExMatch(VERSION_NUMBER, "\d+\.\d+\.\d+", vn)
+    
+    ;download assets zip file  ;change to MAIN github url later
+    UrlDownloadToFile, % "https://github.com/hybolic/FishSol-Macro/releases/download/v" . vn . "/assets.zip", % "./assets.zip"
+
+    ;check if file is valid
+    File := FileOpen("./assets.zip", "R")
+    first64 := File.Read(64)
+    File.Close()
+    if first64 ~= "Not Found"
+    {
+        ;file invalid
+        FileDelete, % "./assets.zip"
+        return
+    }
+
+    ;if file exists
+    if FileExist("./assets.zip") 
+        RunWait % "PowerShell.exe -Command Expand-Archive './assets.zip' -DestinationPath '" A_ScriptDir . "'",, Hide
+}
+
+CheckForAHKUpdate()
+{
+    ;check update version against our version
+    ;if Update
+    ;zip contents of current into a backup file for restoration
+    ;download new version of ahk
+    ;unpack
+    ;reload
+    ;else
+    ;nothing
+}
+
+DoDonatorsList:
+
+    url := "https://raw.githubusercontent.com/ivelchampion249/FishSol-Macro/refs/heads/main/DONATORS.txt"
+
+    Http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    Http.Open("GET", url, false)
+    Http.Send()
+    content := RTrim(Http.ResponseText, " `t`n`r")
+    GuiControl, , DonatorsList, % content
+return
