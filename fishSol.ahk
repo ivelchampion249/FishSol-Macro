@@ -1,6 +1,7 @@
 ;#Requires AutoHotkey v1.1
 #NoEnv
 #SingleInstance Force
+;
 
 ; enable these so user can still do things before turning it on in script
 Gosub, EnableControl ;EXPERIMENTAL CONTROL DISABLER
@@ -10,7 +11,7 @@ CoordMode, Mouse,   Screen
 CoordMode, Pixel,   Screen
 CoordMode, ToolTip, Screen
 
-VERSION_NUMBER := "v1.9.6E"
+VERSION_NUMBER := "v1.9.6G"
 
 SystemChecks()
 OnExit, CloseScript
@@ -52,6 +53,9 @@ if (FileExist(iniFilePath)) {
     autoCrafter := (tempAutoCrafter = "1" || tempAutoCrafter = "true")
     IniRead, tempAutoCrafterWebhook, %iniFilePath%, "Macro", "autoCrafterWebhook", 0
     autoCrafterWebhook := (tempAutoCrafterWebhook = "1" || tempAutoCrafterWebhook = "true")
+    IniRead DoneFirstDownload, %iniFilePath%, "Assets", "DoneFirstDownload", 0
+    if not DoneFirstDownload
+        gosub DownloadAssets
 }
 
 strangeControllerTime := 0
@@ -219,6 +223,8 @@ hasBiomesPlugin := FileExist(A_ScriptDir "\plugins\biomes.ahk")
 hasCrafterPlugin := FileExist(A_ScriptDir "\plugins\auto crafter.ahk")
 ;
 
+; CheckForAssetUpdate()
+
 if (FileExist(iniFilePath)) {
     IniRead, tempCrafter, %iniFilePath%, "Macro", "crafterToggle"
     if (tempCrafter != "ERROR")
@@ -253,7 +259,7 @@ randomMessages := ["Go catch some fish IRL sometime!"
                     ;new random messages
                     , "Don't Forget to thank the @Helpers!"
                     , "Beat on Nadir he's stupid"
-                    , "Thanks for finding the text size issue @Ova <3"]
+                    , "Thanks for pointing out the text size issue @Ova <3"]
 ;
 
 Random, messageRand, 1, randomMessages.Length()
@@ -314,7 +320,6 @@ loop % Devs.Length()
     dev%A_Index%_color      := Devs[Randomised_DevOrder[A_INDEX]].dev_color
 }
 
-Gui, New
 Gui, Color, 0x1E1E1E
 Gui, Font, s17 cWhite Bold, Segoe UI
 Gui, Add, Text, x0 y10 w600 h45 Center BackgroundTrans c0x00D4FF, fishSol %VERSION_NUMBER%
@@ -333,7 +338,7 @@ Gui, Add, Text, x325 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpCli
 Gui, Font, s10 cWhite Normal Bold
 
 ; adds plugin to tab list
-tabList := "Main|Misc|Failsafes|Webhook"
+tabList := "Main|Settings|Misc|Failsafes|Webhook"
 if (hasBiomesPlugin)
     tabList .= "|Biomes"
 if (hasCrafterPlugin)
@@ -443,6 +448,31 @@ Gui, Font, s9 c0xCCCCCC Normal
 Gui, Add, Text, x50 y545 w500 h20 BackgroundTrans, Requirements: 100`% Windows scaling - Roblox in fullscreen mode
 Gui, Add, Text, x50 y563 w500 h20 BackgroundTrans, For best results, make sure you have good internet and avoid screen overlays
 
+;;;;;;;;;SETTINGS TAB;;;;;;;;
+Gui, Tab, Settings
+
+;Download Button
+Gui, Font, s9 cWhite Normal
+Gui, Font, s11 cWhite Bold
+Gui, Add, Text, x41 y104 h25 BackgroundTrans, Download Latest Files:
+Gui, Font, s10 cWhite Bold
+Gui, Add, Button, x+m y100 w100 gDownloadAssets vButton_DownloadAssets Section, Assets
+GuiControl, Disable, Button_DownloadAssets
+Gui, Add, Button, x+m y100 w100 gDownloadBiomes vButton_DownloadBiomes, Biomes.ahk
+GuiControl, Disable, Button_DownloadBiomes
+Gui, Add, Button, x+m y100 w100 gOpenGitHub_URL, Open Github
+Gui, Add, Button, xs w342 gCheckForUpdate vButton_CheckForUpdate Section, Check for Update
+Gui, Font, s9 cWhite Normal
+Gui, Add, Text,   x41 ys w180 h80 vText_CFU_and_DownloadFeedback,
+
+;add lag prevention in ms here
+Gui, Font, s11 cWhite Bold
+Gui, Add, Text, x41 y400 w150 h25 BackgroundTrans, Miliseconds:
+Gui, Font, s10 cWhite Bold
+Gui, Add, Edit, x200 y400 w120 h25 vMsUntilCheckInMenuInput gUpdateMsCheck +HwndHANDLE_MsUntilCheckInMenuInput Limit4 Number Background0xD3D3D3 cBlack, %MsUntilCheckInMenuInput%
+Gui, Font, s10 cWhite Normal
+Gui, Add, Text, x327 y400 w500 h25 BackgroundTrans, Time in MS to wait for ui in the case of lag.
+
 ;;;;;;;;;MISC TAB;;;;;;;;;
 Gui, Tab, Misc
 
@@ -503,16 +533,6 @@ Gui, Add, Picture, x538 y601 w18 h19, %A_ScriptDir%\assets\img\Robux.png
 Gui, Font, s11 cWhite Bold Underline, Segoe UI
 Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
 Gui, Add, Text, x330 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
-
-
-;add lag prevention in ms here
-Gui, Font, s9 cWhite Normal
-Gui, Font, s11 cWhite Bold
-Gui, Add, Text, x41 y400 w150 h25 BackgroundTrans, Miliseconds:
-Gui, Font, s10 cWhite Bold
-Gui, Add, Edit, x200 y400 w120 h25 vMsUntilCheckInMenuInput gUpdateMsCheck +HwndHANDLE_MsUntilCheckInMenuInput Limit4 Number Background0xD3D3D3 cBlack, %MsUntilCheckInMenuInput%
-Gui, Font, s10 cWhite Normal
-Gui, Add, Text, x327 y400 w500 h25 BackgroundTrans, Time in MS to wait for ui in the case of lag.
 
 ;;;;;;;;;Failsafes TAB;;;;;;;;;
 Gui, Tab, Failsafes
@@ -776,7 +796,7 @@ loop % (Devs.Length() - 3)
 Gui, Font, s10 cWhite Normal Bold
 Gui, Add, Text, x50 y345 w200 h20 BackgroundTrans, Thank you to our donators!
 Gui, Font, s9 c0xCCCCCC Normal
-Gui, Add, Edit, x50 y370 w480 h125 vDonatorsList -Wrap +ReadOnly +VScroll -WantReturn -E0x200 Background0x2D2D2D c0xCCCCCC, %content%
+Gui, Add, Edit, x50 y370 w480 h125 vDonatorsList -Wrap +ReadOnly +VScroll -WantReturn -E0x200 Background0x2D2D2D c0xCCCCCC , LOADING...
 
 Gui, Font, s8 c0xCCCCCC Normal
 Gui, Add, Text, x50 y518 w500 h15 BackgroundTrans, fishSol %VERSION_NUMBER% - %randomMessage%
@@ -922,7 +942,7 @@ if (hasCrafterPlugin) {
  ;
 ;
 
-SetTimer, DoDonatorsList, -1
+SetTimer, DoDonatorsList, -0
 return
 
 GuiClose:
@@ -5041,7 +5061,7 @@ SystemChecks()
         
         ; finally recheck if folders exists. later check for individual files specifical gui files
         if not (instr(FileExist("./assets/img"), "D") and instr(FileExist("./assets/gui"), "D"))
-            CheckForAssetUpdate()
+            GuiControl, Enable, Button_DownloadAssets
     }
 
     ;basic screen dpi check
@@ -5109,28 +5129,59 @@ SystemChecks_SetResFromValue(in_res)
     WinMove, %WinName%,, 0, 0, % StandardScreenSizesW[out], % StandardScreenSizesH[out]
 }
 
-CheckForAssetUpdate()
-{
-    ;extract version number without the v from version number
-    RegExMatch(VERSION_NUMBER, "\d+\.\d+\.\d+", vn)
-    
-    ;download assets zip file  ;change to MAIN github url later
-    UrlDownloadToFile, % "https://github.com/hybolic/FishSol-Macro/releases/download/v" . vn . "/assets.zip", % "./assets.zip"
+CheckForUpdate:
+    checkForLocal()
+    GuiControl, Disable, Button_CheckForUpdate
+return
 
-    ;check if file is valid
-    File := FileOpen("./assets.zip", "R")
-    first64 := File.Read(64)
-    File.Close()
-    if first64 ~= "Not Found"
+checkForLocal()
+{
+    global iniFilePath
+    if FileExist("./temp/assets.zip")
     {
-        ;file invalid
-        FileDelete, % "./assets.zip"
+        SHA256_Local := getSHA256("\temp\assets.zip")
+        IniWrite, %SHA256_Local%, %iniFilePath%, "Assets", "SHA256_Local"
+    }
+    Else
+    {
+        GuiControl, , Text_CFU_and_DownloadFeedback, No Local files please download latest
+        GuiControl, Enable, Button_DownloadAssets
         return
     }
+    
+    AssetsSHA256 := "https://github.com/FishSol-Development/FishSol-Legacy/releases/download/Assets/sha256.txt"
 
-    ;if file exists
-    if FileExist("./assets.zip") 
-        RunWait % "PowerShell.exe -Command Expand-Archive './assets.zip' -DestinationPath '" A_ScriptDir . "'",, Hide
+    ;get sha256.txt as a variable
+    Http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    Http.Open("GET", AssetsSHA256, false)
+    Http.setRequestHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 1.1.4322; .NET CLR 3.5.30729; .NET CLR 3.0.30618; .NET4.0C; .NET4.0E; BCD2000; BCD2000)")
+    Http.Send()
+    SHA256_Online := Http.ResponseText
+
+    ;check var
+    if SHA256_Online ~= "Not Found"
+    {
+        GuiControl, , Text_CFU_and_DownloadFeedback, Unable to fetch Content during Check For Update
+        ;failed to grab sha256 file from online
+        ;exit early
+        return
+    }
+    
+    if SHA256_Local ~= "sha256:"
+    {
+        if not (SHA256_Online = SHA256_Local)
+        {
+            ;tell user there is an asset update
+            GuiControl, , Text_CFU_and_DownloadFeedback, Update Found
+            GuiControl, Enable, Button_DownloadAssets
+        }
+        Else
+        {
+            ;sha256 check is same as online continue to file level check?
+            GuiControl, , Text_CFU_and_DownloadFeedback, You are using the latest Assets
+            Return
+        }
+    }
 }
 
 CheckForAHKUpdate()
@@ -5145,13 +5196,83 @@ CheckForAHKUpdate()
     ;nothing
 }
 
+getSHA256(file)
+{
+    ;do sha256 using system command Certutil
+    Run, % "PowerShell.exe -Command certutil -hashfile '" . A_ScriptDir . file . "' SHA256 > '" . A_ScriptDir . file . ".sha256'",,Hide
+
+    File := FileOpen("." . file . ".sha256", "R")
+    File.ReadLine()
+    SHA256_Local := "sha256:" . RTrim(File.ReadLine(), " `t`r")
+    File.Close()
+    return SHA256_Local
+}
+
 DoDonatorsList:
-
     url := "https://raw.githubusercontent.com/ivelchampion249/FishSol-Macro/refs/heads/main/DONATORS.txt"
-
     Http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
     Http.Open("GET", url, false)
     Http.Send()
-    content := RTrim(Http.ResponseText, " `t`n`r")
-    GuiControl, , DonatorsList, % content
+    content := RTrim(Http.ResponseText, " `t`n`r") ; remove trailing spaces, new lines and carriage returns
+    GuiControl, , DonatorsList, %content%
+return
+
+DownloadAssets:
+    AssetsUrl := "https://github.com/FishSol-Development/FishSol-Legacy/releases/download/Assets/assets.zip"
+    AssetsSHA256 := "https://github.com/FishSol-Development/FishSol-Legacy/releases/download/Assets/sha256.txt"
+    
+    if not (FileExist("./temp") == "D")
+        FileCreateDir, % "./temp"
+    
+    
+    ;get sha256.txt as a variable
+    Http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    Http.Open("GET", AssetsSHA256, false)
+    Http.setRequestHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 1.1.4322; .NET CLR 3.5.30729; .NET CLR 3.0.30618; .NET4.0C; .NET4.0E; BCD2000; BCD2000)")
+    Http.Send()
+    SHA256_Online := Http.ResponseText
+
+    ;check var
+    if SHA256_Online ~= "Not Found"
+    {
+        ;failed to grab sha256 file from online
+        ;exit early
+        GuiControl, , Text_CFU_and_DownloadFeedback, Unable to fetch Content
+        return
+    }
+
+    ;download assets.zip to our temp folder
+    UrlDownloadToFile, % AssetsUrl, % "./temp/assets.zip"
+    
+    ;get sha256 of assets.zip
+    SHA256_Local := getSHA256("\temp\assets.zip")
+
+    ;check if file is valid
+    File := FileOpen("./temp/assets.zip", "R")
+    first64 := File.Read(64)
+    File.Close()
+    
+    ;check if file is found
+    if first64 ~= "Not Found"
+    {
+        ;file invalid remove it
+        GuiControl, , Text_CFU_and_DownloadFeedback, Unable to fetch Content
+        FileDelete, % "./temp/assets.zip"
+        return
+    }
+
+    GuiControl, , Text_CFU_and_DownloadFeedback, Content Updated
+    ;file checksum matches
+    if (SHA256_Online = SHA256_Local)
+        if FileExist("./temp/assets.zip")
+            RunWait % "PowerShell.exe -Command Expand-Archive './temp/assets.zip' -DestinationPath '" . A_ScriptDir . "'",, Hide
+    GuiControl, Disable, Button_DownloadAssets
+return
+
+DownloadBiomes:
+    ;does nothing rn
+return
+
+OpenGitHub_URL:
+    Run, % "https://github.com/FishSol-Development/FishSol-Legacy"
 return
