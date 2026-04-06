@@ -39,6 +39,7 @@ pauseAutoRoll := false
 limitedPathing := false
 autoCrafter := false
 autoCrafterWebhook := false
+FixedMaxFish := 56 ; Update with max fish types from collection sols each update
 
 if (FileExist(iniFilePath)) {
     IniRead, tempSnowmanPathing, %iniFilePath%, "Macro", "snowmanPathing", 0
@@ -825,9 +826,10 @@ Gui, Add, Text, x110 y285 w200 h15 BackgroundTrans, %dev3_role%
 Gui, Font, s9 c0xCCCCCC Normal Underline
 Gui, Add, Text, x110 y300 w200 h15 BackgroundTrans c0x0088FF gDev3LinkClick, %dev3_discord%
 
-;forcing myself into the list because 1.10 does this properly and im not implementing that here just yet lol
-IfNotExist, ./img/nadir.png
-    UrlDownloadToFile, https://github.com/FishSol-Development/FishSol-Legacy/blob/main/assets/img/nadir.png?raw=true, ./img/nadir.png
+; forcing myself into the list because 1.10 does this properly and im not implementing that here just yet lol
+; disabled as assets should now be included in zip
+; IfNotExist, ./img/nadir.png
+;     UrlDownloadToFile, https://github.com/FishSol-Development/FishSol-Legacy/blob/main/assets/img/nadir.png?raw=true, ./img/nadir.png
 goto jump
 Dev4NameClick:
     Run, https://www.twitch.tv/nadirrift
@@ -1043,6 +1045,12 @@ startTick := 0
 cycleCount := 0
 
 TabChange:
+    Gui, Submit, nohide
+    if MainTabs ~= "Easter" and not EasterPopupMessageShown
+    {
+        global EasterPopupMessageShown := true
+        Msgbox,,About Recent Pickup Issue, % "Due to SolsRNG's recent patches [v4.762+]`ncollection range has been decreased (was 9 studs, now 3) while still showing the button at the old distance.`nSo it will fail to pick it up unless the player is closer to the egg`nA Fix is in progress, we are sorry!"
+    }
 return
 
 UpdateLoopCount:
@@ -1390,20 +1398,20 @@ RunAutoCrafter1080p() {
     Sleep, 300
 
     Send, {s Down}
-    Send, {a Down}
+    Send, {%keyA% Down}
     Sleep, 2000
-    Send, {a Up}
+    Send, {%keyA% Up}
     Sleep, 1500
     Send, {d Down}
     Sleep, 1000
     Send, {d Up}
     Sleep, 500
 
-    Send, {a Down}
-    Send, {w Down}
+    Send, {%keyA% Down}
+    Send, {%keyW% Down}
     Sleep, 500
-    Send, {a Up}
-    Send, {w Up}
+    Send, {%keyA% Up}
+    Send, {%keyW% Up}
     Sleep, 100
     Send, {Space Down}
     Send, {s Down}
@@ -1416,8 +1424,8 @@ RunAutoCrafter1080p() {
 
 ; 1440p Auto Crafter
 RunAutoCrafter1440p() {
-    Send, {w up}
-    Send, {a up}
+    Send, {%keyW% up}
+    Send, {%keyA% up}
     Send, {s up}
     Send, {d up}
     Send, {space up}
@@ -1454,20 +1462,20 @@ RunAutoCrafter1440p() {
 
     ; start pathing to stella
     Send, {s down}
-    Send, {a down}
+    Send, {%keyA% down}
     sleep 2660
-    Send, {a up}
+    Send, {%keyA% up}
     Sleep, 2500
     Send, {d down}
     Sleep, 1100
     Send, {d up}
     Send, {s up}
     sleep 10
-    Send, {a down}
-    Send, {w down}
+    Send, {%keyA% down}
+    Send, {%keyW% down}
     Sleep, 300
-    Send, {a up}
-    Send, {w up}
+    Send, {%keyA% up}
+    Send, {%keyW% up}
     sleep 100
     Send, {Space down}
     Send, {s down}
@@ -1476,22 +1484,22 @@ RunAutoCrafter1440p() {
     Sleep, 500
     Send, {s up}
     sleep 10
-    Send, {a down}
+    Send, {%keyA% down}
     Send, {s down}
     Sleep, 400
-    Send, {a up}
+    Send, {%keyA% up}
     Sleep, 6000
     Send, {s up}
-    Send, {a down}
+    Send, {%keyA% down}
     Sleep, 1500
-    Send, {a up}
+    Send, {%keyA% up}
     Send, {s down}
     Sleep, 1250
-    Send, {a down}
+    Send, {%keyA% down}
     Sleep, 200
-    Send, {a up}
+    Send, {%keyA% up}
     Sleep, 1000
-    Send, {a down}
+    Send, {%keyA% down}
     Send, {Space down}
     Sleep, 100
     Send, {Space up}
@@ -1502,7 +1510,7 @@ RunAutoCrafter1440p() {
     Sleep, 700
     Send, {s up}
     Sleep, 2500
-    Send, {a up}
+    Send, {%keyA% up}
     Send, {s down}
     Sleep, 1300
     Send, {s up}
@@ -1531,9 +1539,9 @@ RunAutoCrafter1440p() {
 
     ; potion crafting
     sleep 750
-    Send, {a down}
+    Send, {%keyA% down}
     Sleep, 1000
-    Send, {a up}
+    Send, {%keyA% up}
     Sleep, 300
     Send, {f down}
     Sleep, 300
@@ -1626,20 +1634,20 @@ RunAutoCrafter768p() {
     Sleep, 300
 
     Send, {s Down}
-    Send, {a Down}
+    Send, {%keyA% Down}
     Sleep, 1800
-    Send, {a Up}
+    Send, {%keyA% Up}
     Sleep, 2000
     Send, {d Down}
     Sleep, 800
     Send, {d Up}
     Sleep, 400
 
-    Send, {a Down}
-    Send, {w Down}
+    Send, {%keyA% Down}
+    Send, {%keyW% Down}
     Sleep, 200
-    Send, {a Up}
-    Send, {w Up}
+    Send, {%keyA% Up}
+    Send, {%keyW% Up}
     Sleep, 100
     Send, {Space Down}
     Send, {s Down}
@@ -1732,33 +1740,33 @@ RunSnowmanPathingVip() {
 		sleep 300
     }
 
-    Send, {a Down}
+    Send, {%keyA% Down}
     sleep 1000
     Send, {s Down}
     sleep 2700
-    Send, {a Up}
+    Send, {%keyA% Up}
     sleep 2800
     Send, {s Up}
     sleep 300
-    Send, {a Down}
+    Send, {%keyA% Down}
     sleep 800
-    Send, {a Up}
+    Send, {%keyA% Up}
     sleep 300
     Send, {d Down}
     sleep 200
     Send, {d Up}
     sleep 200
-    Send, {w Down}
+    Send, {%keyW% Down}
     sleep 200
-    Send, {w Up}
+    Send, {%keyW% Up}
     sleep 300
     Send, {space Down}
     sleep 50
-    Send, {a Down}
+    Send, {%keyA% Down}
     sleep 50
     Send, {space Up}
     sleep 2200
-    Send, {a Up}
+    Send, {%keyA% Up}
     sleep 300
     Send, {e Down}
     sleep 50
@@ -1769,8 +1777,8 @@ RunSnowmanPathingVip() {
     Send, {e Up}
 
     Send, {space Up}
-    Send, {w Up}
-    Send, {a Up}
+    Send, {%keyW% Up}
+    Send, {%keyA% Up}
     Send, {s Up}
     Send, {d Up}
     Send, {e Up}
@@ -1850,33 +1858,33 @@ RunSnowmanPathingNonVip() {
 		sleep 300
     }
 
-    Send, {a Down}
+    Send, {%keyA% Down}
     sleep 1500
     Send, {s Down}
     sleep 3400
-    Send, {a Up}
+    Send, {%keyA% Up}
     sleep 3400
     Send, {s Up}
     sleep 300
-    Send, {a Down}
+    Send, {%keyA% Down}
     sleep 800
-    Send, {a Up}
+    Send, {%keyA% Up}
     sleep 300
     Send, {d Down}
     sleep 300
     Send, {d Up}
     sleep 200
-    Send, {w Down}
+    Send, {%keyW% Down}
     sleep 200
-    Send, {w Up}
+    Send, {%keyW% Up}
     sleep 300
-    Send, {a Down}
+    Send, {%keyA% Down}
     sleep 50
     Send, {space Down}
     sleep 50
     Send, {space Up}
     sleep 2600
-    Send, {a Up}
+    Send, {%keyA% Up}
     sleep 300
     Send, {e Down}
     sleep 50
@@ -1887,8 +1895,8 @@ RunSnowmanPathingNonVip() {
     Send, {e Up}
 
     Send, {space Up}
-    Send, {w Up}
-    Send, {a Up}
+    Send, {%keyW% Up}
+    Send, {%keyA% Up}
     Send, {s Up}
     Send, {d Up}
     Send, {e Up}
@@ -2088,33 +2096,33 @@ RunSnowmanPathingAbyssal() {
         sleep 200
     }
 
-    Send, {a Down}
+    Send, {%keyA% Down}
     sleep 1000
     Send, {s Down}
     sleep 1400
-    Send, {a Up}
+    Send, {%keyA% Up}
     sleep 2100
     Send, {s Up}
     sleep 300
-    Send, {a Down}
+    Send, {%keyA% Down}
     sleep 600
-    Send, {a Up}
+    Send, {%keyA% Up}
     sleep 300
     Send, {d Down}
     sleep 150
     Send, {d Up}
     sleep 200
-    Send, {w Down}
+    Send, {%keyW% Down}
     sleep 150
-    Send, {w Up}
+    Send, {%keyW% Up}
     sleep 300
     Send, {space Down}
     sleep 50
-    Send, {a Down}
+    Send, {%keyA% Down}
     sleep 50
     Send, {space Up}
     sleep 1500
-    Send, {a Up}
+    Send, {%keyA% Up}
     sleep 300
     Send, {e Down}
     sleep 50
@@ -2125,8 +2133,8 @@ RunSnowmanPathingAbyssal() {
     Send, {e Up}
 
     Send, {space Up}
-    Send, {w Up}
-    Send, {a Up}
+    Send, {%keyW% Up}
+    Send, {%keyA% Up}
     Send, {s Up}
     Send, {d Up}
     Send, {e Up}
@@ -2144,8 +2152,8 @@ RunSnowmanPathingNow:
     Send, {Enter}
     sleep 2000
 
-    Send, {w up}
-    Send, {a up}
+    Send, {%keyW% up}
+    Send, {%keyA% up}
     Send, {s up}
     Send, {d up}
     Send, {space up}
@@ -2255,48 +2263,30 @@ RunEasterPathingVip() {
 		Send, {o up}
     }
 
-        SetTimer, PressE, 100
-        SetTimer, ClearUI, 15000
+        gosub EnableTimers
 
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
-
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2000
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2000
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 2000
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {s Down}
         sleep 175
         Send, {s Up}
         sleep 100
 
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
+        gosub DisableTimers
 
         Send, {space Down}
         sleep 50
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 50
         Send, {space Up}
         sleep 100
@@ -2304,40 +2294,31 @@ RunEasterPathingVip() {
         sleep 700
         Send, {space Up}
         sleep 400
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 300
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 200
 
-        SetTimer, PressE, 100
-        SetTimer, ClearUI, 15000
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
+        gosub EnableTimers
 
         sleep 800
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1600
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2600
         Send, {s Down}
         sleep 750
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 2600
         Send, {s Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1500
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {s Down}
         sleep 200
@@ -2351,13 +2332,13 @@ RunEasterPathingVip() {
         sleep 700
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2700
         Send, {d Down}
         sleep 800
         Send, {d Up}
         sleep 1000
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 400
@@ -2368,46 +2349,37 @@ RunEasterPathingVip() {
         Send, {d Down}
         sleep 900
         Send, {d Up}
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1400
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 1500
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 600
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 3800
         Send, {s Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 500
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1000
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 400
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 1700
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1200
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {s Down}
         sleep 3300
         Send, {s Up}
 
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
+        gosub DisableTimers
 
         Send, {esc}
         sleep 650
@@ -2416,28 +2388,19 @@ RunEasterPathingVip() {
         Send, {enter}
         sleep 2600
 
-        SetTimer, PressE, 100
-        SetTimer, ClearUI, 15000
+        gosub EnableTimers
 
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
-
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2000
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2000
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 2000
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {s Down}
         Send, {d Down}
@@ -2447,21 +2410,19 @@ RunEasterPathingVip() {
         sleep 100
         Send, {d Down}
         sleep 800
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 800
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 1300
 
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
+        gosub DisableTimers
 
         Send, {s Down}
         sleep 1200
         Send, {s Up}
         sleep 1000
 
-        SetTimer, PressE, 100
-        SetTimer, ClearUI, 15000
+        gosub EnableTimers
 
         sleep 2500
         Send, {d Up}
@@ -2478,25 +2439,16 @@ RunEasterPathingVip() {
         sleep 700
         Send, {s Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 8000
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 200
 
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
+        gosub DisableTimers
 
         if (limitedPathing) {
             MouseMove, %originalX%, %originalY%, 0
@@ -2509,29 +2461,20 @@ RunEasterPathingVip() {
         sleep 650
         Send, {enter}
 
-        SetTimer, PressE, 100
-        SetTimer, ClearUI, 15000
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
+        gosub EnableTimers
 
         sleep 2600
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 650
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {s Down}
         sleep 650
         Send, {s Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 650
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {d Down}
         sleep 650
@@ -2541,14 +2484,14 @@ RunEasterPathingVip() {
         sleep 650
         Send, {d Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 650
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         Send, {s Down}
         sleep 2700
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 3000
         Send, {s Up}
         sleep 100
@@ -2556,11 +2499,11 @@ RunEasterPathingVip() {
         sleep 1000
         Send, {d Up}
         sleep 100
-        Send, {w Down}
-        Send, {a Down}
+        Send, {%keyW% Down}
+        Send, {%keyA% Down}
         sleep 150
-        Send, {w Up}
-        Send, {a Up}
+        Send, {%keyW% Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {space Down}
         sleep 50
@@ -2570,23 +2513,23 @@ RunEasterPathingVip() {
         sleep 250
         Send, {d Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 300
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1000
-        Send, {w Up}
-        Send, {a Up}
+        Send, {%keyW% Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1000
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1000
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1300
-        Send, {a Up}
-        Send, {w Up}
+        Send, {%keyA% Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 8500
@@ -2596,9 +2539,9 @@ RunEasterPathingVip() {
         sleep 800
         Send, {s Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 7500
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {s Down}
         sleep 750
@@ -2622,11 +2565,11 @@ RunEasterPathingVip() {
         sleep 1700
         Send, {s Up}
         Send, {d Up}
-        Send, {w Down}
-        Send, {a Down}
+        Send, {%keyW% Down}
+        Send, {%keyA% Down}
         sleep 175
-        Send, {w Up}
-        Send, {a Up}
+        Send, {%keyW% Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {space Down}
         sleep 50
@@ -2642,9 +2585,9 @@ RunEasterPathingVip() {
         sleep 50
         Send, {space Up}
         sleep 600
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1900
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 1800
         Send, {d Down}
         sleep 1400
@@ -2652,9 +2595,9 @@ RunEasterPathingVip() {
         sleep 1500
         Send, {s Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 100
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {space Down}
         sleep 100
@@ -2669,9 +2612,9 @@ RunEasterPathingVip() {
         sleep 50
         Send, {space Up}
         sleep 50
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 500
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 500
         Send, {space Down}
         sleep 100
@@ -2683,13 +2626,13 @@ RunEasterPathingVip() {
         sleep 900
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1000
         Send, {d Down}
         sleep 400
         Send, {d Up}
         sleep 2900
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 750
@@ -2703,9 +2646,9 @@ RunEasterPathingVip() {
         sleep 750
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 800
@@ -2715,9 +2658,9 @@ RunEasterPathingVip() {
         sleep 800
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 4200
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 750
@@ -2731,9 +2674,9 @@ RunEasterPathingVip() {
         sleep 750
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1800
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 750
@@ -2747,37 +2690,37 @@ RunEasterPathingVip() {
         sleep 750
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2900
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 2000
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 750
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2000
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 750
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 1300
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1400
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 4600
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {s Down}
         sleep 1400
@@ -2787,74 +2730,65 @@ RunEasterPathingVip() {
         sleep 750
         Send, {d Up}
         sleep 100
-        Send, {w Down}
-        Send, {a Down}
+        Send, {%keyW% Down}
+        Send, {%keyA% Down}
         sleep 175
-        Send, {w Up}
-        Send, {a Up}
+        Send, {%keyW% Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1000
         Send, {d Down}
         sleep 800
         Send, {d Up}
         sleep 2100
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1700
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 750
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 2400
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 750
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2800
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 2800
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 750
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2800
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 2800
         Send, {d Up}
 
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
+        gosub DisableTimers
 
         MouseMove, %originalX%, %originalY%, 0
 
@@ -2928,43 +2862,26 @@ RunEasterPathingNonVip() {
 		Send, {o up}
     }
 
-    SetTimer, PressE, 100
-    SetTimer, ClearUI, 15000
+        gosub EnableTimers
 
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
-
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2400
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2400
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 2400
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1800
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {s Down}
         sleep 300
         Send, {s Up}
         sleep 300
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
 
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
+        gosub DisableTimers
 
         Send {Space Down}
         sleep 25
@@ -2978,41 +2895,32 @@ RunEasterPathingNonVip() {
         sleep 420
         Send {w Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
 
-        SetTimer, PressE, 100
-        SetTimer, ClearUI, 15000
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
+        gosub EnableTimers
 
         sleep 1400
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2000
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 3500
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {s Down}
         sleep 600
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1000
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 2400
         Send, {s Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1800
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {s Down}
         sleep 300
@@ -3026,13 +2934,13 @@ RunEasterPathingNonVip() {
         sleep 900
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2000
         Send, {d Down}
         sleep 700
         Send, {d Up}
         sleep 1500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 900
@@ -3043,38 +2951,29 @@ RunEasterPathingNonVip() {
         Send, {d Down}
         sleep 1000
         Send, {d Up}
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2200
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 7000
         Send, {s Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 900
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 3400
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1700
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {s Down}
         sleep 4300
         Send, {s Up}
 
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
+        gosub DisableTimers
 
         Send, {esc}
         sleep 780
@@ -3083,28 +2982,19 @@ RunEasterPathingNonVip() {
         Send, {enter}
         sleep 3120
 
-        SetTimer, PressE, 100
-        SetTimer, ClearUI, 15000
+        gosub EnableTimers
 
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
-
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2400
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2400
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 2400
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1800
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {s Down}
 		Send, {d Down}
@@ -3114,21 +3004,19 @@ RunEasterPathingNonVip() {
         sleep 100
         Send, {d Down}
         sleep 960
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 800
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 1560
 
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
+        gosub DisableTimers
 
         Send, {s Down}
         sleep 1440
         Send, {s Up}
         sleep 1200
 
-        SetTimer, PressE, 100
-        SetTimer, ClearUI, 15000
+        gosub EnableTimers
 
 		sleep 3500
 		Send, {d Up}
@@ -3145,24 +3033,15 @@ RunEasterPathingNonVip() {
 		sleep 1500
 		Send, {s Up}
 		sleep 100
-		Send, {a Down}
+		Send, {%keyA% Down}
 		sleep 10500
-		Send, {a Up}
+		Send, {%keyA% Up}
 		sleep 100
-		Send, {w Down}
+		Send, {%keyW% Down}
 		sleep 1500
-		Send, {w Up}
+		Send, {%keyW% Up}
 
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
+        gosub DisableTimers
 
         if (limitedPathing) {
             MouseMove, %originalX%, %originalY%, 0
@@ -3176,28 +3055,19 @@ RunEasterPathingNonVip() {
         Send, {enter}
         sleep 2600
 
-        SetTimer, PressE, 100
-        SetTimer, ClearUI, 15000
+        gosub EnableTimers
 
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
-
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 780
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {s Down}
         sleep 780
         Send, {s Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 780
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {d Down}
         sleep 780
@@ -3207,15 +3077,15 @@ RunEasterPathingNonVip() {
         sleep 780
         Send, {d Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 780
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         Send, {s Down}
         sleep 3240
 
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 3900
         Send, {s Up}
         sleep 100
@@ -3223,11 +3093,11 @@ RunEasterPathingNonVip() {
         sleep 1200
         Send, {d Up}
         sleep 100
-        Send, {w Down}
-        Send, {a Down}
+        Send, {%keyW% Down}
+        Send, {%keyA% Down}
         sleep 100
-        Send, {w Up}
-        Send, {a Up}
+        Send, {%keyW% Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {space Down}
         sleep 60
@@ -3237,23 +3107,23 @@ RunEasterPathingNonVip() {
         sleep 700
         Send, {d Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 760
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1200
-        Send, {w Up}
-        Send, {a Up}
+        Send, {%keyW% Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1200
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1200
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1560
-        Send, {a Up}
-        Send, {w Up}
+        Send, {%keyA% Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 10200
@@ -3263,9 +3133,9 @@ RunEasterPathingNonVip() {
         sleep 960
         Send, {s Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 9000
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {s Down}
         sleep 900
@@ -3289,11 +3159,11 @@ RunEasterPathingNonVip() {
         sleep 3000
         Send, {s Up}
         Send, {d Up}
-        Send, {w Down}
-        Send, {a Down}
+        Send, {%keyW% Down}
+        Send, {%keyA% Down}
         sleep 150
-        Send, {w Up}
-        Send, {a Up}
+        Send, {%keyW% Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {space Down}
         sleep 60
@@ -3309,9 +3179,9 @@ RunEasterPathingNonVip() {
         sleep 60
         Send, {space Up}
         sleep 1300
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2600
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 2160
         Send, {d Down}
         sleep 1680
@@ -3319,9 +3189,9 @@ RunEasterPathingNonVip() {
         sleep 1800
         Send, {s Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 120
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {space Down}
         sleep 120
@@ -3336,9 +3206,9 @@ RunEasterPathingNonVip() {
         sleep 60
         Send, {space Up}
         sleep 60
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 350
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 500
         Send, {space Down}
         sleep 120
@@ -3350,13 +3220,13 @@ RunEasterPathingNonVip() {
         sleep 1080
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1200
         Send, {d Down}
         sleep 480
         Send, {d Up}
         sleep 3480
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 900
@@ -3370,9 +3240,9 @@ RunEasterPathingNonVip() {
         sleep 1100
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1800
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 1150
@@ -3382,9 +3252,9 @@ RunEasterPathingNonVip() {
         sleep 960
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 5040
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 900
@@ -3398,9 +3268,9 @@ RunEasterPathingNonVip() {
         sleep 900
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2160
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 900
@@ -3414,37 +3284,37 @@ RunEasterPathingNonVip() {
         sleep 900
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 3480
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 2400
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 900
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2400
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 900
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 2000
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2600
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 5650
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {s Down}
         sleep 1680
@@ -3454,74 +3324,65 @@ RunEasterPathingNonVip() {
         sleep 900
         Send, {d Up}
         sleep 100
-        Send, {w Down}
-        Send, {a Down}
+        Send, {%keyW% Down}
+        Send, {%keyA% Down}
         sleep 210
-        Send, {w Up}
-        Send, {a Up}
+        Send, {%keyW% Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1200
         Send, {d Down}
         sleep 960
         Send, {d Up}
         sleep 2520
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2040
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 900
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 2880
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 900
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 3360
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2700
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 3360
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 900
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 3360
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 600
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 3360
         Send, {d Up}
 
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
+        gosub DisableTimers
 
     MouseMove, %originalX%, %originalY%, 0
 }
@@ -3732,22 +3593,19 @@ RunEasterPathingAbyssal() {
 		Send, {o up}
 
     }
-        SetTimer, PressE, 100
-        SetTimer, ClearUI, 15000
+        gosub EnableTimers
 
-        SetTimer, MerchantClick1, 5000
-
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1350
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1350
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 1350
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {s Down}
 		Send, {d Down}
@@ -3756,34 +3614,34 @@ RunEasterPathingAbyssal() {
         sleep 200
 		Send, {d Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 50
 
         Send, {space Down}
         sleep 600
         Send, {space Up}
         sleep 400
-        Send, {a Up}
+        Send, {%keyA% Up}
 
-        Send, {w Down}
+        Send, {%keyW% Down}
 		sleep 1675
-		Send, {w Up}
+		Send, {%keyW% Up}
 		sleep 100
-		Send, {a Down}
+		Send, {%keyA% Down}
 		sleep 1800
-		Send, {a Up}
+		Send, {%keyA% Up}
 		sleep 100
 		Send, {s Down}
 		sleep 500
-		Send, {a Down}
+		Send, {%keyA% Down}
 		sleep 550
-		Send, {a Up}
+		Send, {%keyA% Up}
 		sleep 600
 		Send, {s Up}
 		sleep 100
-		Send, {a Down}
+		Send, {%keyA% Down}
 		sleep 800
-		Send, {a Up}
+		Send, {%keyA% Up}
 		sleep 100
 		Send, {s Down}
 		sleep 400
@@ -3798,13 +3656,13 @@ RunEasterPathingAbyssal() {
 		sleep 400
 		Send, {d Up}
 		sleep 100
-		Send, {w Down}
+		Send, {%keyW% Down}
 		sleep 1600
 		Send, {d Down}
 		sleep 850
 		Send, {d Up}
 		sleep 300
-		Send, {w Up}
+		Send, {%keyW% Up}
 		sleep 100
 		Send, {d Down}
 		sleep 300
@@ -3815,35 +3673,33 @@ RunEasterPathingAbyssal() {
 		Send, {d Down}
 		sleep 500
 		Send, {d Up}
-		Send, {a Down}
+		Send, {%keyA% Down}
 		sleep 1400
-		Send, {a Up}
+		Send, {%keyA% Up}
 		sleep 3200
 		Send, {s Up}
 		sleep 100
-		Send, {a Down}
+		Send, {%keyA% Down}
 		sleep 250
-		Send, {a Up}
+		Send, {%keyA% Up}
 		sleep 100
-		Send, {w Down}
+		Send, {%keyW% Down}
 		sleep 750
-		Send, {a Down}
+		Send, {%keyA% Down}
 		sleep 300
-		Send, {a Up}
+		Send, {%keyA% Up}
 		sleep 800
-		Send, {w Up}
+		Send, {%keyW% Up}
 		sleep 100
-		Send, {a Down}
+		Send, {%keyA% Down}
 		sleep 700
-		Send, {a Up}
+		Send, {%keyA% Up}
 		sleep 100
 		Send, {s Down}
 		sleep 2200
         Send, {s Up}
 
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
-        SetTimer, MerchantClick1, Off
+        gosub DisableTimers
 
         Send, {esc}
         sleep 650
@@ -3852,21 +3708,19 @@ RunEasterPathingAbyssal() {
         Send, {enter}
         sleep 2600
 
-        SetTimer, PressE, 100
-        SetTimer, ClearUI, 15000
-        SetTimer, MerchantClick1, 5000
+        gosub EnableTimers
 
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1250
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1250
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 1250
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 940
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {s Down}
         Send, {d Down}
@@ -3876,9 +3730,9 @@ RunEasterPathingAbyssal() {
         sleep 100
         Send, {d Down}
         sleep 400
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 300
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 800
         Send, {s Down}
         sleep 750
@@ -3898,19 +3752,16 @@ RunEasterPathingAbyssal() {
         sleep 440
         Send, {s Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 5200
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 400
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 125
 
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
-
-        SetTimer, MerchantClick1, Off
+        gosub DisableTimers
 
         if (limitedPathing) {
             MouseMove, %originalX%, %originalY%, 0
@@ -3924,23 +3775,20 @@ RunEasterPathingAbyssal() {
         Send, {enter}
         sleep 2600
 
-        SetTimer, PressE, 100
-        SetTimer, ClearUI, 15000
-
-        SetTimer, MerchantClick1, 5000
+        gosub EnableTimers
 
         sleep 1625
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 410
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {s Down}
         sleep 410
         Send, {s Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 410
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {d Down}
         sleep 410
@@ -3950,14 +3798,14 @@ RunEasterPathingAbyssal() {
         sleep 410
         Send, {d Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 410
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         Send, {s Down}
         sleep 1900
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 1875
         Send, {s Up}
         sleep 100
@@ -3965,11 +3813,11 @@ RunEasterPathingAbyssal() {
         sleep 625
         Send, {d Up}
         sleep 100
-        Send, {w Down}
-        Send, {a Down}
+        Send, {%keyW% Down}
+        Send, {%keyA% Down}
         sleep 100
-        Send, {w Up}
-        Send, {a Up}
+        Send, {%keyW% Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {space Down}
         sleep 50
@@ -3979,20 +3827,20 @@ RunEasterPathingAbyssal() {
         sleep 160
         Send, {d Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 190
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 625
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 600
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 625
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 810
-        Send, {a Up}
-        Send, {w Up}
+        Send, {%keyA% Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 5500
@@ -4002,9 +3850,9 @@ RunEasterPathingAbyssal() {
         sleep 600
         Send, {s Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 4700
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {s Down}
         sleep 470
@@ -4024,12 +3872,12 @@ RunEasterPathingAbyssal() {
         sleep 2875
         Send, {s Up}
         Send, {d Up}
-        Send, {w Down}
-        Send, {a Down}
+        Send, {%keyW% Down}
+        Send, {%keyA% Down}
         sleep 180
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 150
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {d Down}
         sleep 100
@@ -4045,9 +3893,9 @@ RunEasterPathingAbyssal() {
         sleep 50
         Send, {space Up}
         sleep 800
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1188
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 1000
         Send, {d Down}
         sleep 800
@@ -4056,9 +3904,9 @@ RunEasterPathingAbyssal() {
         Send, {s Up}
         sleep 100
 
-		Send, {w Down}
+		Send, {%keyW% Down}
         sleep 100
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {space Down}
 		sleep 50
@@ -4074,9 +3922,9 @@ RunEasterPathingAbyssal() {
 		sleep 50
         Send, {space Up}
         sleep 200
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 310
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {space Down}
         sleep 100
@@ -4089,13 +3937,13 @@ RunEasterPathingAbyssal() {
         sleep 700
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 625
         Send, {d Down}
         sleep 280
         Send, {d Up}
         sleep 1850
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 500
@@ -4109,9 +3957,9 @@ RunEasterPathingAbyssal() {
         sleep 500
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 940
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 500
@@ -4122,9 +3970,9 @@ RunEasterPathingAbyssal() {
 
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2625
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 500
@@ -4138,9 +3986,9 @@ RunEasterPathingAbyssal() {
         sleep 500
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1100
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 500
@@ -4154,37 +4002,37 @@ RunEasterPathingAbyssal() {
         sleep 500
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 2000
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 1400
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1400
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 470
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 810
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 875
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 2875
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
         Send, {s Down}
         sleep 1000
@@ -4194,69 +4042,66 @@ RunEasterPathingAbyssal() {
         sleep 600
         Send, {d Up}
         sleep 100
-        Send, {w Down}
-        Send, {a Down}
+        Send, {%keyW% Down}
+        Send, {%keyA% Down}
         sleep 110
-        Send, {w Up}
-        Send, {a Up}
+        Send, {%keyW% Up}
+        Send, {%keyA% Up}
         sleep 100
 
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 625
         Send, {d Down}
         sleep 500
         Send, {d Up}
         sleep 1500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1062
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 1500
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1750
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 1350
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 1750
         Send, {d Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 500
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
-        Send, {a Down}
+        Send, {%keyA% Down}
         sleep 1750
-        Send, {a Up}
+        Send, {%keyA% Up}
         sleep 100
-        Send, {w Down}
+        Send, {%keyW% Down}
         sleep 312
-        Send, {w Up}
+        Send, {%keyW% Up}
         sleep 100
         Send, {d Down}
         sleep 1750
         Send, {d Up}
 
-        SetTimer, PressE, Off
-        SetTimer, ClearUI, Off
-
-        SetTimer, MerchantClick3, Off
+        gosub DisableTimers
 
     } if (pauseAutoRoll) {
         if (res = "1080p") {
@@ -4285,8 +4130,8 @@ RunEasterPathingNow:
     Send, {Enter}
     sleep 2000
 
-    Send, {w up}
-    Send, {a up}
+    Send, {%keyW% up}
+    Send, {%keyA% up}
     Send, {s up}
     Send, {d up}
     Send, {space up}
@@ -4870,8 +4715,15 @@ Return
 
 F3::
 
-Send, {w up}
-Send, {a up}
+if azertyPathing{
+    Send, {q up}
+    Send, {z up}
+}
+Else
+{
+    Send, {w up}
+    Send, {a up}
+}
 Send, {s up}
 Send, {d up}
 Send, {space up}
@@ -4921,6 +4773,7 @@ if (toggle) {
     global autoCrafterDetection
     global autoCrafterLastCheck
     global autoCrafterCheckInterval
+    global FixedMaxFish
     loopCount := 0
     keyW := azertyPathing ? "z" : "w"
     keyA := azertyPathing ? "q" : "a"
@@ -5157,11 +5010,14 @@ if (toggle) {
             sleep 800
             loopCount := 0
 
-            while (loopCount < fishingLoopCount) {
+            while (loopCount < sellAllToggle ? min(fishingLoopCount, FixedMaxFish) : fishingLoopCount) {
                 MouseMove, 828, 404, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 680, 804, 3
                 } else {
@@ -5174,10 +5030,6 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
             }
 
@@ -5242,11 +5094,14 @@ if (toggle) {
             sleep 800
             loopCount := 0
 
-            while (loopCount < fishingLoopCount) {
+            while (loopCount < sellAllToggle ? min(fishingLoopCount, FixedMaxFish) : fishingLoopCount) {
                 MouseMove, 828, 404, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 680, 804, 3
                 } else {
@@ -5259,12 +5114,7 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
-
             }
 
             MouseMove, 1458, 266, 3
@@ -5379,15 +5229,18 @@ if (toggle) {
             sleep 800
             loopCount := 0
 
-            while (loopCount < fishingLoopCount) {
-                MouseMove, 838, 413, 3
+            while (loopCount < sellAllToggle ? min(fishingLoopCount, FixedMaxFish) : fishingLoopCount) {
+                MouseMove, 828, 404, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
-                    MouseMove, 678, 810, 3
+                    MouseMove, 680, 804, 3
                 } else {
-                    MouseMove, 525, 809, 3
+                    MouseMove, 512, 804, 3
                 }
                 sleep 200
                 MouseClick, Left
@@ -5396,12 +5249,7 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
-
             }
 
             MouseMove, 1469, 271, 3
@@ -5641,6 +5489,7 @@ if (toggle) {
     global autoCrafterDetection
     global autoCrafterLastCheck
     global autoCrafterCheckInterval
+    global FixedMaxFish
     loopCount := 0
     keyW := azertyPathing ? "z" : "w"
     keyA := azertyPathing ? "q" : "a"
@@ -5878,11 +5727,14 @@ if (toggle) {
             sleep 800
             loopCount := 0
 
-            while (loopCount < fishingLoopCount) {
+            while (loopCount < sellAllToggle ? min(fishingLoopCount, FixedMaxFish) : fishingLoopCount) {
                 MouseMove, 1117, 550, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 904, 1080, 3
                 } else {
@@ -5896,10 +5748,6 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
             }
 
             MouseMove, 1958, 361, 3
@@ -5963,11 +5811,14 @@ if (toggle) {
             sleep 800
             loopCount := 0
 
-            while (loopCount < fishingLoopCount) {
+            while (loopCount < sellAllToggle ? min(fishingLoopCount, FixedMaxFish) : fishingLoopCount) {
                 MouseMove, 1117, 550, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 904, 1080, 3
                 } else {
@@ -5981,10 +5832,6 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
             }
 
             MouseMove, 1958, 361, 3
@@ -6099,11 +5946,14 @@ if (toggle) {
             sleep 800
             loopCount := 0
 
-            while (loopCount < fishingLoopCount) {
+            while (loopCount < sellAllToggle ? min(fishingLoopCount, FixedMaxFish) : fishingLoopCount) {
                 MouseMove, 1117, 550, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 904, 1080, 3
                 } else {
@@ -6117,10 +5967,6 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
             }
 
             MouseMove, 1958, 361, 3
@@ -6366,6 +6212,7 @@ if (toggle) {
     global autoCrafterDetection
     global autoCrafterLastCheck
     global autoCrafterCheckInterval
+    global FixedMaxFish
     loopCount := 0
     keyW := azertyPathing ? "z" : "w"
     keyA := azertyPathing ? "q" : "a"
@@ -6608,11 +6455,14 @@ if (toggle) {
             sleep 800
             loopCount := 0
 
-            while (loopCount < fishingLoopCount) {
+            while (loopCount < sellAllToggle ? min(fishingLoopCount, FixedMaxFish) : fishingLoopCount) {
                 MouseMove, 586, 287, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 486, 570, 3
                 } else {
@@ -6626,12 +6476,6 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
-                ; Check for white color at coordinates 1027, 595, 1183, 604
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    ; White color not found, break out of selling loop early
-                    break
-                }
             }
 
             MouseMove, 1050, 197, 3
@@ -6695,11 +6539,14 @@ if (toggle) {
             sleep 800
             loopCount := 0
 
-            while (loopCount < fishingLoopCount) {
+            while (loopCount < sellAllToggle ? min(fishingLoopCount, FixedMaxFish) : fishingLoopCount) {
                 MouseMove, 586, 287, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 486, 570, 3
                 } else {
@@ -6713,12 +6560,6 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
-                ; Check for white color at coordinates 1027, 595, 1183, 604
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    ; White color not found, break out of selling loop early
-                    break
-                }
             }
 
             MouseMove, 1050, 197, 3
@@ -6833,15 +6674,18 @@ if (toggle) {
             sleep 800
             loopCount := 0
 
-            while (loopCount < fishingLoopCount) {
-                MouseMove, 597, 294, 3
+            while (loopCount < sellAllToggle ? min(fishingLoopCount, FixedMaxFish) : fishingLoopCount) {
+                MouseMove, 586, 287, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
-                    MouseMove, 484, 577, 3
+                    MouseMove, 486, 570, 3
                 } else {
-                    MouseMove, 374, 576, 3
+                    MouseMove, 365, 570, 3
                 }
                 sleep 200
                 MouseClick, Left
@@ -6850,12 +6694,6 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                ; Check for white color at coordinates 1027, 595, 1183, 604
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 0) {
-                    ; White color found, break out of selling loop early
-                    break
-                }
                 loopCount++
             }
 
@@ -7282,13 +7120,42 @@ ClearUIClick:
 return
 
 MerchantClick1: ; 1440p
-    Click, 1686, 1261, 3
+    Click, 1686, 1261, 1
 Return
 
 MerchantClick2: ; 1080p
-    Click, 1265, 943, 3
+    Click, 1265, 943, 1
 Return
 
 MerchantClick3: ; 768p
-    Click, 910, 670, 3
+    Click, 910, 670, 1
 Return
+
+DisableTimers:
+    SetTimer, PressE, Off
+    SetTimer, UnPressE, Off ;secondary timer does not need to be renabled
+    Send, {e up}
+    SetTimer, ClearUI, Off
+    SetTimer, ClearUIClick, Off ;secondary timer does not need to be renabled
+
+    if (res = "1080p") {
+        SetTimer, MerchantClick2, Off
+    } else if (res = "1440p") {
+        SetTimer, MerchantClick1, Off
+    } else if (res = "1366x768") {
+        SetTimer, MerchantClick3, Off
+    }
+Return
+
+EnableTimers:
+    SetTimer, PressE, 100
+    SetTimer, ClearUI, 15000
+
+    if (res = "1080p") {
+        SetTimer, MerchantClick2, 5000
+    } else if (res = "1440p") {
+        SetTimer, MerchantClick1, 5000
+    } else if (res = "1366x768") {
+        SetTimer, MerchantClick3, 5000
+    }
+return
