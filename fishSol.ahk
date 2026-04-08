@@ -5442,10 +5442,6 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
             }
 
@@ -5530,10 +5526,6 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
 
             }
@@ -5670,10 +5662,6 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
 
             }
@@ -6173,10 +6161,6 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
             }
 
             MouseMove, 1958, 361, 3
@@ -6261,10 +6245,6 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
             }
 
             MouseMove, 1958, 361, 3
@@ -6400,10 +6380,6 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
             }
 
             MouseMove, 1958, 361, 3
@@ -6911,12 +6887,6 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
-                ; Check for white color at coordinates 1027, 595, 1183, 604
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    ; White color not found, break out of selling loop early
-                    break
-                }
             }
 
             MouseMove, 1050, 197, 3
@@ -7001,12 +6971,6 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
-                ; Check for white color at coordinates 1027, 595, 1183, 604
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    ; White color not found, break out of selling loop early
-                    break
-                }
             }
 
             MouseMove, 1050, 197, 3
@@ -7141,12 +7105,6 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                ; Check for white color at coordinates 1027, 595, 1183, 604
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 0) {
-                    ; White color found, break out of selling loop early
-                    break
-                }
                 loopCount++
             }
 
