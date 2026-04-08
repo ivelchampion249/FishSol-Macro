@@ -9,6 +9,7 @@ iconFilePath := A_ScriptDir "\img\icon.ico"
 if (FileExist(iconFilePath)) {
     Menu, Tray, Icon, %iconFilePath%
 }
+;#Include, lib/interAHK_com.ahk
 
 res := "1080p"
 maxLoopCount := 15
@@ -39,7 +40,7 @@ pauseAutoRoll := false
 limitedPathing := false
 autoCrafter := false
 autoCrafterWebhook := false
-FishedMaxFish := 56
+FixedMaxFish := 56
 
 if (FileExist(iniFilePath)) {
     IniRead, tempSnowmanPathing, %iniFilePath%, "Macro", "snowmanPathing", 0
@@ -241,29 +242,26 @@ if RegExMatch(privateServerLink, "code=([^&]+)", m)
 
 Random,, A_TickCount
 Random, shuffle, 1, 6
-Random, messageRand, 1, 10
 
-if (messageRand = 1) {
-    randomMessage := "Go catch some fish IRL sometime!"
-} else if (messageRand = 2) {
-    randomMessage := "Also try FishScope!"
-} else if (messageRand = 3) {
-    randomMessage := "Also try maxstellar's Biome Macro!"
-} else if (messageRand = 4) {
-    randomMessage := "Also try MultiScope!"
-} else if (messageRand = 5) {
-    randomMessage := "Patch notes: Fixed a Geneva Convention violation"
-} else if (messageRand = 6) {
-    randomMessage := "Patch notes: Removed Herobrine"
-} else if (messageRand = 7) {
-    randomMessage := "oof"
-} else if (messageRand = 8) {
-    randomMessage := "Now with 100% more fishing!"
-} else if (messageRand = 9) {
-    randomMessage := "Gone fishing"
-} else {
-    randomMessage := "No fish were harmed in the making of this macro"
-}
+randomMessages := ["Go catch some fish IRL sometime!"
+                    , "Also try FishScope!"
+                    , "Also try maxstellar's Biome Macro!"
+                    , "Also try MultiScope!"
+                    , "Patch notes: Fixed a Geneva Convention violation"
+                    , "Patch notes: Removed Herobrine"
+                    , "oof"
+                    , "Now with 100% more fishing!"
+                    , "Gone fishing"
+                    , "No fish were harmed in the making of this macro"
+                    ;new random messages
+                    , "Don't Forget to thank the @Helpers!"
+                    , "Beat on Nadir he's stupid"
+                    , "Thanks for pointing out the text size issue @Ova <3"]
+;
+
+Random, messageRand, 1, randomMessages.Length()
+
+randomMessage := randomMessages[messageRand]
 
 if (shuffle = 1) {
     dev1_name := "maxstellar"
@@ -357,7 +355,7 @@ if (dev3_name = "ivelchampion249") {
 
 Gui, Color, 0x1E1E1E
 Gui, Font, s17 cWhite Bold, Segoe UI
-Gui, Add, Text, x0 y10 w600 h45 Center BackgroundTrans c0x00D4FF, EggSol v1.9.6-4
+Gui, Add, Text, x0 y10 w600 h45 Center BackgroundTrans c0x00D4FF, EggSol v1.9.6-5
 
 Gui, Font, s9 cWhite Normal, Segoe UI
 
@@ -675,6 +673,8 @@ Gui, Add, Picture, x14 y80 w574 h590, %A_ScriptDir%\gui\Webhook.png
 
 Gui, Font, s10 cWhite Normal Bold
 Gui, Add, Text, x50 y125 w200 h25 BackgroundTrans, Discord Webhook URL:
+Gui, Add, Button, x255 y120 w100 h25 gTestWebhook vTestWebhookButton, Test WebHook
+Gui, Add, Text, x355 y125 w195 h25 vTestWebhookFeedback 0x202
 Gui, Add, Edit, x50 y150 w500 h25 vWebhookInput gUpdateWebhook Background0xD3D3D3 cBlack, %webhookURL%
 Gui, Font, s8 c0xCCCCCC Normal
 Gui, Add, Text, x50 y180 w500 h15 BackgroundTrans, Paste your Discord webhook URL here to be notified of actions happening in real time.
@@ -828,12 +828,30 @@ Gui, Add, Text, x110 y300 w200 h15 BackgroundTrans c0x0088FF gDev3LinkClick, %de
 
 IfNotExist, ./img/nadir.png
     UrlDownloadToFile, https://github.com/FishSol-Development/FishSol-Legacy/blob/main/assets/img/nadir.png?raw=true, ./img/nadir.png
+IfNotExist, ./img/nadir_bonk.png
+    UrlDownloadToFile, https://github.com/FishSol-Development/FishSol-Legacy/blob/main/assets/img/nadir_bonk.png?raw=true, ./img/nadir_bonk.png
+IfNotExist, ./img/nadir_unbonk.png
+    UrlDownloadToFile, https://github.com/FishSol-Development/FishSol-Legacy/blob/main/assets/img/nadir_unbonk.png?raw=true, ./img/nadir_unbonk.png
+IfNotExist, ./img/bonk.mp3
+    UrlDownloadToFile, https://github.com/FishSol-Development/FishSol-Legacy/blob/main/assets/sfx/bonk.mp3?raw=true, ./img/bonk.mp3
 goto jump
 Dev4NameClick:
     Run, https://www.twitch.tv/nadirrift
 Return
+Bonk:
+    SetTimer, ResetBonkFunc, Off
+    GuiControl,, BonkImage , ./img/nadir_bonk.png
+    SoundPlay, ./img/bonk.mp3
+    while GetKeyState("LButton", "P") ;wait until LButton is up
+        sleep 1
+    GuiControl,, BonkImage , ./img/nadir_unbonk.png
+    SetTimer, ResetBonkFunc, -3000
+return
+ResetBonkFunc:
+    GuiControl,, BonkImage , ./img/nadir.png
+Return
 jump:
-Gui, Add, Picture, x490 y260 w50 h50, ./img/nadir.png
+Gui, Add, Picture, x490 y260 w50 h50 gBonk vBonkImage, ./img/nadir.png
 Gui, Font, s11 cWhite Normal Bold
 Gui, Add, Text, x280 y265 w200 h20 BackgroundTrans c0x00DD00 0x202, NadirRift
 Gui, Font, s9 c0xCCCCCC Normal
@@ -855,9 +873,9 @@ Gui, Font, s9 c0xCCCCCC Normal
 Gui, Add, Edit, x50 y370 w480 h125 vDonatorsList -Wrap +ReadOnly +VScroll -WantReturn -E0x200 Background0x2D2D2D c0xCCCCCC, %content%
 
 Gui, Font, s8 c0xCCCCCC Normal
-Gui, Add, Text, x50 y518 w500 h15 BackgroundTrans, EggSol v1.9.6-4 - %randomMessage%
+Gui, Add, Text, x50 y518 w500 h15 BackgroundTrans, EggSol v1.9.6-5 - %randomMessage%
 
-Gui, Show, w600 h670, EggSol v1.9.6-4
+Gui, Show, w600 h670, EggSol v1.9.6-5
 
 Gui, Color, 0x1E1E1E
 Gui, Add, Picture, x445 y600 w27 h19, %A_ScriptDir%\img\Discord.png
@@ -2179,6 +2197,7 @@ RunSnowmanPathingNow:
     return
 
 RunEasterPathing() {
+    Run, "%A_ScriptDir%\plugins\easter.egg.pathing.ahk"
     if (pathingMode = "Non Vip Pathing") {
         RunEasterPathingNonVip()
     } else if (pathingMode = "Abyssal Pathing") {
@@ -2248,8 +2267,9 @@ RunEasterPathingVip() {
 		Sleep 1500
 		Send, {o up}
     }
-
-        SetTimer, PressE, 500
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
+        SetTimer, PressE, 100
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         if (res = "1080p") {
         SetTimer, MerchantClick2, 5000
@@ -2277,6 +2297,8 @@ RunEasterPathingVip() {
         sleep 100
 
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
         SetTimer, MerchantClick2, Off
@@ -2301,7 +2323,8 @@ RunEasterPathingVip() {
         Send, {%keyA% Down}
         sleep 200
 
-        SetTimer, PressE, 500
+        SetTimer, PressE, 100
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         if (res = "1080p") {
         SetTimer, MerchantClick2, 5000
@@ -2390,6 +2413,7 @@ RunEasterPathingVip() {
         Send, {s Up}
 
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
             MouseMove, 35, 405, 3
@@ -2429,7 +2453,8 @@ RunEasterPathingVip() {
         Send, {enter}
         sleep 2600
 
-        SetTimer, PressE, 500
+        SetTimer, PressE, 100
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         if (res = "1080p") {
         SetTimer, MerchantClick2, 5000
@@ -2465,13 +2490,15 @@ RunEasterPathingVip() {
         sleep 1300
 
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         Send, {s Down}
         sleep 1200
         Send, {s Up}
         sleep 1000
 
-        SetTimer, PressE, 500
+        SetTimer, PressE, 100
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         sleep 2500
         Send, {d Up}
@@ -2498,6 +2525,7 @@ RunEasterPathingVip() {
         sleep 200
 
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
             MouseMove, 35, 405, 3
@@ -2541,7 +2569,8 @@ RunEasterPathingVip() {
         sleep 650
         Send, {enter}
 
-        SetTimer, PressE, 500
+        SetTimer, PressE, 100
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         if (res = "1080p") {
         SetTimer, MerchantClick2, 5000
@@ -2877,6 +2906,7 @@ RunEasterPathingVip() {
         Send, {d Up}
 
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
             MouseMove, 35, 405, 3
@@ -2976,7 +3006,8 @@ RunEasterPathingNonVip() {
 		Send, {o up}
     }
 
-        SetTimer, PressE, 500
+        SetTimer, PressE, 100
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         if (res = "1080p") {
         SetTimer, MerchantClick2, 5000
@@ -3003,6 +3034,7 @@ RunEasterPathingNonVip() {
         Send, {s Up}
         sleep 300
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
         SetTimer, MerchantClick2, Off
@@ -3026,7 +3058,8 @@ RunEasterPathingNonVip() {
         sleep 100
         Send, {%keyA% Down}
 
-        SetTimer, PressE, 500
+        SetTimer, PressE, 100
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         if (res = "1080p") {
         SetTimer, MerchantClick2, 5000
@@ -3111,6 +3144,7 @@ RunEasterPathingNonVip() {
         Send, {s Up}
 
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
             MouseMove, 35, 405, 3
@@ -3150,7 +3184,8 @@ RunEasterPathingNonVip() {
         Send, {enter}
         sleep 3120
 
-        SetTimer, PressE, 500
+        SetTimer, PressE, 100
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         if (res = "1080p") {
         SetTimer, MerchantClick2, 5000
@@ -3186,13 +3221,15 @@ RunEasterPathingNonVip() {
         sleep 1560
 
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         Send, {s Down}
         sleep 1440
         Send, {s Up}
         sleep 1200
 
-        SetTimer, PressE, 500
+        SetTimer, PressE, 100
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
 		sleep 3500
 		Send, {d Up}
@@ -3218,6 +3255,7 @@ RunEasterPathingNonVip() {
 		Send, {%keyW% Up}
 
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
             MouseMove, 35, 405, 3
@@ -3262,7 +3300,8 @@ RunEasterPathingNonVip() {
         Send, {enter}
         sleep 2600
 
-        SetTimer, PressE, 500
+        SetTimer, PressE, 100
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         if (res = "1080p") {
         SetTimer, MerchantClick2, 5000
@@ -3598,6 +3637,7 @@ RunEasterPathingNonVip() {
         Send, {d Up}
 
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
             MouseMove, 35, 405, 3
@@ -3947,6 +3987,7 @@ RunEasterPathingAbyssal() {
         Send, {s Up}
 
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
             MouseMove, 35, 405, 3
@@ -4048,6 +4089,7 @@ RunEasterPathingAbyssal() {
         sleep 125
 
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
             MouseMove, 35, 405, 3
@@ -4427,6 +4469,7 @@ RunEasterPathingAbyssal() {
         Send, {d Up}
 
         SetTimer, PressE, Off
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
             MouseMove, 35, 405, 3
@@ -4635,7 +4678,7 @@ SendWebhook(title, color := "16777215") {
     . "{"
     . "    ""title"": """ title ""","
     . "    ""color"": " color ","
-    . "    ""footer"": {""text"": ""EggSol v1.9.6-4"", ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},"
+    . "    ""footer"": {""text"": ""EggSol v1.9.6-5"", ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},"
     . "    ""timestamp"": """ timestamp """"
     . "  }"
     . "],"
@@ -5011,8 +5054,12 @@ if (!toggle) {
     }
     toggle := true
     if (hasBiomesPlugin) {
-    Run, "%A_ScriptDir%\plugins\biomes.ahk"
-    biomeDetectionRunning := true
+        Run, "%A_ScriptDir%\plugins\biomes.ahk"
+        biomeDetectionRunning := true
+    }
+    if (hasEasterPlugin) {
+        Run, "%A_ScriptDir%\plugins\easter.egg.pathing.ahk"
+        eggDetectionRunning := true
     }
     strangeControllerLastRun := 0
     biomeRandomizerLastRun := 0
@@ -5057,6 +5104,18 @@ if (toggle) {
         }
         biomeDetectionRunning := false
     }
+
+    if (eggDetectionRunning) {
+        DetectHiddenWindows, On
+        SetTitleMatchMode, 2
+
+        target := "easter.egg.pathing.ahk"
+        WinGet, id, ID, %target% ahk_class AutoHotkey
+        if (id) {
+            WinClose, ahk_id %id%
+        }
+        eggDetectionRunning := false
+    }
     toggle := false
     firstLoop := true
     SetTimer, DoMouseMove, Off
@@ -5090,6 +5149,10 @@ if (biomeDetectionRunning) {
         WinClose, ahk_id %id%
     }
     biomeDetectionRunning := false
+}
+
+if (eggDetectionRunning) {
+    Send_WM_COPYDATA("kill", "easter.egg.pathing")
 }
 try SendWebhook(":red_circle: Macro Stopped.", "14495300")
 ExitApp
@@ -5362,7 +5425,10 @@ if (toggle) {
                 MouseMove, 828, 404, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 680, 804, 3
                 } else {
@@ -5375,10 +5441,6 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
             }
 
@@ -5447,7 +5509,10 @@ if (toggle) {
                 MouseMove, 828, 404, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 680, 804, 3
                 } else {
@@ -5460,12 +5525,7 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
-
             }
 
             MouseMove, 1458, 266, 3
@@ -5581,14 +5641,17 @@ if (toggle) {
             loopCount := 0
 
             while (loopCount < fishingLoopCount) {
-                MouseMove, 838, 413, 3
+                MouseMove, 828, 404, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 560, 640, 680, 645, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
-                    MouseMove, 678, 810, 3
+                    MouseMove, 680, 804, 3
                 } else {
-                    MouseMove, 525, 809, 3
+                    MouseMove, 512, 804, 3
                 }
                 sleep 200
                 MouseClick, Left
@@ -5597,12 +5660,7 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
-
             }
 
             MouseMove, 1469, 271, 3
@@ -6083,7 +6141,10 @@ if (toggle) {
                 MouseMove, 1117, 550, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 904, 1080, 3
                 } else {
@@ -6096,12 +6157,7 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
-
             }
 
             MouseMove, 1958, 361, 3
@@ -6169,7 +6225,10 @@ if (toggle) {
                 MouseMove, 1117, 550, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 904, 1080, 3
                 } else {
@@ -6182,12 +6241,7 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
-
             }
 
             MouseMove, 1958, 361, 3
@@ -6306,7 +6360,10 @@ if (toggle) {
                 MouseMove, 1117, 550, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 746, 853, 907, 860, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 904, 1080, 3
                 } else {
@@ -6319,12 +6376,7 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
-
             }
 
             MouseMove, 1958, 361, 3
@@ -6815,7 +6867,10 @@ if (toggle) {
                 MouseMove, 586, 287, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 486, 570, 3
                 } else {
@@ -6828,12 +6883,7 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
-
             }
 
             MouseMove, 1050, 197, 3
@@ -6901,7 +6951,10 @@ if (toggle) {
                 MouseMove, 586, 287, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
                     MouseMove, 486, 570, 3
                 } else {
@@ -6914,12 +6967,7 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 1) {
-                    break
-                }
                 loopCount++
-
             }
 
             MouseMove, 1050, 197, 3
@@ -7035,14 +7083,17 @@ if (toggle) {
             loopCount := 0
 
             while (loopCount < fishingLoopCount) {
-                MouseMove, 597, 294, 3
+                MouseMove, 586, 287, 3
                 sleep 200
                 MouseClick, Left
-                sleep 200
+                sleep 400
+                PixelSearch, , , 395, 455, 484, 459, 0xFFFFFF, 1, Fast RGB
+                if ErrorLevel != 0
+                    break
                 if (sellAllToggle) {
-                    MouseMove, 484, 577, 3
+                    MouseMove, 486, 570, 3
                 } else {
-                    MouseMove, 374, 576, 3
+                    MouseMove, 365, 570, 3
                 }
                 sleep 200
                 MouseClick, Left
@@ -7051,12 +7102,7 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
-                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
-                if (ErrorLevel = 0) {
-                    break
-                }
                 loopCount++
-
             }
 
             MouseMove, 1047, 193, 3
@@ -7290,6 +7336,10 @@ if (!toggle) {
         Run, "%A_ScriptDir%\plugins\biomes.ahk"
         biomeDetectionRunning := true
     }
+    if (hasEasterPlugin) {
+        Run, "%A_ScriptDir%\plugins\easter.egg.pathing.ahk"
+        eggDetectionRunning := true
+    }
     if (startTick = "") {
         startTick := A_TickCount
     }
@@ -7469,13 +7519,88 @@ UnPressE:
 Return
 
 MerchantClick1: ; 1440p
-    Click, 1686, 1261, 3
+    ; Click, 1686, 1261, 3
 Return
 
 MerchantClick2: ; 1080p
-    Click, 1265, 943, 3
+    ; Click, 1265, 943, 3
 Return
 
 MerchantClick3: ; 768p
-    Click, 910, 670, 3
+    ; Click, 910, 670, 3
 Return
+
+Send_WM_COPYDATA(ByRef StringToSend, ByRef TargetScriptTitle)
+{
+    VarSetCapacity(CopyDataStruct, 3 * A_PtrSize, 0)
+    SizeInBytes := (StrLen(StringToSend) + 1) * (A_IsUnicode ? 2 : 1)
+    NumPut(SizeInBytes, CopyDataStruct, A_PtrSize)
+    NumPut(&StringToSend, CopyDataStruct, 2 * A_PtrSize)
+    Prev_DetectHiddenWindows := A_DetectHiddenWindows
+    Prev_TitleMatchMode := A_TitleMatchMode
+    DetectHiddenWindows On
+    SetTitleMatchMode 2
+    SendMessage, 0x4a, 0, &CopyDataStruct,, %TargetScriptTitle%
+    DetectHiddenWindows %Prev_DetectHiddenWindows%
+    SetTitleMatchMode %Prev_TitleMatchMode%
+    return ErrorLevel
+}
+TestWebhook:
+    WebHookTest()
+Return
+
+WebHookTest()
+{
+    global
+    Output := RunWebhookTest()
+    GuiControl, , TestWebhookFeedback, % Output
+    if Output ~= "Success!"
+        GuiControl, Disable, TestWebhookButton
+}
+
+RunWebhookTest()
+{
+    global webhookURL
+    if (!InStr(webhookURL, "discord")) {
+        return "Invalid URL"
+    }
+
+    http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    http.Open("GET", webhookURL , false)
+    http.Send()
+
+    if (http.ResponseText() ~= "is not snowflake")
+        return "Invalid URL"
+
+    time := A_NowUTC
+    timestamp := SubStr(time,1,4) "-" SubStr(time,5,2) "-" SubStr(time,7,2) "T" SubStr(time,9,2) ":" SubStr(time,11,2) ":" SubStr(time,13,2) ".000Z"
+    
+    json := "{"
+    . """embeds"": ["
+    . "{"
+    . "    ""title"": "":orange_circle: Macro Test."","
+    . "    ""color"": 14653476,"
+    . "    ""footer"": {""text"": ""fishSol " VERSION_NUMBER """, ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},"
+    . "    ""timestamp"": """ timestamp """"
+    . "  }"
+    . "],"
+    . """content"": ""WE ARE TESTING THE WEBHOOK!"""
+    . "}"
+    
+    http.Open("POST", webhookURL . "?wait=true", false)
+    http.SetRequestHeader("Content-Type", "application/json")
+    http.Send(json)
+
+    if not RegExMatch(http.ResponseText(), """id"":""(\d+)""", snowflake)
+        Return "No Post Permission or Snowflake Error"
+
+    json := "{""content"": ""WE ARE TESTING THE WEBHOOK!\nSUCCESS!""}"
+
+    http.Open("PATCH", webhookURL . "/messages/" . snowflake1, false)
+    http.SetRequestHeader("Content-Type", "application/json")
+    http.Send(json)
+    
+    if not RegexMatch(http.ResponseText(), "WE ARE TESTING THE WEBHOOK!..SUCCESS")
+        Return "No PATCH Permission or Snowflake Error"
+    return "Success!"
+}
