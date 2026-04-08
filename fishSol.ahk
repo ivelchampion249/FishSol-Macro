@@ -1240,6 +1240,7 @@ if (autoCrafter) {
     GuiControl, +c0xFF4444, AutoCrafterStatus
     IniWrite, false, %iniFilePath%, "Macro", "autoCrafter"
 }
+return
 
 if (autoCrafterWebhook) {
     GuiControl,, AutoCrafterWebhookStatus, ON
@@ -5054,8 +5055,8 @@ if (!toggle) {
     }
     toggle := true
     if (hasBiomesPlugin) {
-        Run, "%A_ScriptDir%\plugins\biomes.ahk"
-        biomeDetectionRunning := true
+    Run, "%A_ScriptDir%\plugins\biomes.ahk"
+    biomeDetectionRunning := true
     }
     if (hasEasterPlugin) {
         Run, "%A_ScriptDir%\plugins\easter.egg.pathing.ahk"
@@ -5441,6 +5442,10 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
+                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
+                if (ErrorLevel = 1) {
+                    break
+                }
                 loopCount++
             }
 
@@ -5525,7 +5530,12 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
+                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
+                if (ErrorLevel = 1) {
+                    break
+                }
                 loopCount++
+
             }
 
             MouseMove, 1458, 266, 3
@@ -5660,7 +5670,12 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
+                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
+                if (ErrorLevel = 1) {
+                    break
+                }
                 loopCount++
+
             }
 
             MouseMove, 1469, 271, 3
@@ -6158,6 +6173,10 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
+                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
+                if (ErrorLevel = 1) {
+                    break
+                }
             }
 
             MouseMove, 1958, 361, 3
@@ -6242,6 +6261,10 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
+                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
+                if (ErrorLevel = 1) {
+                    break
+                }
             }
 
             MouseMove, 1958, 361, 3
@@ -6377,6 +6400,10 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
+                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
+                if (ErrorLevel = 1) {
+                    break
+                }
             }
 
             MouseMove, 1958, 361, 3
@@ -6884,6 +6911,12 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
+                ; Check for white color at coordinates 1027, 595, 1183, 604
+                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
+                if (ErrorLevel = 1) {
+                    ; White color not found, break out of selling loop early
+                    break
+                }
             }
 
             MouseMove, 1050, 197, 3
@@ -6968,6 +7001,12 @@ if (toggle) {
                 MouseClick, Left
                 sleep 1000
                 loopCount++
+                ; Check for white color at coordinates 1027, 595, 1183, 604
+                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
+                if (ErrorLevel = 1) {
+                    ; White color not found, break out of selling loop early
+                    break
+                }
             }
 
             MouseMove, 1050, 197, 3
@@ -7102,6 +7141,12 @@ if (toggle) {
                 sleep 200
                 MouseClick, Left
                 sleep 1000
+                ; Check for white color at coordinates 1027, 595, 1183, 604
+                PixelSearch, Px, Py, 1027, 595, 1183, 604, 0xFFFFFF, 3, Fast RGB
+                if (ErrorLevel = 0) {
+                    ; White color found, break out of selling loop early
+                    break
+                }
                 loopCount++
             }
 
