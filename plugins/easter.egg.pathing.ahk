@@ -1,13 +1,10 @@
 ﻿; nothing to see here :blush:
-; #Requires AutoHotkey v1.1
 
 /*
     for best results have gui transparency set at max so chat can't be seen through!
 */
 
-
-
-
+; #Requires AutoHotkey v1.1
 #NoEnv
 #SingleInstance, Force
 #Persistent
@@ -15,11 +12,14 @@ CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
 SetWorkingDir % SubStr(A_ScriptDir, 1, StrLen(A_ScriptDir) - 8)
 EnvGet, LocalAppData, LOCALAPPDATA
-OnMessage(0x4a, "Receive_WM_COPYDATA")
+
+OnMessage(0x4a, "Receive_WM_COPYDATA") ; script communications
 
 global standalone := (A_ScriptDir ~= "\\plugins") != 0
 
 global iniFilePath := A_WorkingDir "\settings.ini"
+
+validWebhook := true
 if (FileExist(iniFilePath)) {
     IniRead, res, %iniFilePath%, "Macro", "resolution"
     IniRead, tempWebhook, %iniFilePath%, "Macro", "webhookURL"
@@ -29,12 +29,14 @@ if (FileExist(iniFilePath)) {
         webhookURL := tempWebhook
         privateServerLink := tempPSLink
         if (!InStr(webhookURL, "discord")) {
-            ExitApp
+            validWebhook := false
         }
     } else {
-        ExitApp
+        validWebhook := false
     }
 }
+Else
+    validWebhook := false
 
 global Tesseract := find_tesseract()
 global TesseractDir := StrReplace(Tesseract, "\tesseract.exe", "")
@@ -45,41 +47,45 @@ gui, add, Text, ,TEST FILE STUFF
 gui, show, w200 Hide
 global LastLine := ""
 global NewLine  := ""
-try SendWebhook(":egg: EE.pathing started")
+; Gosub, start
 return
 
 start:
-Gosub, readlog
-SetTimer, readlog, 15000
-if res ~= "1440p"
-{
-    SetTimer, FS1440p, 100
-    SetTimer, MerchantClick1, 5000
-}
-else if ~= "1080p"
-{
-    SetTimer, FS1080p, 100
-    SetTimer, MerchantClick2, 5000
-}
-else
-{
-    SetTimer, FS768p, 100
-    SetTimer, MerchantClick3, 5000
-}
+    ; Gosub, readlog
+    SetTimer, readlog, 60000
+	ToolTip, % "Res: " res, 500, 90, 4
+    Sleep 20000
+    if (res = "1440p")
+    {
+        SetTimer, FS1440p, 100
+        SetTimer, MerchantClick1, 5000
+    }
+    if (res = "1080p")
+    {
+		ToolTip, % "CHECK: ", 500, 120, 5
+        SetTimer, MerchantClick2, 5000
+        SetTimer, FS1080p, 100
+    }
+    if (res = "1366x768")
+    {
+        SetTimer, FS768p, 100
+        SetTimer, MerchantClick3, 5000
+    }
 return
 
 stop:
-    if res ~= "1440p"
+    SetTimer, readlog, Off
+    if (res = "1440p")
     {
         SetTimer, FS1440p, off
         SetTimer, MerchantClick1, off
     }
-    else if ~= "1080p"
+    if (res = "1080p")
     {
         SetTimer, FS1080p, off
         SetTimer, MerchantClick2, off
     }
-    else
+    if (res = "1366x768")
     {
         SetTimer, FS768p, off
         SetTimer, MerchantClick3, off
@@ -164,9 +170,9 @@ return
 
 SendWebhook(title, color := "3468175") {
     global webhookURL
-    if (!InStr(webhookURL, "discord")) {
-        return
-    }
+    if not validWebhook
+        Return
+    
     time := A_NowUTC
     timestamp := SubStr(time,1,4) "-" SubStr(time,5,2) "-" SubStr(time,7,2) "T" SubStr(time,9,2) ":" SubStr(time,11,2) ":" SubStr(time,13,2) ".000Z"
 
@@ -175,7 +181,7 @@ SendWebhook(title, color := "3468175") {
     . "{"
     . "    ""title"": """ title ""","
     . "    ""color"": " color ","
-    . "    ""footer"": {""text"": ""EggSol v1.9.6-5-DEV"", ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},"
+    . "    ""footer"": {""text"": ""Easter.Egg.Pathing"", ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},"
     . "    ""timestamp"": """ timestamp """"
     . "  }"
     . "],"
@@ -194,47 +200,102 @@ Receive_WM_COPYDATA(wParam, lParam)
     StringAddress := NumGet(lParam + 2*A_PtrSize)
     CopyOfData := StrGet(StringAddress)
 
-    if CopyOfData ~= "stop"
+	ToolTip, %CopyOfData%, 500, 30, 2
+    if CopyOfData ~= "stop|pause"
     {
+        ToolTip, Stop, 500, 0
         Gosub, stop
         return true
     }
 
     if CopyOfData ~= "start"
     {
+        ToolTip, Start, 500, 0
         Gosub, start
         return true
     }
 
     if CopyOfData ~= "kill"
     {
+        ToolTip, KillApp, 500, 0
         SetTimer, killme, -1
+        return true
+    }
+    
+    if InStr(CopyOfData, "Data:{") and InStr(CopyOfData, "}:ataD")
+    {
+        ReturnValue := RegExReplace(CopyOfData, "(?:Data:{)|(?:}:ataD)", "")
+        SetTimer, SendToRead
+        return true
+    }
+    Else
+    {
+        MsgBox, % CopyOfData
         return true
     }
 
     return false
 }
 
+SendToRead:
+    testLines := [ "Wait am [li\|] sti[li\|][li\|] Dreaming\?"
+                    , "Preparing Protoco[li\|]\..Do you want to be my friend\?."
+                    , "Scanning\. Egg cannon charging 2000\%\."
+                    , "Let.s have an egg hunt here"
+                    , "Don.t forget to water the .sma[li\|I][li\|I] p[li\|I]ant\."
+                    , "Ho[li\|]y Eggeus"
+                    , "Am [li\|] in spaaaace right now\?[li\|\!]"
+                    , "A Specia[li\|] Egg has Spawned\."]
+    Eggs := [ "Dreamer Egg"
+                    , "Egg v2.0"
+                    , "The Egg of the Sky"
+                    , "Forest Egg"
+                    , "Blooming Egg"
+                    , "Angelic Egg"
+                    , "Andromeda Egg"
+                    , "Royal or Hatch Egg"]
+    hasEgg := false
+    if chat_output ~= "\[Egg Spawned\]"
+        hasEgg := true
+    EggIndex := -1
+    Loop % testLines.Length()
+    {
+        if (chat_output ~= testLines[A_Index]) or (chat_output ~= "[Egg Spawned] " . testLines[A_Index])
+        {
+            hasEgg := true
+            EggIndex := A_Index
+            Break
+        }
+    }
+    if hasEgg and (EggIndex > 0)
+        try SendWebhook(":egg: " Eggs[EggIndex] " Spawned!")
+Return
+
+F3:
 killme:
 ExitApp
 Return
 
 ; leave merchant click no auto detect version [update to smart version]
+; not running? maybe bugged
 MerchantClick1: ; 1440p
-    if roblox_check()
-        Click, 1686, 1261, 3
+    if not roblox_check()
+        return
+    Click, 1686, 1261, 3
 Return
 
 MerchantClick2: ; 1080p
-    if roblox_check()
-        Click, 1265, 943, 3
+	ToolTip, % "CAN RUN: " roblox_check(), 500, 60, 3
+    if not roblox_check()
+        return
+    Click, 1265, 943, 3
 Return
 
 MerchantClick3: ; 768p
-    if roblox_check()
-        Click, 910, 670, 3
+    if not roblox_check()
+        return
+    Click, 910, 670, 3
 Return
-
 
 ; questboard failsafe [done?]
 FS1440p:
@@ -264,13 +325,13 @@ FS1080p:
         click, 388, 130
     }
 Return
+
 FS768p:
     if not roblox_check()
         return
     ; check for left and right arrows
     pixelgetcolor, c2, 971, 384, RGB
     pixelgetcolor, c3, 396, 384, RGB
-    ToolTip, % (c2 = 0xFFFFFF) "and" (c3 = 0xFFFFFF), 0, 0
     if (c2 = 0xFFFFFF) and (c3 = 0xFFFFFF)
     {
         click, 680, 668
@@ -291,7 +352,7 @@ roblox_check()
 OCR(InputFile)
 {
     global Tesseract, TesseractDir
-    snapshot_chat()
+    snapshot_chat(InputFile)
     commands := ".\tesseract.exe '" . A_WorkingDir . InputFile "' '" A_WorkingDir . "\ocr\last" "' -l eng"
     Return runWaitMany(commands)
 }
@@ -306,19 +367,23 @@ runWaitMany(commands) {
     Return output
 }
 
-snapshot_chat()
+snapshot_chat(InputFile)
 {
     global res
-    WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
+    ;force roblox to be in front
+    while not roblox_check()
+        WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
+    sleep 100
+
     MouseGetPos, PosX, PosY
     send, /           ; open chat
     height := (res = "1366x768") ? 190 : 290
     
-    commands := " Add-Type -AssemblyName System.Drawing `;"
+    commands := "Add-Type -AssemblyName System.Drawing `;"
     . " $Bitmap = New-Object System.Drawing.Bitmap 450, " height " `;"
     . " $Graphics = [System.Drawing.Graphics]::FromImage($Bitmap) `;"
     . " $Graphics.CopyFromScreen(10, 100, 0, 0, $Bitmap.Size) `;"
-    . " $File = '" SubStr(A_ScriptDir, 1, StrLen(A_ScriptDir) - 8) "\ocr\screenshot.png' `;"
+    . " $File = '" SubStr(A_ScriptDir, 1, StrLen(A_ScriptDir) - 8) InputFile"' `;"
     . " $Bitmap.Save($File, [System.Drawing.Imaging.ImageFormat]::Png) `;"
     . " $Graphics.Dispose() `;"
     . " $Bitmap.Dispose() `;"
