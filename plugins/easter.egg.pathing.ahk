@@ -13,8 +13,74 @@ CoordMode, Pixel, Screen
 SetWorkingDir % SubStr(A_ScriptDir, 1, StrLen(A_ScriptDir) - 8)
 EnvGet, LocalAppData, LOCALAPPDATA
 
-OnMessage(0x4a, "Receive_WM_COPYDATA") ; script communications
+global Tesseract := find_tesseract()
+global TesseractDir := StrReplace(Tesseract, "\tesseract.exe", "")
 
+OnMessage(0x4a, "Receive_WM_COPYDATA") ; script communications
+FileReadLine, VersionLine, % A_WorkingDir "\ocr\MemoryOCR_CaptureRobloxChat.ps1", 1
+
+ExpectedFileVersion := "#version 1.3"
+if not FileExist(A_WorkingDir "\ocr\MemoryOCR_CaptureRobloxChat.ps1") or VersionLine != ExpectedFileVersion
+{
+    if FileExist(A_WorkingDir "\ocr\MemoryOCR_CaptureRobloxChat.ps1")
+    {
+        FileSetAttrib, -R-A, % A_WorkingDir "\ocr\MemoryOCR_CaptureRobloxChat.ps1"
+        FileDelete, % A_WorkingDir "\ocr\MemoryOCR_CaptureRobloxChat.ps1"
+    }
+    width := 450
+    height1 := 290 ; or 190 for 768p
+    height2 := 190
+    X := 10
+    Y := 100
+    FileOut := % ExpectedFileVersion "`nSet-Location '" TesseractDir "'`n"
+     . "# Get the height from config resolution`t`t`t`t`t`t`t`t`t`t`t`t`t`t`tBasically a bunch of replace symbols on the ini file to make it accessable as a variable`n"
+     . "$Config = Get-Content """ A_WorkingDir "\settings.ini"" | Where-Object { $_ -Match ""="" } | ForEach-Object { $_ -Replace ""#.*"", """" } |"
+     . " ForEach-Object { $_ -Replace ""\\"", ""\\"" } | ForEach-Object { $_ -Replace '""', """" } | ConvertFrom-StringData`n"
+     . "If ($Config.resolution -Eq ""1366x768"") { $height = " height2 " } Else { $height = " height1 "}`n"
+	 . "Add-Type -AssemblyName System.Drawing`n`n"
+	 . "# Capture Chatbox into MemoryStream(RAM)`n"
+	 . "$Bitmap = New-Object System.Drawing.Bitmap " width ", $height`n"
+	 . "$Graphics = [System.Drawing.Graphics]::FromImage($Bitmap)`n"
+	 . "$Graphics.CopyFromScreen(" X ", " Y ", 0, 0, $Bitmap.Size)`n"
+	 . "$MemoryStream = New-Object System.IO.MemoryStream`n"
+	 . "$Bitmap.Save($MemoryStream, [System.Drawing.Imaging.ImageFormat]::Png)`n"
+	 . "$Bytes = $MemoryStream.ToArray()`n`n"
+	 . "# Define Tesseract Process`n"
+	 . "$ProcStartInfo = New-Object System.Diagnostics.ProcessStartInfo`n"
+	 . "$ProcStartInfo.FileName = '" Tesseract "'`n"
+	 . "$ProcStartInfo.Arguments = 'stdin stdout -l eng'`n"
+	 . "$ProcStartInfo.RedirectStandardInput = $true`n"
+	 . "$ProcStartInfo.RedirectStandardOutput = $true`n"
+	 . "$ProcStartInfo.UseShellExecute = $false`n"
+	 . "$ProcStartInfo.CreateNoWindow = $true`n`n"
+	 . "# Start Tesseract Shell`n"
+	 . "$Shell = [System.Diagnostics.Process]::Start($ProcStartInfo)`n"
+	 . "$Shell.StandardInput.BaseStream.Write($Bytes, 0, $Bytes.Length)`n"
+	 . "$Shell.StandardInput.BaseStream.Close()`n"
+	 . "$Result = $Shell.StandardOutput.ReadToEnd()`n`n"
+	 . "$Shell.WaitForExit()`n"
+	 . "$AHKMessage = ""Data:`{'$Result'`}:ataD""`n`n"
+	 . "# Memory Cleanup`n"
+	 . "$Graphics.Dispose()`; $Bitmap.Dispose()`; $MemoryStream.Flush()`; $MemoryStream.Dispose()`; $Shell.Dispose()`;`n`n"
+	 . "# Define SendMessage and copydatastrut`n"
+	 . "$MemberDef = @""`n[DllImport(""user32.dll"")]`npublic static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref COPYDATASTRUCT lParam)`;`npublic struct COPYDATASTRUCT`n{`n    public IntPtr dwData`;`n    public int cbData`;`n    public IntPtr lpData`;`n}`n""@`n"
+	 . "$WinAPI = Add-Type -MemberDefinition $MemberDef -Name ""Win32SendMessage"" -Namespace ""Win32"" -PassThru`n"
+	 . "# Reuse Bytes variable`n"
+	 . "$Bytes = [System.Text.Encoding]::Unicode.GetBytes($AHKMessage)`n"
+	 . "$PTR = [System.Runtime.InteropServices.Marshal]::AllocHGlobal($Bytes.Length)`n"
+	 . "[System.Runtime.InteropServices.Marshal]::Copy($Bytes, 0, $PTR, $Bytes.Length)`n"
+	 . "# Send data back to AHK`n"
+	 . "$CopyDataStrut = [Win32.Win32SendMessage+COPYDATASTRUCT]::new()`n"
+	 . "$CopyDataStrut.dwData = [IntPtr]::Zero`n"
+	 . "$CopyDataStrut.cbData = $Bytes.Length`n"
+	 . "$CopyDataStrut.lpData = $PTR`n"
+	 . "$HWND = (Get-Process | Where-Object { $_.MainWindowTitle -like ""easter.egg.pathing""}).MainWindowHandle`n"
+	 . "if ($HWND) {[Win32.Win32SendMessage]::SendMessage($HWND, 0x4a, [IntPtr]::Zero, [ref]$CopyDataStrut)}`n"
+	 . "[System.Runtime.InteropServices.Marshal]::FreeHGlobal($PTR)`n"
+	. "# THESE FILE CONTENTS CAN STILL BE PASTED INTO POWERSHELL MANUALLY"
+    FileAppend, %FileOut%, % A_WorkingDir "\ocr\MemoryOCR_CaptureRobloxChat.ps1"
+    FileSetAttrib, +R-A, % A_WorkingDir "\ocr\MemoryOCR_CaptureRobloxChat.ps1"
+}
 global standalone := (A_ScriptDir ~= "\\plugins") != 0
 
 global iniFilePath := A_WorkingDir "\settings.ini"
@@ -38,16 +104,15 @@ if (FileExist(iniFilePath)) {
 Else
     validWebhook := false
 
-global Tesseract := find_tesseract()
-global TesseractDir := StrReplace(Tesseract, "\tesseract.exe", "")
-
 ; make window for communitcations
-gui, new, -ToolWindow,easter.egg.pathing
+gui, new, +ToolWindow,easter.egg.pathing
 gui, add, Text, ,TEST FILE STUFF
-gui, show, w200 Hide
+gui, show, w200 Minimize
 global LastLine := ""
 global NewLine  := ""
-; Gosub, start
+
+if standalone
+    SetTimer, readlog, 60000
 return
 
 start:
@@ -379,15 +444,15 @@ snapshot_chat(InputFile)
     send, /           ; open chat
     height := (res = "1366x768") ? 190 : 290
     
-    commands := "Add-Type -AssemblyName System.Drawing `;"
-    . " $Bitmap = New-Object System.Drawing.Bitmap 450, " height " `;"
-    . " $Graphics = [System.Drawing.Graphics]::FromImage($Bitmap) `;"
-    . " $Graphics.CopyFromScreen(10, 100, 0, 0, $Bitmap.Size) `;"
-    . " $File = '" SubStr(A_ScriptDir, 1, StrLen(A_ScriptDir) - 8) InputFile"' `;"
-    . " $Bitmap.Save($File, [System.Drawing.Imaging.ImageFormat]::Png) `;"
-    . " $Graphics.Dispose() `;"
-    . " $Bitmap.Dispose() `;"
-    RunWait % "powershell.exe -command """ commands """",, HIDE ; Get screenshot of active chat
+    commands := "Add-Type -AssemblyName System.Drawing `; "
+    . " $Bitmap = New-Object System.Drawing.Bitmap 450, " . height . " `; "
+    . " $Graphics = [System.Drawing.Graphics]::FromImage($Bitmap) `; "
+    . " $Graphics.CopyFromScreen(10, 100, 0, 0, $Bitmap.Size) `; "
+    . " $File = '" . SubStr(A_ScriptDir, 1, StrLen(A_ScriptDir) - 8) . InputFile . "' `; "
+    . " $Bitmap.Save($File, [System.Drawing.Imaging.ImageFormat]::Png) `; "
+    . " $Graphics.Dispose() `; "
+    . " $Bitmap.Dispose() `; "
+    Run % "powershell.exe -command """ commands """",, HIDE ; Get screenshot of active chat
     sleep, 1
 
 

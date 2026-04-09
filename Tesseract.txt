@@ -1,6 +1,6 @@
 https://github.com/UB-Mannheim/tesseract/releases/latest
 
-Powershell used to capture screen data
+Powershell used to capture screen data see ocr/MemoryOCR_CaptureRobloxChat.ps1 for latest version
 
 # set directory to the Tesseract OCR folder
 cd 'C:\Program Files\Tesseract-OCR\'
