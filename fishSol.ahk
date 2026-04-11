@@ -2268,7 +2268,6 @@ RunEasterPathingVip() {
 		Sleep 1500
 		Send, {o up}
     }
-        Send_WM_COPYDATA("start", "easter.egg.pathing")
         SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
 
@@ -2298,7 +2297,6 @@ RunEasterPathingVip() {
         sleep 100
 
         SetTimer, PressE, Off
-        Send_WM_COPYDATA("stop", "easter.egg.pathing")
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
@@ -3874,6 +3872,7 @@ RunEasterPathingAbyssal() {
 		Send, {o up}
     }
     SetTimer, PressE, 100
+    Send_WM_COPYDATA("start", "easter.egg.pathing")
 
     if (res = "1080p") {
         SetTimer, MerchantClick2, 5000
@@ -4029,6 +4028,7 @@ RunEasterPathingAbyssal() {
         sleep 2600
 
         SetTimer, PressE, 100
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         if (res = "1080p") {
             SetTimer, MerchantClick2, 5000
@@ -4136,6 +4136,7 @@ RunEasterPathingAbyssal() {
         sleep 2600
 
         SetTimer, PressE, 100
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         if (res = "1080p") {
             SetTimer, MerchantClick2, 5000
@@ -7548,6 +7549,7 @@ Send_WM_COPYDATA(ByRef StringToSend, ByRef TargetScriptTitle)
     SetTitleMatchMode %Prev_TitleMatchMode%
     return ErrorLevel
 }
+
 TestWebhook:
     WebHookTest()
 Return

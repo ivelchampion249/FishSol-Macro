@@ -108,18 +108,15 @@ global CustomTesseractLocation
 global validWebhook := false
 global res
 global webhookURL
-global privateServerLink
 
 if (FileExist(iniFilePath)) {
     IniRead, res, %iniFilePath%, "Macro", "resolution"
     IniRead, RunHDDSafe, %iniFilePath%, "OCR", "RunHDDSafe"
     IniRead, CustomTesseractLocation, %iniFilePath%, "OCR", "CustomTesseractLocation"
     IniRead, tempWebhook, %iniFilePath%, "Macro", "webhookURL"
-    IniRead, tempPSLink, %iniFilePath%, "Biomes", "privateServerLink" ; using biomes like temporarily
-    if (tempWebhook != "ERROR" && tempPSLink != "ERROR")
+    if (tempWebhook != "ERROR")
     {
         webhookURL := tempWebhook
-        privateServerLink := tempPSLink
         if (InStr(webhookURL, "discord"))
             validWebhook := true
     }
@@ -139,15 +136,15 @@ gui, new, +ToolWindow,easter.egg.pathing
 gui, add, Text, ,TEST FILE STUFF
 gui, show, w200 Minimize
 
-if standalone and hasTesseract
-    SetTimer, readlog, 60000
+if hasTesseract
+    SetTimer, readlog, 15000
 return
 
 start:
     ; Gosub, readlog
     if hasTesseract
-        SetTimer, readlog, 60000
-    Sleep 20000
+        SetTimer, readlog, 15000
+    Sleep 5000
     if (res = "1440p")
     {
         SetTimer, FS1440p, 1000
@@ -186,9 +183,6 @@ return
 
 readlog:
     settimer, readlog, off
-    if roblox_check() {
-        return
-    }
     logDir := LocalAppData "\Roblox\logs"
     newestTime := 0
     newestFile := ""
@@ -216,7 +210,6 @@ readlog:
         file.Seek(-chunkSize, 2) ; 2 = from end of file
     content := file.Read()
     file.Close()
-
     lines := StrSplit(content, "`n")
     Loop % lines.MaxIndex()
     {
@@ -230,7 +223,16 @@ readlog:
                 Else
                 {
                     LastLine := m
+
+                    while not roblox_check()
+                        WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
+                    sleep 100
+
+                    MouseGetPos, PosX, PosY
+                    send, /           ; open chat
+                    click, 440, 35, 1 ; close chat
                     chat_output := OCR("\ocr\screenshot.png")
+                    SetTimer, CloseChat, -800
                     if not RunHDDSafe
                         gosub SendToRead
                     Break
@@ -239,6 +241,11 @@ readlog:
         }
     }
     settimer, readlog, on
+return
+
+CloseChat:
+    click, 140, 35, 1 ; close chat
+    MouseMove, %PosX%, %PosY%, 1
 return
 
 SendToRead:
@@ -313,13 +320,13 @@ Receive_WM_COPYDATA(wParam, lParam)
 
     if CopyOfData ~= "stop|pause"
     {
-        Gosub, stop
+        SetTimer, stop, -200
         return true
     }
 
     if CopyOfData ~= "start"
     {
-        Gosub, start
+        SetTimer, start, -200
         return true
     }
 
@@ -332,10 +339,7 @@ Receive_WM_COPYDATA(wParam, lParam)
     if InStr(CopyOfData, "Data:{") and InStr(CopyOfData, "}:ataD")
     {
         chat_output := RegExReplace(CopyOfData, "(?:Data:{)|(?:}:ataD)", "")
-        gosub, SendToRead
-        sleep, 3000
-        click, 140, 35, 1 ; close chat
-        MouseMove, %PosX%, %PosY%, 1
+        SetTimer, SendToRead, -200
         return true
     }
     Else
@@ -348,7 +352,7 @@ Receive_WM_COPYDATA(wParam, lParam)
 }
 F3::
 killme:
-Send, F3
+Send, {F3}
 ExitApp
 Return
 
@@ -479,13 +483,7 @@ roblox_check()
 
 OCR(InputFile)
 {
-    global Tesseract, TesseractDir, RunHDDSafe, PosX, PosY
-    while not roblox_check()
-        WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
-    sleep 100
-
-    MouseGetPos, PosX, PosY
-    send, /           ; open chat
+    global Tesseract, TesseractDir, RunHDDSafe
     if RunHDDSafe
     {
         ; please reference MemoryOCR_CaptureRobloxChat in ocr folder or in code above
@@ -496,11 +494,6 @@ OCR(InputFile)
     else ; else run hdd unsafe version
     {
         snapshot_chat(InputFile)
-        
-        sleep, 3000
-
-        click, 140, 35, 1 ; close chat
-        MouseMove, %PosX%, %PosY%, 1
     }
     commands := ".\tesseract.exe '" . A_WorkingDir . InputFile "' '" A_WorkingDir . "\ocr\last" "' -l eng"
     Return runWaitMany(commands)
