@@ -20,6 +20,8 @@ global TesseractDir
 if hasTesseract
 {
     TesseractDir := StrReplace(Tesseract, "\tesseract.exe", "")
+    if not instr(FileExist(A_WorkingDir "\ocr"), "D")
+        FileCreateDir, % A_WorkingDir "\ocr"
     FileReadLine, VersionLine, % A_WorkingDir "\ocr\MemoryOCR_CaptureRobloxChat.ps1", 1
     ExpectedFileVersion := "#version 1.3.13"
 
