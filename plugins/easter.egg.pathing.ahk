@@ -17,6 +17,7 @@ OnMessage(0x4a, "Receive_WM_COPYDATA") ; script communications
 
 global Tesseract := find_tesseract()
 global TesseractDir
+global chat_output := "ERROR"
 if hasTesseract
 {
     TesseractDir := StrReplace(Tesseract, "\tesseract.exe", "")
@@ -184,6 +185,7 @@ stop:
 return
 
 readlog:
+    settimer, readlog, off
     if roblox_check() {
         return
     }
@@ -216,7 +218,6 @@ readlog:
     file.Close()
 
     lines := StrSplit(content, "`n")
-    
     Loop % lines.MaxIndex()
     {
         line := lines[lines.MaxIndex() - A_Index + 1]
@@ -228,6 +229,7 @@ readlog:
                     Break
                 Else
                 {
+                    LastLine := m
                     chat_output := OCR("\ocr\screenshot.png")
                     if not RunHDDSafe
                         gosub SendToRead
@@ -236,6 +238,7 @@ readlog:
             }
         }
     }
+    settimer, readlog, on
 return
 
 SendToRead:
@@ -256,12 +259,15 @@ SendToRead:
             , "Andromeda Egg"
             , "Royal or Hatch Egg"]
     hasEgg := false
-    if chat_output ~= "\[Egg Spawned\]"
+    copy := chat_output
+    Clipboard := copy
+    if copy ~= "\[Egg Spawned\]"
         hasEgg := true
     EggIndex := -1
+    
     Loop % testLines.Length()
     {
-        if (chat_output ~= testLines[A_Index]) or (chat_output ~= "[Egg Spawned] " . testLines[A_Index])
+        if (copy ~= "i)" . testLines[A_Index]) or (copy ~= "[Egg Spawned]: " . testLines[A_Index])
         {
             hasEgg := true
             EggIndex := A_Index
@@ -304,7 +310,6 @@ Receive_WM_COPYDATA(wParam, lParam)
 {
     StringAddress := NumGet(lParam + 2*A_PtrSize)
     CopyOfData := StrGet(StringAddress)
-    ; ToolTip, %CopyOfData%, 500, 10, 15
 
     if CopyOfData ~= "stop|pause"
     {
@@ -327,7 +332,7 @@ Receive_WM_COPYDATA(wParam, lParam)
     if InStr(CopyOfData, "Data:{") and InStr(CopyOfData, "}:ataD")
     {
         chat_output := RegExReplace(CopyOfData, "(?:Data:{)|(?:}:ataD)", "")
-        SetTimer, SendToRead, -1
+        gosub, SendToRead
         sleep, 3000
         click, 140, 35, 1 ; close chat
         MouseMove, %PosX%, %PosY%, 1
@@ -343,6 +348,7 @@ Receive_WM_COPYDATA(wParam, lParam)
 }
 F3::
 killme:
+Send, F3
 ExitApp
 Return
 
