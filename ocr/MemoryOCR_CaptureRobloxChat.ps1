@@ -66,5 +66,4 @@ if ($HWND)
     }
 }
 [System.Runtime.InteropServices.Marshal]::FreeHGlobal($PTR)
-Start-Sleep 10
 # THESE FILE CONTENTS CAN STILL BE PASTED INTO POWERSHELL MANUALLY

@@ -328,6 +328,9 @@ Receive_WM_COPYDATA(wParam, lParam)
     {
         chat_output := RegExReplace(CopyOfData, "(?:Data:{)|(?:}:ataD)", "")
         SetTimer, SendToRead, -1
+        sleep, 3000
+        click, 140, 35, 1 ; close chat
+        MouseMove, %PosX%, %PosY%, 1
         return true
     }
     Else
@@ -416,6 +419,10 @@ FS1440p:
         click, 1277, 1257
         click, 30,  610
         click, 516, 160
+        
+		Send, {o down}
+		Sleep 1500
+		Send, {o up}
     }
 Return
 
@@ -430,6 +437,10 @@ FS1080p:
         click, 950, 936
         click, 30,  460
         click, 388, 130
+        
+		Send, {o down}
+		Sleep 1500
+		Send, {o up}
     }
 Return
 
@@ -444,6 +455,10 @@ FS768p:
         click, 680, 668
         click, 30, 320
         click, 270, 110
+        
+		Send, {o down}
+		Sleep 1500
+		Send, {o up}
     }
 Return
 
@@ -458,15 +473,29 @@ roblox_check()
 
 OCR(InputFile)
 {
-    global Tesseract, TesseractDir, RunHDDSafe
+    global Tesseract, TesseractDir, RunHDDSafe, PosX, PosY
+    while not roblox_check()
+        WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
+    sleep 100
+
+    MouseGetPos, PosX, PosY
+    send, /           ; open chat
     if RunHDDSafe
     {
         ; please reference MemoryOCR_CaptureRobloxChat in ocr folder or in code above
         Run, powershell.exe .\ocr\MemoryOCR_CaptureRobloxChat.ps1,, Hide
         ;run don't wait
         return 0
-    }else ; else run hdd unsafe version
+    }
+    else ; else run hdd unsafe version
+    {
         snapshot_chat(InputFile)
+        
+        sleep, 3000
+
+        click, 140, 35, 1 ; close chat
+        MouseMove, %PosX%, %PosY%, 1
+    }
     commands := ".\tesseract.exe '" . A_WorkingDir . InputFile "' '" A_WorkingDir . "\ocr\last" "' -l eng"
     Return runWaitMany(commands)
 }
@@ -484,12 +513,6 @@ snapshot_chat(InputFile)
 {
     global res
     ;force roblox to be in front
-    while not roblox_check()
-        WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
-    sleep 100
-
-    MouseGetPos, PosX, PosY
-    send, /           ; open chat
     height := (res = "1366x768") ? 190 : 290
     
     commands := "Add-Type -AssemblyName System.Drawing `; "
@@ -502,10 +525,6 @@ snapshot_chat(InputFile)
     . " $Bitmap.Dispose() `; "
     Run % "powershell.exe -command """ commands """",, HIDE ; Get screenshot of active chat
 
-    sleep, 1
-
-    click, 140, 35, 1 ; close chat
-    MouseMove, %PosX%, %PosY%, 1
 }
 
 ; get location of tesseract install
