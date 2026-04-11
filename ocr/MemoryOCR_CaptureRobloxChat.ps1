@@ -1,6 +1,6 @@
-#version 1.3
+#version 1.3.13
 Set-Location 'C:\Program Files\Tesseract-OCR'
-#get the height from config resolution															basically a bunch of replace symbols on the ini file to make it accessable
+# Get the height from config resolution															Basically a bunch of replace symbols on the ini file to make it accessable as a variable
 $Config = Get-Content "C:\Nades Programs\AutoHotkeys\EggSols\settings.ini" | Where-Object { $_ -Match "=" } | ForEach-Object { $_ -Replace "#.*", "" } | ForEach-Object { $_ -Replace "\\", "\\" } | ForEach-Object { $_ -Replace '"', "" } | ConvertFrom-StringData
 If ($Config.resolution -Eq "1366x768") { $height = 190 } Else { $height = 290}
 Add-Type -AssemblyName System.Drawing
@@ -56,6 +56,15 @@ $CopyDataStrut.dwData = [IntPtr]::Zero
 $CopyDataStrut.cbData = $Bytes.Length
 $CopyDataStrut.lpData = $PTR
 $HWND = (Get-Process | Where-Object { $_.MainWindowTitle -like "easter.egg.pathing"}).MainWindowHandle
-if ($HWND) {[Win32.Win32SendMessage]::SendMessage($HWND, 0x4a, [IntPtr]::Zero, [ref]$CopyDataStrut)}
+Start-Sleep 1
+if ($HWND)
+{
+    for($i = 0; $i -lt 5; $i++) {
+        $returnMessage = [Win32.Win32SendMessage]::SendMessage($HWND, 0x4a, [IntPtr]::Zero, [ref]$CopyDataStrut)
+        if (1 -eq $returnMessage) {            Break
+        }        else { Start-Sleep 1 }
+    }
+}
 [System.Runtime.InteropServices.Marshal]::FreeHGlobal($PTR)
-#THESE FILE CONTENTS CAN STILL BE PASTED INTO POWERSHELL MANUALLY
+Start-Sleep 10
+# THESE FILE CONTENTS CAN STILL BE PASTED INTO POWERSHELL MANUALLY
