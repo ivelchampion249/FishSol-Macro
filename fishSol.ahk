@@ -5229,6 +5229,7 @@ if (toggle) {
                 strangeControllerLastRun := elapsed
             }
         }
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         ; Snowman Pathing Toggle
         if (snowmanPathing) {
@@ -5947,6 +5948,7 @@ if (toggle) {
                 strangeControllerLastRun := elapsed
             }
         }
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         ; Snowman Pathing Toggle
         if (snowmanPathing) {
@@ -6671,6 +6673,7 @@ if (toggle) {
                 strangeControllerLastRun := elapsed
             }
         }
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         ; Snowman Pathing
         if (snowmanPathing) {

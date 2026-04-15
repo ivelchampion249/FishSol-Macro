@@ -137,13 +137,13 @@ gui, add, Text, ,TEST FILE STUFF
 gui, show, w200 Minimize
 
 if hasTesseract
-    SetTimer, readlog, 15000
+    SetTimer, readlog, 60000
 return
 
 start:
     ; Gosub, readlog
     if hasTesseract
-        SetTimer, readlog, 15000
+        SetTimer, readlog, 60000
     Sleep 5000
     if (res = "1440p")
     {
@@ -254,7 +254,7 @@ SendToRead:
                     , "Scanning\. Egg cannon charging 2000\%\."
                     , "Let.s have an egg hunt here"
                     , "Don.t forget to water the .sma[li\|I][li\|I] p[li\|I]ant\."
-                    , "Ho[li\|]y Eggeus"
+                    , "Ho[li\|]y Eggsus"
                     , "Am [li\|] in spaaaace right now\?[li\|\!]"
                     , "A Specia[li\|] Egg has Spawned\."]
     Eggs := [ "Dreamer Egg"
@@ -281,8 +281,13 @@ SendToRead:
             Break
         }
     }
-    if hasEgg and (EggIndex > 0)
-        try SendWebhook(":egg: " Eggs[EggIndex] " Spawned!")
+    if hasEgg 
+    {
+        if (EggIndex > 0)
+            try SendWebhook(":egg: " Eggs[EggIndex] " Spawned!")
+        else
+            try SendWebhook(":egg: Rare egg Spawned!`n Unable to determine type!")
+    }
 Return
 
 
@@ -532,22 +537,48 @@ find_tesseract()
     global iniFilePath, hasTesseract
     hasTesseract := true
     if FileExist("C:\Program Files\Tesseract-OCR\tesseract.exe")
-        return "C:\Program Files\Tesseract-OCR\tesseract.exe"
+        tes_location := "C:\Program Files\Tesseract-OCR\tesseract.exe"
 
-    if FileExist("C:\Program Files (x86)\Tesseract-OCR\tesseract.exe")
-        return "C:\Program Files (x86)\Tesseract-OCR\tesseract.exe"
+    else if FileExist("C:\Program Files (x86)\Tesseract-OCR\tesseract.exe")
+        tes_location := "C:\Program Files (x86)\Tesseract-OCR\tesseract.exe"
 
-    if FileExist(A_AppData . "\Program\Tesseract-OCR\tesseract.exe")
-        return A_AppData . "\Program\Tesseract-OCR\tesseract.exe"
+    ;just for me install checks
+    ;Roaming
+    else if FileExist(A_AppData . "\Program\Tesseract-OCR\tesseract.exe")
+        tes_location := A_AppData . "\Program\Tesseract-OCR\tesseract.exe"
 
-    if FileExist(A_AppData . "\Tesseract-OCR\tesseract.exe")
-        return A_AppData . "\Tesseract-OCR\tesseract.exe"
+    else if FileExist(A_AppData . "\Tesseract-OCR\tesseract.exe")
+        tes_location := A_AppData . "\Tesseract-OCR\tesseract.exe"
+    ;Local
+    else if FileExist(StrReplace(A_AppData, "Roaming", "Local") . "\Program\Tesseract-OCR\tesseract.exe")
+        tes_location := StrReplace(A_AppData, "Roaming", "Local") . "\Program\Tesseract-OCR\tesseract.exe"
 
-    IniRead, CustomTesseractLocation, %iniFilePath%, "OCR", "CustomTesseractLocation"
-    if FileExist(CustomTesseractLocation)
-        return CustomTesseractLocation
+    else if FileExist(StrReplace(A_AppData, "Roaming", "Local") . "\Tesseract-OCR\tesseract.exe")
+        tes_location := StrReplace(A_AppData, "Roaming", "Local") . "\Tesseract-OCR\tesseract.exe"
+    ;LocalLow
+    else if FileExist(StrReplace(A_AppData, "Roaming", "LocalLow") . "\Program\Tesseract-OCR\tesseract.exe")
+        tes_location := StrReplace(A_AppData, "Roaming", "LocalLow") . "\Program\Tesseract-OCR\tesseract.exe"
 
-    hasTesseract := false
-    throw Exception("Tesseract not found")
-    return
+    else if FileExist(StrReplace(A_AppData, "Roaming", "LocalLow") . "\Tesseract-OCR\tesseract.exe")
+        tes_location := StrReplace(A_AppData, "Roaming", "LocalLow") . "\Tesseract-OCR\tesseract.exe"
+
+    else if FileExist(CustomTesseractLocation)
+        tes_location := CustomTesseractLocation
+
+
+    if tes_location = ""
+        throw Exception("Tesseract not found")
+    LibTessDLL := StrReplace(tes_location, "tesseract.exe", "libtesseract-5.dll")
+    if FileExist(LibTessDLL)
+    {
+        FileRead, libtess, %LibTessDLL%
+        RegExMatch(libtess, "<Creator>Tesseract - .(v\d\.\d\.\d\.\d{4,8}).%Y-%m", tess_version)
+        libtess := "" ; clear data from memory so we don't hog it
+        if not (tess_version1 ~= "v[56789]\.[56789]")
+            throw Exception("Wrong Version Detected! Expected v5.5+ got " tess_version1)
+    }
+    else
+        MsgBox, , WARNING!, % "libtesseract-5.dll not detected, Unable to determine version!`nContinue at your own risk!"
+    
+    return tes_location
 }
