@@ -18,6 +18,7 @@ OnMessage(0x4a, "Receive_WM_COPYDATA") ; script communications
 global Tesseract := find_tesseract()
 global TesseractDir
 global chat_output := "ERROR"
+global snapshot_location := A_WorkingDir "\ocr\latest.png"
 if hasTesseract
 {
     TesseractDir := StrReplace(Tesseract, "\tesseract.exe", "")
@@ -85,6 +86,16 @@ if hasTesseract
      . "    }`n}`n"
      . "[System.Runtime.InteropServices.Marshal]::FreeHGlobal($PTR)`n"
     . "# THESE FILE CONTENTS CAN STILL BE PASTED INTO POWERSHELL MANUALLY"
+
+    snapshot_command :=  "$Config = Get-Content """ iniFilePath """ | Where-Object { $_ -Match ""="" } | ForEach-Object { $_ -Replace ""#.*"", """" } | ForEach-Object { $_ -Replace ""\\"", ""\\"" } | ForEach-Object { $_ -Replace '""', """" } | ConvertFrom-StringData`; "
+    . "If ($Config.resolution -Eq ""1366x768"") { $height = " height2 " } Else { $height = " height1 " }`; "
+    . "Add-Type -AssemblyName System.Drawing`; "
+    . "$Bitmap = New-Object System.Drawing.Bitmap " width ", $height`; "
+    . "$Graphics = [System.Drawing.Graphics]::FromImage($Bitmap)`; "
+    . "$Graphics.CopyFromScreen(" X ", " Y ", 0, 0, $Bitmap.Size)`; "
+    . "$path = """ snapshot_location """`; "
+    . "$Bitmap.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)`; "
+    . "$Graphics.Dispose()`; $Bitmap.Dispose()`; "
 
     if not FileExist(A_WorkingDir "\ocr\MemoryOCR_CaptureRobloxChat.ps1") or VersionLine != ExpectedFileVersion
     {
@@ -283,12 +294,32 @@ SendToRead:
     }
     if hasEgg 
     {
+        RunWait, powershell.exe -command %snapshot_command%, Hide
+
         if (EggIndex > 0)
-            try SendWebhook(":egg: " Eggs[EggIndex] " Spawned!")
+            try SendWebhookFile(":egg: " Eggs[EggIndex] " Spawned! :egg:", "3468175", snapshot_location)
         else
-            try SendWebhook(":egg: Rare egg Spawned!`n Unable to determine type!")
+            try SendWebhookFile(":egg: Rare egg Spawned!\nUnable to determine type!", "3468175", snapshot_location)
+
     }
 Return
+
+base64(file) {
+    Local Rqd := 0, LineLength := 64, B64, B := "", N := 0 - LineLength + 1
+    File := FileOpen(file, "r")
+    bytes  := File.Length
+    File.RawRead(object, bytes)
+
+    DllCall( "Crypt32.dll\CryptBinaryToString", "Ptr",&object ,"UInt",bytes, "UInt",0x1, "Ptr",0,   "UIntP",Rqd )
+    VarSetCapacity( B64, Rqd * ( A_Isunicode ? 2 : 1 ), 0 )
+    DllCall( "Crypt32.dll\CryptBinaryToString", "Ptr",&object, "UInt",bytes, "UInt",0x1, "Str",B64, "UIntP",Rqd )
+    If ( LineLength = 64 )
+        Return B64
+    B64 := StrReplace( B64, "`r`n" )        
+    Loop % Ceil( StrLen(B64) / LineLength )
+        B .= Format("{1:0s}","" ) . SubStr( B64, N += LineLength, LineLength ) . "`n" 
+    Return RTrim( B,"`n" )
+}
 
 
 SendWebhook(title, color := "3468175") {
@@ -314,6 +345,44 @@ SendWebhook(title, color := "3468175") {
     http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
     http.Open("POST", webhookURL, false)
     http.SetRequestHeader("Content-Type", "application/json")
+    http.Send(json)
+}
+SendWebhookFile(title, color, file) {
+    global webhookURL
+    if not validWebhook
+        Return
+    b64 := base64(file)
+    time := A_NowUTC
+    timestamp := SubStr(time,1,4) "-" SubStr(time,5,2) "-" SubStr(time,7,2) "T" SubStr(time,9,2) ":" SubStr(time,11,2) ":" SubStr(time,13,2) ".000Z"
+    json := "--boundary`r`n"
+    . "Content-Disposition: form-data; name=""payload_json""`r`n"
+    . "Content-Type: application/json`r`n"
+    . "`r`n"
+    . "{`r`n"
+    . "  ""content"": """",`r`n"
+    . "  ""embeds"": [{`r`n"
+    . "      ""title"": """ title """,`r`n"
+    . "      ""color"": """ color """,`r`n"
+    . "      ""footer"": {""text"": ""Easter.Egg.Pathing"", ""icon_url"": ""https://maxstellar.github.io/fishSol%20icon.png""},`r`n"
+    . "      ""timestamp"": """ timestamp """,`r`n"
+    . "    ""thumbnail"": {`r`n"
+    . "      ""url"": ""attachment://files[0]""`r`n"
+    . "    }`r`n"
+    . "  }],`r`n"
+    . "  ""attachments"": [{`r`n"
+    . "      ""id"": 0,`r`n"
+    . "      ""filename"": ""latest.png""`r`n"
+    . "  }]`r`n"
+    . "}`r`n"
+    . "--boundary`r`n"
+    . "Content-Disposition: form-data; name=""files[0]""; filename=""latest.png"";`r`n"
+    . "Content-Transfer-Encoding: base64`r`n"
+    . "`r`n"
+    . "" b64 "`r`n"
+    . "--boundary--`r`n"
+    http := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    http.Open("POST", webhookURL, false)
+    http.SetRequestHeader("Content-Type", "multipart/form-data;boundary=boundary")
     http.Send(json)
 }
 
@@ -355,6 +424,7 @@ Receive_WM_COPYDATA(wParam, lParam)
 
     return false
 }
+
 F3::
 killme:
 Send, {F3}
