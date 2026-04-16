@@ -4698,20 +4698,24 @@ SendWebhook(title, color := "16777215") {
 RunStrangeController() {
     global res
     global itemWebhook
+    tryCount := 0
     ; 1080p
     if (res = "1080p") {
         sleep 300
         MouseMove, 46, 520, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1279, 342, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1104, 368, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         Clipboard := "Strange Controller"
         sleep 300
         Send, ^v
@@ -4719,30 +4723,52 @@ RunStrangeController() {
         MouseMove, 848, 479, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
 
-        Loop {
-            PixelSearch, Px, Py, 491, 711, 749, 723, 0x457dff, 3, Fast RGB
-            if (!ErrorLevel) {
+        Loop 10
+        {
+            ErrorLevel := 0
+            sleep 1000
+            PixelSearch, px, py, 504, 614, 568, 626, 0xFF2312, 5, Fast RGB
+            LastStrangeController1 := ErrorLevel = 0
+            
+            ErrorLevel := 0
+            PixelSearch, px, py, 570, 662, 659, 675, 0xFFB176, 5, Fast RGB
+            LastStrangeController2 := ErrorLevel = 0
+            if (LastStrangeController1 and LastStrangeController2) {
+                MouseMove, 685, 580, 3
+                sleep 300
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 300
                 break
             } else {
+                ; retries the controller/randomizer
                 MouseMove, 1279, 342, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
+                sleep 300
+                MouseMove, 1104, 368, 3
+                sleep 300
+                MouseClick, Left
+                gosub DoUIWait
+                Clipboard := "Strange Controller"
+                sleep 300
+                Send, ^v
                 sleep 300
                 MouseMove, 848, 479, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
             }
         }
-        MouseMove, 682, 578, 3
-        sleep 300
-        MouseClick, Left
-        sleep 300
         MouseMove, 1413, 297, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
     }
     ; 1440p
@@ -4751,14 +4777,17 @@ RunStrangeController() {
         MouseMove, 52, 693, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1704, 452, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1473, 489, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         Clipboard := "Strange Controller"
         sleep 300
         Send, ^v
@@ -4766,30 +4795,51 @@ RunStrangeController() {
         MouseMove, 1144, 643, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
 
-        Loop {
-            PixelSearch, Px, Py, 655, 916, 914, 929, 0x457dff, 3, Fast RGB
-            if (!ErrorLevel) {
+        Loop 10 {
+            ErrorLevel := 0
+            sleep 1000
+            PixelSearch, px, py, 667, 821, 732, 831, 0xFF2312, 5, Fast RGB
+            LastStrangeController1 := ErrorLevel = 0
+            
+            ErrorLevel := 0
+            PixelSearch, px, py, 735, 869, 823, 878, 0xFFB176, 5, Fast RGB
+            LastStrangeController2 := ErrorLevel = 0
+            if (LastStrangeController1 and LastStrangeController2) {
+                MouseMove, 910, 775, 3
+                sleep 300
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 300
                 break
             } else {
+                ; retries the controller/randomizer
                 MouseMove, 1704, 452, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
+                sleep 300
+                MouseMove, 1473, 489, 3
+                sleep 300
+                MouseClick, Left
+                gosub DoUIWait
+                Clipboard := "Strange Controller"
+                sleep 300
+                Send, ^v
                 sleep 300
                 MouseMove, 1144, 643, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
             }
         }
-        MouseMove, 920, 774, 3
-        sleep 300
-        MouseClick, Left
-        sleep 300
         MouseMove, 1896, 403, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
     }
     ; 1366x768
@@ -4798,14 +4848,17 @@ RunStrangeController() {
         MouseMove, 42, 376, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 911, 242, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 785, 262, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         Clipboard := "Strange Controller"
         sleep 300
         Send, ^v
@@ -4813,30 +4866,51 @@ RunStrangeController() {
         MouseMove, 616, 347, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
 
-        Loop {
-            PixelSearch, Px, Py, 427, 518, 474, 530, 0x457dff, 3, Fast RGB
-            if (!ErrorLevel) {
+        Loop 10 {
+            ErrorLevel := 0
+            sleep 1000
+            PixelSearch, px, py, 361, 439, 428, 451, 0xFF2312, 5, Fast RGB
+            LastStrangeController1 := ErrorLevel = 0
+            
+            ErrorLevel := 0
+            PixelSearch, px, py, 427, 501, 519, 514, 0xFFB176, 5, Fast RGB
+            LastStrangeController2 := ErrorLevel = 0
+            if (LastStrangeController1 and LastStrangeController2) {
+                MouseMove, 480, 410, 3
+                sleep 300
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 300
                 break
             } else {
+                ; retries the controller/randomizer
                 MouseMove, 911, 242, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
+                sleep 300
+                MouseMove, 785, 262, 3
+                sleep 300
+                MouseClick, Left
+                gosub DoUIWait
+                Clipboard := "Strange Controller"
+                sleep 300
+                Send, ^v
                 sleep 300
                 MouseMove, 616, 347, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
             }
         }
-        MouseMove, 486, 413, 3
-        sleep 300
-        MouseClick, Left
-        sleep 300
         MouseMove, 1017, 214, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
     }
     if (itemWebhook) {
@@ -4848,20 +4922,24 @@ RunStrangeController() {
 RunBiomeRandomizer() {
     global res
     global itemWebhook
+    tryCount := 0
     ; 1080p
     if (res = "1080p") {
         sleep 300
         MouseMove, 46, 520, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1279, 342, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1104, 368, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         Clipboard := "Biome Randomizer"
         sleep 300
         Send, ^v
@@ -4869,30 +4947,51 @@ RunBiomeRandomizer() {
         MouseMove, 848, 479, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
 
-        Loop {
-            PixelSearch, Px, Py, 491, 727, 748, 739, 0x457dff, 3, Fast RGB
-            if (!ErrorLevel) {
+        Loop 10 {
+            ErrorLevel := 0
+            sleep 1000
+            PixelSearch, px, py, 504, 614, 603, 626, 0x5CFFE8, 5, Fast RGB
+            BiomeRandomiser1 := ErrorLevel = 0
+            
+            ErrorLevel := 0
+            PixelSearch, px, py, 603, 614, 670, 628, 0xFF2312, 5, Fast RGB
+            BiomeRandomiser2 := ErrorLevel = 0
+            if (BiomeRandomiser1 and BiomeRandomiser2) {
+                MouseMove, 685, 580, 3
+                sleep 300
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 300
                 break
             } else {
+                ; retries the controller/randomizer
                 MouseMove, 1279, 342, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
+                sleep 300
+                MouseMove, 1104, 368, 3
+                sleep 300
+                MouseClick, Left
+                gosub DoUIWait
+                Clipboard := "Biome Randomizer"
+                sleep 300
+                Send, ^v
                 sleep 300
                 MouseMove, 848, 479, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
             }
         }
-        MouseMove, 682, 578, 3
-        sleep 300
-        MouseClick, Left
-        sleep 300
         MouseMove, 1413, 297, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
     }
     ; 1440p
@@ -4901,14 +5000,17 @@ RunBiomeRandomizer() {
         MouseMove, 52, 693, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 1704, 452, 3
         sleep 300
         MouseClick, Left
-		sleep 300
+        gosub DoUIWait
+        sleep 300
         MouseMove, 1473, 489, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         Clipboard := "Biome Randomizer"
         sleep 300
         Send, ^v
@@ -4916,30 +5018,51 @@ RunBiomeRandomizer() {
         MouseMove, 1144, 643, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
 
-        Loop {
-            PixelSearch, Px, Py, 755, 916, 913, 928, 0x457dff, 3, Fast RGB
-            if (!ErrorLevel) {
+        Loop 10 {
+            ErrorLevel := 0
+            sleep 1000
+            PixelSearch, px, py, 667, 821, 766, 831, 0x5CFFE8, 5, Fast RGB
+            BiomeRandomiser1 := ErrorLevel = 0
+            
+            ErrorLevel := 0
+            PixelSearch, px, py, 768, 820, 835, 834, 0xFF2312, 5, Fast RGB
+            BiomeRandomiser2 := ErrorLevel = 0
+            if (BiomeRandomiser1 and BiomeRandomiser2) {
+                MouseMove, 910, 775, 3
+                sleep 300
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 300
                 break
             } else {
+                ; retries the controller/randomizer
                 MouseMove, 1704, 452, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
+                sleep 300
+                MouseMove, 1473, 489, 3
+                sleep 300
+                MouseClick, Left
+                gosub DoUIWait
+                Clipboard := "Biome Randomizer"
+                sleep 300
+                Send, ^v
                 sleep 300
                 MouseMove, 1144, 643, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
             }
         }
-        MouseMove, 920, 774, 3
-        sleep 300
-        MouseClick, Left
-        sleep 300
         MouseMove, 1896, 403, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
     }
     ; 1366x768
@@ -4948,14 +5071,17 @@ RunBiomeRandomizer() {
         MouseMove, 42, 376, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 911, 242, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
         MouseMove, 785, 262, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         Clipboard := "Biome Randomizer"
         sleep 300
         Send, ^v
@@ -4963,30 +5089,51 @@ RunBiomeRandomizer() {
         MouseMove, 616, 347, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
 
-        Loop {
-            PixelSearch, Px, Py, 433, 518, 480, 530, 0x8b8b8b, 3, Fast RGB
-            if (!ErrorLevel) {
+        Loop 10 {
+            ErrorLevel := 0
+            sleep 1000
+            PixelSearch, px, py, 362, 438, 462, 450, 0x5CFFE8, 5, Fast RGB
+            BiomeRandomiser1 := ErrorLevel = 0
+            
+            ErrorLevel := 0
+            PixelSearch, px, py, 350, 454, 417, 467, 0xFF2312, 5, Fast RGB
+            BiomeRandomiser2 := ErrorLevel = 0
+            if (BiomeRandomiser1 and BiomeRandomiser2) {
+                MouseMove, 480, 410, 3
+                sleep 300
+                MouseClick, Left
+                gosub DoUIWait
+                sleep 300
                 break
             } else {
+                ; retries the controller/randomizer
                 MouseMove, 911, 242, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
+                sleep 300
+                MouseMove, 785, 262, 3
+                sleep 300
+                MouseClick, Left
+                gosub DoUIWait
+                Clipboard := "Biome Randomizer"
+                sleep 300
+                Send, ^v
                 sleep 300
                 MouseMove, 616, 347, 3
                 sleep 300
                 MouseClick, Left
+                gosub DoUIWait
                 sleep 300
             }
         }
-        MouseMove, 486, 413, 3
-        sleep 300
-        MouseClick, Left
-        sleep 300
         MouseMove, 1017, 214, 3
         sleep 300
         MouseClick, Left
+        gosub DoUIWait
         sleep 300
     }
     if (itemWebhook) {
