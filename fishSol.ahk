@@ -4705,17 +4705,14 @@ RunStrangeController() {
         MouseMove, 46, 520, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
         MouseMove, 1279, 342, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
         MouseMove, 1104, 368, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         Clipboard := "Strange Controller"
         sleep 300
         Send, ^v
@@ -4723,7 +4720,6 @@ RunStrangeController() {
         MouseMove, 848, 479, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
 
         Loop 10
@@ -4740,7 +4736,6 @@ RunStrangeController() {
                 MouseMove, 685, 580, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
                 break
             } else {
@@ -4748,12 +4743,10 @@ RunStrangeController() {
                 MouseMove, 1279, 342, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
                 MouseMove, 1104, 368, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 Clipboard := "Strange Controller"
                 sleep 300
                 Send, ^v
@@ -4761,14 +4754,12 @@ RunStrangeController() {
                 MouseMove, 848, 479, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
             }
         }
         MouseMove, 1413, 297, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
     }
     ; 1440p
@@ -4777,17 +4768,14 @@ RunStrangeController() {
         MouseMove, 52, 693, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
         MouseMove, 1704, 452, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
         MouseMove, 1473, 489, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         Clipboard := "Strange Controller"
         sleep 300
         Send, ^v
@@ -4795,7 +4783,6 @@ RunStrangeController() {
         MouseMove, 1144, 643, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
 
         Loop 10 {
@@ -4811,7 +4798,6 @@ RunStrangeController() {
                 MouseMove, 910, 775, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
                 break
             } else {
@@ -4819,12 +4805,10 @@ RunStrangeController() {
                 MouseMove, 1704, 452, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
                 MouseMove, 1473, 489, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 Clipboard := "Strange Controller"
                 sleep 300
                 Send, ^v
@@ -4832,14 +4816,12 @@ RunStrangeController() {
                 MouseMove, 1144, 643, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
             }
         }
         MouseMove, 1896, 403, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
     }
     ; 1366x768
@@ -4848,17 +4830,14 @@ RunStrangeController() {
         MouseMove, 42, 376, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
         MouseMove, 911, 242, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
         MouseMove, 785, 262, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         Clipboard := "Strange Controller"
         sleep 300
         Send, ^v
@@ -4866,7 +4845,6 @@ RunStrangeController() {
         MouseMove, 616, 347, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
 
         Loop 10 {
@@ -4882,7 +4860,6 @@ RunStrangeController() {
                 MouseMove, 480, 410, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
                 break
             } else {
@@ -4890,12 +4867,10 @@ RunStrangeController() {
                 MouseMove, 911, 242, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
                 MouseMove, 785, 262, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 Clipboard := "Strange Controller"
                 sleep 300
                 Send, ^v
@@ -4903,14 +4878,12 @@ RunStrangeController() {
                 MouseMove, 616, 347, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
             }
         }
         MouseMove, 1017, 214, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
     }
     if (itemWebhook) {
@@ -4929,17 +4902,14 @@ RunBiomeRandomizer() {
         MouseMove, 46, 520, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
         MouseMove, 1279, 342, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
         MouseMove, 1104, 368, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         Clipboard := "Biome Randomizer"
         sleep 300
         Send, ^v
@@ -4947,7 +4917,6 @@ RunBiomeRandomizer() {
         MouseMove, 848, 479, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
 
         Loop 10 {
@@ -4963,7 +4932,6 @@ RunBiomeRandomizer() {
                 MouseMove, 685, 580, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
                 break
             } else {
@@ -4971,12 +4939,10 @@ RunBiomeRandomizer() {
                 MouseMove, 1279, 342, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
                 MouseMove, 1104, 368, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 Clipboard := "Biome Randomizer"
                 sleep 300
                 Send, ^v
@@ -4984,14 +4950,12 @@ RunBiomeRandomizer() {
                 MouseMove, 848, 479, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
             }
         }
         MouseMove, 1413, 297, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
     }
     ; 1440p
@@ -5000,17 +4964,14 @@ RunBiomeRandomizer() {
         MouseMove, 52, 693, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
         MouseMove, 1704, 452, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
         MouseMove, 1473, 489, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         Clipboard := "Biome Randomizer"
         sleep 300
         Send, ^v
@@ -5018,7 +4979,6 @@ RunBiomeRandomizer() {
         MouseMove, 1144, 643, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
 
         Loop 10 {
@@ -5034,7 +4994,6 @@ RunBiomeRandomizer() {
                 MouseMove, 910, 775, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
                 break
             } else {
@@ -5042,12 +5001,10 @@ RunBiomeRandomizer() {
                 MouseMove, 1704, 452, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
                 MouseMove, 1473, 489, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 Clipboard := "Biome Randomizer"
                 sleep 300
                 Send, ^v
@@ -5055,14 +5012,12 @@ RunBiomeRandomizer() {
                 MouseMove, 1144, 643, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
             }
         }
         MouseMove, 1896, 403, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
     }
     ; 1366x768
@@ -5071,17 +5026,14 @@ RunBiomeRandomizer() {
         MouseMove, 42, 376, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
         MouseMove, 911, 242, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
         MouseMove, 785, 262, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         Clipboard := "Biome Randomizer"
         sleep 300
         Send, ^v
@@ -5089,7 +5041,6 @@ RunBiomeRandomizer() {
         MouseMove, 616, 347, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
 
         Loop 10 {
@@ -5105,7 +5056,6 @@ RunBiomeRandomizer() {
                 MouseMove, 480, 410, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
                 break
             } else {
@@ -5113,12 +5063,10 @@ RunBiomeRandomizer() {
                 MouseMove, 911, 242, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
                 MouseMove, 785, 262, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 Clipboard := "Biome Randomizer"
                 sleep 300
                 Send, ^v
@@ -5126,14 +5074,12 @@ RunBiomeRandomizer() {
                 MouseMove, 616, 347, 3
                 sleep 300
                 MouseClick, Left
-                gosub DoUIWait
                 sleep 300
             }
         }
         MouseMove, 1017, 214, 3
         sleep 300
         MouseClick, Left
-        gosub DoUIWait
         sleep 300
     }
     if (itemWebhook) {
