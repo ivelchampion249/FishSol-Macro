@@ -260,14 +260,14 @@ CloseChat:
 return
 
 SendToRead:
-    testLines := [ "Wait am [li\|] sti[li\|][li\|] Dreaming\?"
-                    , "Preparing Protoco[li\|]\..Do you want to be my friend\?."
-                    , "Scanning\. Egg cannon charging 2000\%\."
+    testLines := [ "Wait am [li\|] sti[li\|][li\|] Dreaming."
+                    , "Preparing Protoco[li\|]...Do you want to be my friend.."
+                    , "Scanning. Egg cannon charging 2000.."
                     , "Let.s have an egg hunt here"
-                    , "Don.t forget to water the .sma[li\|I][li\|I] p[li\|I]ant\."
+                    , "Don.t forget to water the .sma[li\|I][li\|I] p[li\|I]ant."
                     , "Ho[li\|]y Eggsus"
-                    , "Am [li\|] in spaaaace right now\?[li\|\!]"
-                    , "A Specia[li\|] Egg has Spawned\."]
+                    , "Am [li\|] in spaaaace right now.."
+                    , "A Specia[li\|] Egg has Spawned."]
     Eggs := [ "Dreamer Egg"
             , "Egg v2.0"
             , "The Egg of the Sky"
@@ -279,13 +279,13 @@ SendToRead:
     hasEgg := false
     copy := chat_output
     Clipboard := copy
-    if copy ~= "\[Egg Spawned\]"
+    if copy ~= ".Egg Spawned."
         hasEgg := true
     EggIndex := -1
     
     Loop % testLines.Length()
     {
-        if (copy ~= "i)" . testLines[A_Index]) or (copy ~= "[Egg Spawned]: " . testLines[A_Index])
+        if (copy ~= "i)" . testLines[A_Index]) or (copy ~= ".Egg Spawned.. " . testLines[A_Index])
         {
             hasEgg := true
             EggIndex := A_Index
