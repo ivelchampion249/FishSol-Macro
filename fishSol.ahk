@@ -5907,6 +5907,11 @@ if (toggle) {
         ; PixelSearch loop
         startTime := A_TickCount
         Loop {
+            if (Mod(A_Index, 50) = 49)
+            {
+                Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+                sleep % 10 * 1000
+            }
         if (!toggle)
         break
         if (A_TickCount - startTime > 9000)
@@ -6630,6 +6635,11 @@ if (toggle) {
         ; PixelSearch loop
         startTime := A_TickCount
         Loop {
+            if (Mod(A_Index, 50) = 49)
+            {
+                Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+                sleep % 10 * 1000
+            }
         if (!toggle)
         break
         if (A_TickCount - startTime > 9000)
@@ -7357,6 +7367,11 @@ if (toggle) {
         ; PixelSearch loop
         startTime := A_TickCount
         Loop {
+            if (Mod(A_Index, 50) = 49)
+            {
+                Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+                sleep % 10 * 1000
+            }
         if (!toggle)
         break
         if (A_TickCount - startTime > 9000)

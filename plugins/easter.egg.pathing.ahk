@@ -241,7 +241,9 @@ readlog:
 
                     MouseGetPos, PosX, PosY
                     send, /           ; open chat
-                    click, 440, 35, 1 ; close chat
+                    click, 440, 35, 1 ; move mouse out of way and click off box
+                    sleep, 100
+                    RunWait, powershell.exe -command %snapshot_command%, Hide
                     chat_output := OCR("\ocr\screenshot.png")
                     SetTimer, CloseChat, -800
                     if not RunHDDSafe
@@ -401,6 +403,12 @@ Receive_WM_COPYDATA(wParam, lParam)
     if CopyOfData ~= "start"
     {
         SetTimer, start, -200
+        return true
+    }
+
+    if CopyOfData ~= "ocr"
+    {
+        SetTimer, readlog, -200
         return true
     }
 
