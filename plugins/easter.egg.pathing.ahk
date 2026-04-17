@@ -243,7 +243,7 @@ readlog:
                     send, /           ; open chat
                     click, 440, 35, 1 ; move mouse out of way and click off box
                     sleep, 100
-                    RunWait, powershell.exe -command %snapshot_command%, Hide
+                    RunWait, powershell.exe -command %snapshot_command%,, Hide
                     chat_output := OCR("\ocr\screenshot.png")
                     SetTimer, CloseChat, -800
                     if not RunHDDSafe
@@ -296,7 +296,7 @@ SendToRead:
     }
     if hasEgg 
     {
-        RunWait, powershell.exe -command %snapshot_command%, Hide
+        RunWait, powershell.exe -command %snapshot_command%,, Hide
 
         if (EggIndex > 0)
             try SendWebhookFile(":egg: " Eggs[EggIndex] " Spawned! :egg:", "3468175", snapshot_location)
