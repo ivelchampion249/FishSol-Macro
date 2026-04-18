@@ -19,7 +19,8 @@ global Tesseract := find_tesseract()
 global TesseractDir
 global chat_output := "ERROR"
 global snapshot_location := A_WorkingDir "\ocr\latest.png"
-if hasTesseract
+global iniFilePath := A_WorkingDir "\settings.ini"
+if hasTesseract 
 {
     TesseractDir := StrReplace(Tesseract, "\tesseract.exe", "")
     if not instr(FileExist(A_WorkingDir "\ocr"), "D")
@@ -87,13 +88,13 @@ if hasTesseract
      . "[System.Runtime.InteropServices.Marshal]::FreeHGlobal($PTR)`n"
     . "# THESE FILE CONTENTS CAN STILL BE PASTED INTO POWERSHELL MANUALLY"
 
-    snapshot_command :=  "$Config = Get-Content """ iniFilePath """ | Where-Object { $_ -Match ""="" } | ForEach-Object { $_ -Replace ""#.*"", """" } | ForEach-Object { $_ -Replace ""\\"", ""\\"" } | ForEach-Object { $_ -Replace '""', """" } | ConvertFrom-StringData`; "
-    . "If ($Config.resolution -Eq ""1366x768"") { $height = " height2 " } Else { $height = " height1 " }`; "
+    snapshot_command :=  "$Config = Get-Content '" iniFilePath "' | Where-Object { $_ -Match '=' } | ForEach-Object { $_ -Replace '#.*', '' } | ForEach-Object { $_ -Replace '`""', '' } | ConvertFrom-StringData`; "
+    . "If ($Config.resolution -Eq '1366x768') { $height = " height2 " } Else { $height = " height1 " }`; "
     . "Add-Type -AssemblyName System.Drawing`; "
     . "$Bitmap = New-Object System.Drawing.Bitmap " width ", $height`; "
     . "$Graphics = [System.Drawing.Graphics]::FromImage($Bitmap)`; "
     . "$Graphics.CopyFromScreen(" X ", " Y ", 0, 0, $Bitmap.Size)`; "
-    . "$path = """ snapshot_location """`; "
+    . "$path = '" snapshot_location "'`; "
     . "$Bitmap.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)`; "
     . "$Graphics.Dispose()`; $Bitmap.Dispose()`; "
 
@@ -112,7 +113,6 @@ if hasTesseract
     }
 }
 global standalone := (A_ScriptDir ~= "\\plugins") != 0
-global iniFilePath := A_WorkingDir "\settings.ini"
 
 global RunHDDSafe := true
 global CustomTesseractLocation
@@ -191,7 +191,6 @@ stop:
 return
 
 readlog:
-    settimer, readlog, off
     logDir := LocalAppData "\Roblox\logs"
     newestTime := 0
     newestFile := ""
@@ -233,8 +232,8 @@ readlog:
                 {
                     LastLine := m
 
-                    while not roblox_check()
-                        WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
+                    ; while not roblox_check()
+                    ;     WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
                     sleep 100
 
                     MouseGetPos, PosX, PosY
@@ -251,7 +250,6 @@ readlog:
             }
         }
     }
-    settimer, readlog, on
 return
 
 CloseChat:
@@ -294,7 +292,7 @@ SendToRead:
     }
     if hasEgg 
     {
-        RunWait, powershell.exe -command %snapshot_command%,, Hide
+        RunWait, % "powershell.exe -command " snapshot_command,, Hide
 
         if (EggIndex > 0)
             try SendWebhookFile(":egg: " Eggs[EggIndex] " Spawned! :egg:", "3468175", snapshot_location)
@@ -389,6 +387,7 @@ SendWebhookFile(title, color, file) {
 ; custom reciever
 Receive_WM_COPYDATA(wParam, lParam)
 {
+    global hasTesseract
     StringAddress := NumGet(lParam + 2*A_PtrSize)
     CopyOfData := StrGet(StringAddress)
 
@@ -406,9 +405,13 @@ Receive_WM_COPYDATA(wParam, lParam)
 
     if CopyOfData ~= "ocr"
     {
-        if hasTesseract
+        if hasTesseract 
+        {
             SetTimer, readlog, -1
-        return true
+            return true
+        }
+        else
+            return false
     }
 
     if CopyOfData ~= "kill"
