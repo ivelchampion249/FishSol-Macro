@@ -1,4 +1,4 @@
-#version 1.3.13
+#version 1.3.15
 Set-Location 'C:\Program Files\Tesseract-OCR'
 # Get the height from config resolution															Basically a bunch of replace symbols on the ini file to make it accessable as a variable
 $Config = Get-Content "C:\Nades Programs\AutoHotkeys\EggSols\settings.ini" | Where-Object { $_ -Match "=" } | ForEach-Object { $_ -Replace "#.*", "" } | ForEach-Object { $_ -Replace "\\", "\\" } | ForEach-Object { $_ -Replace '"', "" } | ConvertFrom-StringData

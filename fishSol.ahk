@@ -2199,7 +2199,7 @@ RunSnowmanPathingNow:
 
 RunEasterPathing() {
     Run, "%A_ScriptDir%\plugins\easter.egg.pathing.ahk"
-    sleep 3000
+    sleep 1000
     Send_WM_COPYDATA("ocr", "easter.egg.pathing")
     sleep 3000
     if (pathingMode = "Non Vip Pathing") {
@@ -2233,6 +2233,11 @@ RunEasterPathingVip() {
 		Send, {o down}
 		Sleep 1500
 		Send, {o up}
+        ;force camera in best position
+        MouseMove, 600, 140
+        MouseClick, Right,,,,,D
+        MouseMove, 600, 540, 3
+        MouseClick, Right,,,,,U
 
     } else if (res = "1440p") {
         sleep 350
@@ -2252,6 +2257,11 @@ RunEasterPathingVip() {
 		Sleep 1500
 		Send, {o up}
 
+        ;force camera in best position
+        MouseMove, 600, 140
+        MouseClick, Right,,,,,D
+        MouseMove, 600, 540, 3
+        MouseClick, Right,,,,,U
 
     } else if (res = "1366x768") {
         sleep 350
@@ -2270,6 +2280,11 @@ RunEasterPathingVip() {
 		Send, {o down}
 		Sleep 1500
 		Send, {o up}
+        ;force camera in best position
+        MouseMove, 600, 140
+        MouseClick, Right,,,,,D
+        MouseMove, 600, 540, 3
+        MouseClick, Right,,,,,U
     }
         SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
@@ -2973,6 +2988,11 @@ RunEasterPathingNonVip() {
 		Send, {o down}
 		Sleep 1500
 		Send, {o up}
+        ;force camera in best position
+        MouseMove, 600, 140
+        MouseClick, Right,,,,,D
+        MouseMove, 600, 540, 3
+        MouseClick, Right,,,,,U
 
     } else if (res = "1440p") {
         sleep 350
@@ -2991,6 +3011,11 @@ RunEasterPathingNonVip() {
 		Send, {o down}
 		Sleep 1500
 		Send, {o up}
+        ;force camera in best position
+        MouseMove, 600, 140
+        MouseClick, Right,,,,,D
+        MouseMove, 600, 540, 3
+        MouseClick, Right,,,,,U
 
 
     } else if (res = "1366x768") {
@@ -3010,6 +3035,11 @@ RunEasterPathingNonVip() {
 		Send, {o down}
 		Sleep 1500
 		Send, {o up}
+        ;force camera in best position
+        MouseMove, 600, 140
+        MouseClick, Right,,,,,D
+        MouseMove, 600, 540, 3
+        MouseClick, Right,,,,,U
     }
 
         SetTimer, PressE, 100
@@ -3761,6 +3791,11 @@ RunEasterPathingAbyssal() {
 		Send, {o down}
 		Sleep 1500
 		Send, {o up}
+        ;force camera in best position
+        MouseMove, 600, 140
+        MouseClick, Right,,,,,D
+        MouseMove, 600, 540, 3
+        MouseClick, Right,,,,,U
 
     } else if (res = "1440p") {
         sleep 350
@@ -3819,6 +3854,11 @@ RunEasterPathingAbyssal() {
 		Send, {o down}
 		Sleep 1500
 		Send, {o up}
+        ;force camera in best position
+        MouseMove, 600, 140
+        MouseClick, Right,,,,,D
+        MouseMove, 600, 540, 3
+        MouseClick, Right,,,,,U
 
 
     } else if (res = "1366x768") {
@@ -3881,6 +3921,11 @@ RunEasterPathingAbyssal() {
 		Send, {o down}
 		Sleep 1500
 		Send, {o up}
+        ;force camera in best position
+        MouseMove, 600, 140
+        MouseClick, Right,,,,,D
+        MouseMove, 600, 540, 3
+        MouseClick, Right,,,,,U
     }
     SetTimer, PressE, 100
     Send_WM_COPYDATA("start", "easter.egg.pathing")
