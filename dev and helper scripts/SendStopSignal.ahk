@@ -2,7 +2,7 @@
 SendMode Input
 SetWorkingDir, %A_ScriptDir%
 
-msgbox % Send_WM_COPYDATA("start", "easter.egg.pathing")
+msgbox % Send_WM_COPYDATA("stop", "easter.egg.pathing")
         
 Send_WM_COPYDATA(ByRef StringToSend, ByRef TargetScriptTitle)
 {
