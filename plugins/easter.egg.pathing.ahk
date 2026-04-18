@@ -4,7 +4,7 @@
     for best results have gui transparency set at max so chat can't be seen through!
 */
 
-; #Requires AutoHotkey v1.1
+#Requires AutoHotkey v1.1
 #NoEnv
 #SingleInstance, Force
 #Persistent
@@ -20,6 +20,34 @@ global TesseractDir
 global chat_output := "ERROR"
 global snapshot_location := A_WorkingDir "\ocr\latest.png"
 global iniFilePath := A_WorkingDir "\settings.ini"
+
+global RunHDDSafe := true
+global CustomTesseractLocation
+global validWebhook := false
+global res
+global webhookURL
+
+if (FileExist(iniFilePath)) {
+    IniRead, res, %iniFilePath%, "Macro", "resolution"
+    IniRead, RunHDDSafe, %iniFilePath%, "OCR", "RunHDDSafe"
+    IniRead, CustomTesseractLocation, %iniFilePath%, "OCR", "CustomTesseractLocation"
+    IniRead, tempWebhook, %iniFilePath%, "Macro", "webhookURL"
+    IniRead, easterPathingWebhook, %iniFilePath%, "Easter", 0
+    if (tempWebhook != "ERROR")
+    {
+        webhookURL := tempWebhook
+        if (InStr(webhookURL, "discord"))
+            validWebhook := true
+    }
+    if (RunHDDSafe = "ERROR")
+        IniWrite, 1, %iniFilePath%, "OCR", "RunHDDSafe"
+    if (CustomTesseractLocation = "ERROR") or (not FileExist(CustomTesseractLocation))
+    {
+        IniWrite, % "", %iniFilePath%, "OCR", "CustomTesseractLocation"
+        CustomTesseractLocation := ""
+    }
+}
+
 if hasTesseract 
 {
     TesseractDir := StrReplace(Tesseract, "\tesseract.exe", "")
@@ -114,31 +142,6 @@ if hasTesseract
 }
 global standalone := (A_ScriptDir ~= "\\plugins") != 0
 
-global RunHDDSafe := true
-global CustomTesseractLocation
-global validWebhook := false
-global res
-global webhookURL
-
-if (FileExist(iniFilePath)) {
-    IniRead, res, %iniFilePath%, "Macro", "resolution"
-    IniRead, RunHDDSafe, %iniFilePath%, "OCR", "RunHDDSafe"
-    IniRead, CustomTesseractLocation, %iniFilePath%, "OCR", "CustomTesseractLocation"
-    IniRead, tempWebhook, %iniFilePath%, "Macro", "webhookURL"
-    if (tempWebhook != "ERROR")
-    {
-        webhookURL := tempWebhook
-        if (InStr(webhookURL, "discord"))
-            validWebhook := true
-    }
-    if (RunHDDSafe = "ERROR")
-        IniWrite, 1, %iniFilePath%, "OCR", "RunHDDSafe"
-    if (CustomTesseractLocation = "ERROR") or (not FileExist(CustomTesseractLocation))
-    {
-        IniWrite, % "", %iniFilePath%, "OCR", "CustomTesseractLocation"
-        CustomTesseractLocation := ""
-    }
-}
 
 global LastLine := ""
 
@@ -189,72 +192,88 @@ stop:
         SetTimer, MerchantClick3, off
     }
 return
-
+;always run routine
 readlog:
-    logDir := LocalAppData "\Roblox\logs"
-    newestTime := 0
-    newestFile := ""
-
-    ; Find latest log file
-    Loop, Files, %logDir%\*.log, F
-    {
-        if (A_LoopFileTimeModified > newestTime) {
-            newestTime := A_LoopFileTimeModified
-            newestFile := A_LoopFileFullPath
-        }
-    }
-
-    if !newestFile
-        return
-
-    file := FileOpen(newestFile, "r")
-    if !IsObject(file)
-        return
-
-    ; Read only the last ~10 KB (adjust if needed)
-    size := file.Length
-    chunkSize := 10240
-    if (size > chunkSize)
-        file.Seek(-chunkSize, 2) ; 2 = from end of file
-    content := file.Read()
-    file.Close()
-    lines := StrSplit(content, "`n")
-    Loop % lines.MaxIndex()
-    {
-        line := lines[lines.MaxIndex() - A_Index + 1]
-        if InStr(line, "[FLog::Output]")
-        {
-            if RegExMatch(line, "([\d\w-\.:,]+)(?= \[FLog::Output\] egg spawned!)", m)
-            {
-                if (LastLine ~= m)
-                    Break
-                Else
-                {
-                    LastLine := m
-
-                    while not roblox_check()
-                        WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
-                    sleep 300
-
-                    MouseGetPos, PosX, PosY
-                    send, /           ; open chat
-                    sleep, 300
-                    send, {esc}
-                    sleep, 300
-                    RunWait, powershell.exe -command %snapshot_command%,, Hide
-                    chat_output := OCR("\ocr\screenshot.png")
-                    SetTimer, CloseChat, -800
-                    if not RunHDDSafe
-                        gosub SendToRead
-                    Break
-                }
-            }
-        }
-    }
+    while not roblox_check()
+        WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
+    sleep 300
+    MouseGetPos, PosX, PosY
+    send, /           ; open chat
+    sleep, 300
+    send, {esc}
+    sleep, 300
+    RunWait, powershell.exe -command %snapshot_command%,, Hide
+    chat_output := OCR("\ocr\screenshot.png")
+    SetTimer, CloseChat, -800
+    if not RunHDDSafe
+        gosub SendToRead
 return
+;old read roblox log routine
+; readlogold:
+;     logDir := LocalAppData "\Roblox\logs"
+;     newestTime := 0
+;     newestFile := ""
+
+;     ; Find latest log file
+;     Loop, Files, %logDir%\*.log, F
+;     {
+;         if (A_LoopFileTimeModified > newestTime) {
+;             newestTime := A_LoopFileTimeModified
+;             newestFile := A_LoopFileFullPath
+;         }
+;     }
+
+;     if !newestFile
+;         return
+
+;     file := FileOpen(newestFile, "r")
+;     if !IsObject(file)
+;         return
+
+;     ; Read only the last ~10 KB (adjust if needed)
+;     size := file.Length
+;     chunkSize := 10240
+;     if (size > chunkSize)
+;         file.Seek(-chunkSize, 2) ; 2 = from end of file
+;     content := file.Read()
+;     file.Close()
+;     lines := StrSplit(content, "`n")
+;     Loop % lines.MaxIndex()
+;     {
+;         line := lines[lines.MaxIndex() - A_Index + 1]
+;         if InStr(line, "[FLog::Output]")
+;         {
+;             if RegExMatch(line, "([\d\w-\.:,]+)(?= \[FLog::Output\] egg spawned!)", m)
+;             {
+;                 ; if (LastLine ~= m)
+;                 ;     Break
+;                 ; Else
+;                 ; {
+;                 ;     LastLine := m
+
+;                     while not roblox_check()
+;                         WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
+;                     sleep 300
+
+;                     MouseGetPos, PosX, PosY
+;                     send, /           ; open chat
+;                     sleep, 300
+;                     send, {esc}
+;                     sleep, 300
+;                     RunWait, powershell.exe -command %snapshot_command%,, Hide
+;                     chat_output := OCR("\ocr\screenshot.png")
+;                     SetTimer, CloseChat, -800
+;                     if not RunHDDSafe
+;                         gosub SendToRead
+;                     Break
+;                 ; }
+;             }
+;         }
+;     }
+; return
 
 CloseChat:
-    MouseClick, Left, 140, 35,, 3
+    MouseClick, Left, 140, 35,, 2
     sleep, 100
     MouseMove, %PosX%, %PosY%, 1
 return
@@ -323,8 +342,8 @@ base64(file) {
 
 
 SendWebhook(title, color := "3468175") {
-    global webhookURL
-    if not validWebhook
+    global webhookURL, easterPathingWebhook
+    if not validWebhook or not easterPathingWebhook
         Return
     
     time := A_NowUTC
@@ -348,8 +367,8 @@ SendWebhook(title, color := "3468175") {
     http.Send(json)
 }
 SendWebhookFile(title, color, file) {
-    global webhookURL
-    if not validWebhook
+    global webhookURL, easterPathingWebhook
+    if not validWebhook or not easterPathingWebhook
         Return
     b64 := base64(file)
     time := A_NowUTC

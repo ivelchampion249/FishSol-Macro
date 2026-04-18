@@ -2227,11 +2227,11 @@ RunEasterPathingVip() {
         MouseClick, Left
         sleep 350
         Send, {i down}
-        Sleep 1500
+        Sleep 2500
         Send, {i up}
 		sleep 100
 		Send, {o down}
-		Sleep 1500
+		Sleep 2500
 		Send, {o up}
         ;force camera in best position
         MouseMove, 600, 140
@@ -2250,11 +2250,11 @@ RunEasterPathingVip() {
         MouseClick, Left
         sleep 350
         Send, {i down}
-        Sleep 1500
+        Sleep 2500
         Send, {i up}
 		sleep 100
 		Send, {o down}
-		Sleep 1500
+		Sleep 2500
 		Send, {o up}
 
         ;force camera in best position
@@ -2274,11 +2274,11 @@ RunEasterPathingVip() {
         MouseClick, Left
         sleep 350
         Send, {i down}
-        Sleep 1500
+        Sleep 2500
         Send, {i up}
 		sleep 100
 		Send, {o down}
-		Sleep 1500
+		Sleep 2500
 		Send, {o up}
         ;force camera in best position
         MouseMove, 600, 140
@@ -2982,11 +2982,11 @@ RunEasterPathingNonVip() {
         MouseClick, Left
         sleep 350
         Send, {i down}
-        Sleep 1500
+        Sleep 2500
         Send, {i up}
 		sleep 100
 		Send, {o down}
-		Sleep 1500
+		Sleep 2500
 		Send, {o up}
         ;force camera in best position
         MouseMove, 600, 140
@@ -3005,11 +3005,11 @@ RunEasterPathingNonVip() {
         MouseClick, Left
         sleep 350
         Send, {i down}
-        Sleep 1500
+        Sleep 2500
         Send, {i up}
 		sleep 100
 		Send, {o down}
-		Sleep 1500
+		Sleep 2500
 		Send, {o up}
         ;force camera in best position
         MouseMove, 600, 140
@@ -3029,11 +3029,11 @@ RunEasterPathingNonVip() {
         MouseClick, Left
         sleep 350
         Send, {i down}
-        Sleep 1500
+        Sleep 2500
         Send, {i up}
 		sleep 100
 		Send, {o down}
-		Sleep 1500
+		Sleep 2500
 		Send, {o up}
         ;force camera in best position
         MouseMove, 600, 140
@@ -3785,11 +3785,11 @@ RunEasterPathingAbyssal() {
         MouseClick, Left
         sleep 350
         Send, {i down}
-        Sleep 1500
+        Sleep 2500
         Send, {i up}
 		sleep 100
 		Send, {o down}
-		Sleep 1500
+		Sleep 2500
 		Send, {o up}
         ;force camera in best position
         MouseMove, 600, 140
@@ -3848,11 +3848,11 @@ RunEasterPathingAbyssal() {
         MouseClick, Left
         sleep 350
         Send, {i down}
-        Sleep 1500
+        Sleep 2500
         Send, {i up}
 		sleep 100
 		Send, {o down}
-		Sleep 1500
+		Sleep 2500
 		Send, {o up}
         ;force camera in best position
         MouseMove, 600, 140
@@ -3915,11 +3915,11 @@ RunEasterPathingAbyssal() {
         sleep 4000
         Send, {i up}
         Send, {i down}
-        Sleep 1500
+        Sleep 2500
         Send, {i up}
 		sleep 100
 		Send, {o down}
-		Sleep 1500
+		Sleep 2500
 		Send, {o up}
         ;force camera in best position
         MouseMove, 600, 140
