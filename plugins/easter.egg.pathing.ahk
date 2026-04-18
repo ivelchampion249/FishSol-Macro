@@ -153,7 +153,7 @@ return
 
 start:
     ; Gosub, readlog
-    Sleep 5000
+    ; Sleep 5000
     if (res = "1440p")
     {
         SetTimer, FS1440p, 1000
@@ -232,14 +232,15 @@ readlog:
                 {
                     LastLine := m
 
-                    ; while not roblox_check()
-                    ;     WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
-                    sleep 100
+                    while not roblox_check()
+                        WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
+                    sleep 300
 
                     MouseGetPos, PosX, PosY
                     send, /           ; open chat
-                    click, 440, 35, 1 ; move mouse out of way and click off box
-                    sleep, 100
+                    sleep, 300
+                    send, {esc}
+                    sleep, 300
                     RunWait, powershell.exe -command %snapshot_command%,, Hide
                     chat_output := OCR("\ocr\screenshot.png")
                     SetTimer, CloseChat, -800
@@ -253,7 +254,8 @@ readlog:
 return
 
 CloseChat:
-    click, 140, 35, 1 ; close chat
+    MouseClick, Left, 140, 35,, 3
+    sleep, 100
     MouseMove, %PosX%, %PosY%, 1
 return
 
@@ -393,13 +395,13 @@ Receive_WM_COPYDATA(wParam, lParam)
 
     if CopyOfData ~= "stop|pause"
     {
-        SetTimer, stop, -200
+        SetTimer, stop, -1
         return true
     }
 
     if CopyOfData ~= "start"
     {
-        SetTimer, start, -200
+        SetTimer, start, -1
         return true
     }
 
