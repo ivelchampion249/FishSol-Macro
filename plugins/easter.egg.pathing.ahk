@@ -25,7 +25,7 @@ if hasTesseract
     if not instr(FileExist(A_WorkingDir "\ocr"), "D")
         FileCreateDir, % A_WorkingDir "\ocr"
     FileReadLine, VersionLine, % A_WorkingDir "\ocr\MemoryOCR_CaptureRobloxChat.ps1", 1
-    ExpectedFileVersion := "#version 1.3.13"
+    ExpectedFileVersion := "#version 1.3.15"
 
     ; this builds the script file string using the current tesseract location,
     ;    Fishsol script location and 5 fixed variables below
@@ -147,14 +147,12 @@ gui, new, +ToolWindow,easter.egg.pathing
 gui, add, Text, ,TEST FILE STUFF
 gui, show, w200 Minimize
 
-if hasTesseract
-    SetTimer, readlog, 60000
+; if hasTesseract
+;     SetTimer, readlog, 60000
 return
 
 start:
     ; Gosub, readlog
-    if hasTesseract
-        SetTimer, readlog, 60000
     Sleep 5000
     if (res = "1440p")
     {
@@ -408,7 +406,8 @@ Receive_WM_COPYDATA(wParam, lParam)
 
     if CopyOfData ~= "ocr"
     {
-        SetTimer, readlog, -200
+        if hasTesseract
+            SetTimer, readlog, -1
         return true
     }
 
@@ -426,7 +425,7 @@ Receive_WM_COPYDATA(wParam, lParam)
     }
     Else
     {
-        MsgBox, % CopyOfData
+        MsgBox, % "Unknown Message: `n" CopyOfData
         return true
     }
 

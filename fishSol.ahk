@@ -2199,6 +2199,9 @@ RunSnowmanPathingNow:
 
 RunEasterPathing() {
     Run, "%A_ScriptDir%\plugins\easter.egg.pathing.ahk"
+    sleep 3000
+    Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+    sleep 3000
     if (pathingMode = "Non Vip Pathing") {
         RunEasterPathingNonVip()
     } else if (pathingMode = "Abyssal Pathing") {
@@ -2272,7 +2275,7 @@ RunEasterPathingVip() {
         Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
+            SetTimer, MerchantClick2, 5000
         } else if (res = "1440p") {
             SetTimer, MerchantClick1, 5000
         } else if (res = "1366x768") {
@@ -2445,6 +2448,8 @@ RunEasterPathingVip() {
             SetTimer, MerchantClick3, Off
         }
 
+        Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+        sleep 3000
         Send, {esc}
         sleep 650
         Send, {r}
@@ -2562,6 +2567,8 @@ RunEasterPathingVip() {
             return
         }
 
+        Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+        sleep 3000
         Send, {esc}
         sleep 650
         Send, {r}
@@ -3176,6 +3183,8 @@ RunEasterPathingNonVip() {
             SetTimer, MerchantClick3, Off
         }
 
+        Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+        sleep 3000
         Send, {esc}
         sleep 780
         Send, {r}
@@ -3292,6 +3301,8 @@ RunEasterPathingNonVip() {
             return
         }
 
+        Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+        sleep 3000
         Send, {esc}
         sleep 650
         Send, {r}
@@ -4020,6 +4031,8 @@ RunEasterPathingAbyssal() {
             SetTimer, MerchantClick3, Off
         }
 
+        Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+        sleep 3000
         Send, {esc}
         sleep 650
         Send, {r}
@@ -4128,6 +4141,8 @@ RunEasterPathingAbyssal() {
             return
         }
 
+        Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+        sleep 3000
         Send, {esc}
         sleep 650
         Send, {r}
@@ -5910,7 +5925,7 @@ if (toggle) {
             if (Mod(A_Index, 50) = 49)
             {
                 Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-                sleep % 10 * 1000
+                sleep % 3 * 1000
             }
         if (!toggle)
         break
@@ -6069,7 +6084,6 @@ if (toggle) {
                 continue
             }
         }
-
         if (easterPathing) {
             elapsed := A_TickCount - startTick
             if ((easterPathingLastRun = 0 && elapsed >= easterPathingTime) || (easterPathingLastRun > 0 && (elapsed - easterPathingLastRun) >= easterPathingInterval)) {
@@ -6638,7 +6652,7 @@ if (toggle) {
             if (Mod(A_Index, 50) = 49)
             {
                 Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-                sleep % 10 * 1000
+                sleep % 3 * 1000
             }
         if (!toggle)
         break
@@ -7370,7 +7384,7 @@ if (toggle) {
             if (Mod(A_Index, 50) = 49)
             {
                 Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-                sleep % 10 * 1000
+                sleep % 3 * 1000
             }
         if (!toggle)
         break
