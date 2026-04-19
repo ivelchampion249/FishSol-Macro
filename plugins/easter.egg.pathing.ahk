@@ -21,15 +21,29 @@ global chat_output := "ERROR"
 global snapshot_location := A_WorkingDir "\ocr\latest.png"
 global iniFilePath := A_WorkingDir "\settings.ini"
 
-global RunHDDSafe := true
 global CustomTesseractLocation
 global validWebhook := false
 global res
 global webhookURL
+global testLines := [ "Wait am [li\|] sti[li\|][li\|] Dreaming."
+                    , "Preparing Protoco[li\|]...Do you want to be my friend.."
+                    , "Scanning. Egg cannon charging 2000.."
+                    , "Let.s have an egg hunt here"
+                    , "Don.t forget to water the .sma[li\|I][li\|I] p[li\|I]ant."
+                    , "Ho[li\|]y Eggsus"
+                    , "Am [li\|] in spaaaace right now.."
+                    , "A Specia[li\|] Egg has Spawned."]
+global Eggs := [ "Dreamer Egg"
+               , "Egg v2.0"
+               , "The Egg of the Sky"
+               , "Forest Egg"
+               , "Blooming Egg"
+               , "Angelic Egg"
+               , "Andromeda Egg"
+               , "Royal or Hatch Egg"]
 
 if (FileExist(iniFilePath)) {
     IniRead, res, %iniFilePath%, "Macro", "resolution"
-    IniRead, RunHDDSafe, %iniFilePath%, "OCR", "RunHDDSafe"
     IniRead, CustomTesseractLocation, %iniFilePath%, "OCR", "CustomTesseractLocation"
      IniRead, tempWebhook, %iniFilePath%, "Macro", "webhookURL"
      IniRead, easterPathingWebhook, %iniFilePath%, "Easter", 0
@@ -39,8 +53,6 @@ if (FileExist(iniFilePath)) {
          if (InStr(webhookURL, "discord"))
              validWebhook := true
      }
-     if (RunHDDSafe = "ERROR")
-         IniWrite, 1, %iniFilePath%, "OCR", "RunHDDSafe"
     if (CustomTesseractLocation = "ERROR") or (not FileExist(CustomTesseractLocation))
     {
         IniWrite, % "", %iniFilePath%, "OCR", "CustomTesseractLocation"
@@ -194,6 +206,7 @@ stop:
         SetTimer, MerchantClick3, off
     }
 return
+
 ;always run routine
 readlog:
     while not roblox_check()
@@ -204,75 +217,9 @@ readlog:
     sleep, 300
     send, {esc}
     sleep, 300
-    ; RunWait, powershell.exe -command %snapshot_command%,, Hide
-    chat_output := OCR("\ocr\screenshot.png")
+    Run, powershell.exe .\ocr\MemoryOCR_CaptureRobloxChat.ps1,, Hide
     SetTimer, CloseChat, -3000
-    if not RunHDDSafe
-        gosub SendToRead
 return
-;old read roblox log routine
-; readlogold:
-;     logDir := LocalAppData "\Roblox\logs"
-;     newestTime := 0
-;     newestFile := ""
-
-;     ; Find latest log file
-;     Loop, Files, %logDir%\*.log, F
-;     {
-;         if (A_LoopFileTimeModified > newestTime) {
-;             newestTime := A_LoopFileTimeModified
-;             newestFile := A_LoopFileFullPath
-;         }
-;     }
-
-;     if !newestFile
-;         return
-
-;     file := FileOpen(newestFile, "r")
-;     if !IsObject(file)
-;         return
-
-;     ; Read only the last ~10 KB (adjust if needed)
-;     size := file.Length
-;     chunkSize := 10240
-;     if (size > chunkSize)
-;         file.Seek(-chunkSize, 2) ; 2 = from end of file
-;     content := file.Read()
-;     file.Close()
-;     lines := StrSplit(content, "`n")
-;     Loop % lines.MaxIndex()
-;     {
-;         line := lines[lines.MaxIndex() - A_Index + 1]
-;         if InStr(line, "[FLog::Output]")
-;         {
-;             if RegExMatch(line, "([\d\w-\.:,]+)(?= \[FLog::Output\] egg spawned!)", m)
-;             {
-;                 ; if (LastLine ~= m)
-;                 ;     Break
-;                 ; Else
-;                 ; {
-;                 ;     LastLine := m
-
-;                     while not roblox_check()
-;                         WinActivate, % "ahk_exe RobloxPlayerBeta.exe"
-;                     sleep 300
-
-;                     MouseGetPos, PosX, PosY
-;                     send, /           ; open chat
-;                     sleep, 300
-;                     send, {esc}
-;                     sleep, 300
-;                     RunWait, powershell.exe -command %snapshot_command%,, Hide
-;                     chat_output := OCR("\ocr\screenshot.png")
-;                     SetTimer, CloseChat, -800
-;                     if not RunHDDSafe
-;                         gosub SendToRead
-;                     Break
-;                 ; }
-;             }
-;         }
-;     }
-; return
 
 CloseChat:
     MouseClick, Left, 140, 35,, 3
@@ -281,22 +228,6 @@ CloseChat:
 return
 
 SendToRead:
-    testLines := [ "Wait am [li\|] sti[li\|][li\|] Dreaming."
-                    , "Preparing Protoco[li\|]...Do you want to be my friend.."
-                    , "Scanning. Egg cannon charging 2000.."
-                    , "Let.s have an egg hunt here"
-                    , "Don.t forget to water the .sma[li\|I][li\|I] p[li\|I]ant."
-                    , "Ho[li\|]y Eggsus"
-                    , "Am [li\|] in spaaaace right now.."
-                    , "A Specia[li\|] Egg has Spawned."]
-    Eggs := [ "Dreamer Egg"
-            , "Egg v2.0"
-            , "The Egg of the Sky"
-            , "Forest Egg"
-            , "Blooming Egg"
-            , "Angelic Egg"
-            , "Andromeda Egg"
-            , "Royal or Hatch Egg"]
     hasEgg := false
     copy := chat_output
     Clipboard := copy
@@ -369,10 +300,16 @@ SendWebhook(title, color := "3468175") {
     http.SetRequestHeader("Content-Type", "application/json")
     http.Send(json)
 }
+
 SendWebhookFile(title, color, file) {
     global webhookURL, easterPathingWebhook
     if not validWebhook or not easterPathingWebhook
         Return
+    if not FileExist(snapshot_location)
+    {
+        try SendWebhook(title, color)
+        return
+    }
     b64 := base64(file)
     time := A_NowUTC
     timestamp := SubStr(time,1,4) "-" SubStr(time,5,2) "-" SubStr(time,7,2) "T" SubStr(time,9,2) ":" SubStr(time,11,2) ":" SubStr(time,13,2) ".000Z"
@@ -420,14 +357,12 @@ Receive_WM_COPYDATA(wParam, lParam)
         SetTimer, stop, -1
         return true
     }
-
-    if CopyOfData ~= "start"
+    else if CopyOfData ~= "start"
     {
         SetTimer, start, -1
         return true
     }
-
-    if CopyOfData ~= "ocr"
+    else if CopyOfData ~= "ocr"
     {
         if hasTesseract 
         {
@@ -437,20 +372,18 @@ Receive_WM_COPYDATA(wParam, lParam)
         else
             return false
     }
-
-    if CopyOfData ~= "kill"
+    else if CopyOfData ~= "kill"
     {
         SetTimer, killme, -1
         return true
     }
-    
-    if InStr(CopyOfData, "Data:{") and InStr(CopyOfData, "}:ataD")
+    else if InStr(CopyOfData, "Data:{") and InStr(CopyOfData, "}:ataD")
     {
         chat_output := RegExReplace(CopyOfData, "(?:Data:{)|(?:}:ataD)", "")
         SetTimer, SendToRead, -200
         return true
     }
-    Else
+    else
     {
         MsgBox, % "Unknown Message: `n" CopyOfData
         return true
@@ -587,52 +520,6 @@ roblox_check()
     IfWinActive, ahk_exe RobloxPlayerBeta.exe
         Return true
     Return false
-}
-
-
-OCR(InputFile)
-{
-    global Tesseract, TesseractDir, RunHDDSafe
-    if RunHDDSafe
-    {
-        ; please reference MemoryOCR_CaptureRobloxChat in ocr folder or in code above
-        Run, powershell.exe .\ocr\MemoryOCR_CaptureRobloxChat.ps1,, Hide
-        ;run don't wait
-        return 0
-    }
-    else ; else run hdd unsafe version
-    {
-        snapshot_chat(InputFile)
-    }
-    commands := ".\tesseract.exe '" . A_WorkingDir . InputFile "' '" A_WorkingDir . "\ocr\last" "' -l eng"
-    Return runWaitMany(commands)
-}
-
-runWaitMany(commands) {
-    global Tesseract, TesseractDir
-
-    RunWait % "powershell.exe -command ""set-location '" TesseractDir "' `; " commands """",, HIDE
-    FileLocation := SubStr(A_ScriptDir, 1, StrLen(A_ScriptDir) - 8) "\ocr\last.txt"
-    FileRead, output, % SubStr(A_ScriptDir, 1, StrLen(A_ScriptDir) - 8) "\ocr\last.txt"
-    Return output
-}
-
-snapshot_chat(InputFile)
-{
-    global res
-    ;force roblox to be in front
-    height := (res = "1366x768") ? 190 : 290
-    
-    commands := "Add-Type -AssemblyName System.Drawing `; "
-    . " $Bitmap = New-Object System.Drawing.Bitmap 450, " . height . " `; "
-    . " $Graphics = [System.Drawing.Graphics]::FromImage($Bitmap) `; "
-    . " $Graphics.CopyFromScreen(10, 100, 0, 0, $Bitmap.Size) `; "
-    . " $File = '" . SubStr(A_ScriptDir, 1, StrLen(A_ScriptDir) - 8) . InputFile . "' `; "
-    . " $Bitmap.Save($File, [System.Drawing.Imaging.ImageFormat]::Png) `; "
-    . " $Graphics.Dispose() `; "
-    . " $Bitmap.Dispose() `; "
-    Run % "powershell.exe -command """ commands """",, HIDE ; Get screenshot of active chat
-
 }
 
 ; get location of tesseract install

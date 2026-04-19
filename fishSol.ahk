@@ -363,7 +363,6 @@ Gui, Color, 0x1E1E1E
 Gui, Add, Picture, x440 y600 w27 h19, %A_ScriptDir%\img\Discord.png
 Gui, Add, Picture, x533 y601 w18 h19, %A_ScriptDir%\img\Robux.png
 
-
 Gui, Font, s11 cWhite Bold Underline, Segoe UI
 Gui, Add, Text, x425 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
 Gui, Add, Text, x325 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
@@ -396,7 +395,6 @@ Gui, Font, s11 cWhite Bold Underline, Segoe UI
 Gui, Add, Text, x425 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
 Gui, Add, Text, x325 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
 
-
 Gui, Font, s11 cWhite Normal Bold
 Gui, Add, Text, x45 y110 w60 h25 BackgroundTrans, Status:
 Gui, Add, Text, x98 y110 w150 h25 vStatusText BackgroundTrans c0xFF4444, Stopped
@@ -408,8 +406,6 @@ Gui, Add, Button, x205 y140 w70 h35 gCloseScript vStopBtn c0xFF4444 +0x8000, Sto
 
 Gui, Font, s8 c0xCCCCCC
 Gui, Add, Text, x45 y185 w240 h15 BackgroundTrans, Hotkeys: F1=Start - F2=Pause - F3=Stop
-
-
 
 Gui, Font, s10 cWhite Bold, Segoe UI
 Gui, Font, s10 cWhite Bold
@@ -482,7 +478,6 @@ Gui, Add, Text, x102 y405 w120 h30 vCyclesText BackgroundTrans c0x00DD00, 0
 Gui, Font, s9 c0xCCCCCC Normal
 Gui, Add, Text, x50 y545 w500 h20 BackgroundTrans, Requirements: 100`% Windows scaling - Roblox in fullscreen mode
 Gui, Add, Text, x50 y563 w500 h20 BackgroundTrans, For best results, make sure you have good internet and avoid screen overlays
-
 
 Gui, Tab, Misc
 
@@ -590,7 +585,6 @@ Gui, Font, s11 cWhite Bold Underline, Segoe UI
 Gui, Add, Text, x430 y600 w150 h38 Center BackgroundTrans c0x00FF00 gDonateClick, Donate!
 Gui, Add, Text, x330 y600 w138 h38 Center BackgroundTrans c0x00D4FF gNeedHelpClick, Need Help?
 
-
 if (hasBiomesPlugin) {
     Gui, Tab, Biomes
 
@@ -608,7 +602,7 @@ if (hasBiomesPlugin) {
     Gui, Add, CheckBox, x250 y320 w140 h25 vBiomeHell gSaveBiomeToggles Checked1 cWhite, Hell
     Gui, Add, CheckBox, x250 y350 w140 h25 vBiomeStarfall gSaveBiomeToggles Checked1 cWhite, Starfall
     Gui, Add, CheckBox, x250 y380 w140 h25 vBiomeCorruption gSaveBiomeToggles Checked1 cWhite, Corruption
-    Gui, Add, CheckBox, x250 y410 w140 h25 vBiomeEgglan gSaveBiomeToggles Checked1 cWhite, Eggland
+    Gui, Add, CheckBox, x250 y410 w140 h25 vBiomeEggland gSaveBiomeToggles Checked1 cWhite, Eggland
 
     Gui, Add, CheckBox, x420 y380 w140 h25 vBiomeNormal gSaveBiomeToggles Checked1 cWhite, Normal
     Gui, Add, CheckBox, x420 y320 w140 h25 vBiomeSandStorm gSaveBiomeToggles Checked1 cWhite, Sand Storm
@@ -2286,16 +2280,8 @@ RunEasterPathingVip() {
         MouseMove, 600, 540, 3
         MouseClick, Right,,,,,U
     }
-        SetTimer, PressE, 100
-        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
-        if (res = "1080p") {
-            SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
+        Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         Send, {%keyW% Down}
         sleep 2000
@@ -2314,16 +2300,7 @@ RunEasterPathingVip() {
         Send, {s Up}
         sleep 100
 
-        SetTimer, PressE, Off
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
 
         Send, {space Down}
         sleep 50
@@ -2340,16 +2317,7 @@ RunEasterPathingVip() {
         Send, {%keyA% Down}
         sleep 200
 
-        SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
 
         sleep 800
         Send, {%keyA% Up}
@@ -2429,7 +2397,6 @@ RunEasterPathingVip() {
         sleep 3300
         Send, {s Up}
 
-        SetTimer, PressE, Off
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
@@ -2455,14 +2422,6 @@ RunEasterPathingVip() {
             sleep 250
         }
 
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
-
         Send_WM_COPYDATA("ocr", "easter.egg.pathing")
         
         GoSub, DoChatWait
@@ -2473,16 +2432,7 @@ RunEasterPathingVip() {
         Send, {enter}
         sleep 2600
 
-        SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
 
         Send, {%keyW% Down}
         sleep 2000
@@ -2509,7 +2459,6 @@ RunEasterPathingVip() {
         Send, {%keyW% Up}
         sleep 1300
 
-        SetTimer, PressE, Off
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         Send, {s Down}
@@ -2517,7 +2466,6 @@ RunEasterPathingVip() {
         Send, {s Up}
         sleep 1000
 
-        SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
 
         sleep 2500
@@ -2544,7 +2492,6 @@ RunEasterPathingVip() {
         Send, {%keyW% Up}
         sleep 200
 
-        SetTimer, PressE, Off
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
@@ -2570,14 +2517,6 @@ RunEasterPathingVip() {
             sleep 250
         }
 
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
-
         if (limitedPathing) {
             MouseMove, %originalX%, %originalY%, 0
             return
@@ -2592,16 +2531,7 @@ RunEasterPathingVip() {
         sleep 650
         Send, {enter}
 
-        SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
 
         sleep 2600
         Send, {%keyW% Down}
@@ -2928,7 +2858,6 @@ RunEasterPathingVip() {
         sleep 2800
         Send, {d Up}
 
-        SetTimer, PressE, Off
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
@@ -2954,19 +2883,9 @@ RunEasterPathingVip() {
             sleep 250
         }
 
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
-
         MouseMove, %originalX%, %originalY%, 0
 
     }
-
-
 
 ; Non-VIP Easter Pathing
 RunEasterPathingNonVip() {
@@ -3019,7 +2938,6 @@ RunEasterPathingNonVip() {
         MouseMove, 600, 540, 3
         MouseClick, Right,,,,,U
 
-
     } else if (res = "1366x768") {
         sleep 350
         MouseMove, 28, 326, 3
@@ -3044,16 +2962,7 @@ RunEasterPathingNonVip() {
         MouseClick, Right,,,,,U
     }
 
-        SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
 
         Send, {%keyW% Down}
         sleep 2400
@@ -3071,16 +2980,8 @@ RunEasterPathingNonVip() {
         sleep 300
         Send, {s Up}
         sleep 300
-        SetTimer, PressE, Off
-        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
+        Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         Send {Space Down}
         sleep 25
@@ -3096,16 +2997,7 @@ RunEasterPathingNonVip() {
         sleep 100
         Send, {%keyA% Down}
 
-        SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
 
         sleep 1400
         Send, {%keyA% Up}
@@ -3181,7 +3073,6 @@ RunEasterPathingNonVip() {
         sleep 4300
         Send, {s Up}
 
-        SetTimer, PressE, Off
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
@@ -3207,14 +3098,6 @@ RunEasterPathingNonVip() {
             sleep 250
         }
 
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
-
         Send_WM_COPYDATA("ocr", "easter.egg.pathing")
         
         GoSub, DoChatWait
@@ -3225,16 +3108,7 @@ RunEasterPathingNonVip() {
         Send, {enter}
         sleep 3120
 
-        SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
 
         Send, {%keyW% Down}
         sleep 2400
@@ -3261,7 +3135,6 @@ RunEasterPathingNonVip() {
         Send, {%keyW% Up}
         sleep 1560
 
-        SetTimer, PressE, Off
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         Send, {s Down}
@@ -3269,7 +3142,6 @@ RunEasterPathingNonVip() {
         Send, {s Up}
         sleep 1200
 
-        SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
 
 		sleep 3500
@@ -3295,7 +3167,6 @@ RunEasterPathingNonVip() {
 		sleep 1500
 		Send, {%keyW% Up}
 
-        SetTimer, PressE, Off
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
@@ -3321,14 +3192,6 @@ RunEasterPathingNonVip() {
             sleep 250
         }
 
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
-
         if (limitedPathing) {
             MouseMove, %originalX%, %originalY%, 0
             return
@@ -3344,16 +3207,7 @@ RunEasterPathingNonVip() {
         Send, {enter}
         sleep 2600
 
-        SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
 
         Send, {%keyW% Down}
         sleep 780
@@ -3680,7 +3534,6 @@ RunEasterPathingNonVip() {
         sleep 3360
         Send, {d Up}
 
-        SetTimer, PressE, Off
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
@@ -3704,14 +3557,6 @@ RunEasterPathingNonVip() {
             sleep 250
             MouseClick, Left
             sleep 250
-        }
-
-        if (res = "1080p") {
-        SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
         }
 
     MouseMove, %originalX%, %originalY%, 0
@@ -3864,7 +3709,6 @@ RunEasterPathingAbyssal() {
         MouseMove, 600, 540, 3
         MouseClick, Right,,,,,U
 
-
     } else if (res = "1366x768") {
         sleep 350
         MouseMove, 21, 289, 3
@@ -3931,16 +3775,8 @@ RunEasterPathingAbyssal() {
         MouseMove, 600, 540, 3
         MouseClick, Right,,,,,U
     }
-    SetTimer, PressE, 100
-    Send_WM_COPYDATA("start", "easter.egg.pathing")
 
-    if (res = "1080p") {
-        SetTimer, MerchantClick2, 5000
-    } else if (res = "1440p") {
-        SetTimer, MerchantClick1, 5000
-    } else if (res = "1366x768") {
-        SetTimer, MerchantClick3, 5000
-    }
+    Send_WM_COPYDATA("start", "easter.egg.pathing")
 
     Send, {%keyW% Down}
     sleep 1350
@@ -4046,7 +3882,6 @@ RunEasterPathingAbyssal() {
 		sleep 2200
         Send, {s Up}
 
-        SetTimer, PressE, Off
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
@@ -4072,14 +3907,6 @@ RunEasterPathingAbyssal() {
             sleep 250
         }
 
-        if (res = "1080p") {
-            SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
-
         Send_WM_COPYDATA("ocr", "easter.egg.pathing")
         
         GoSub, DoChatWait
@@ -4090,16 +3917,7 @@ RunEasterPathingAbyssal() {
         Send, {enter}
         sleep 2600
 
-        SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
-
-        if (res = "1080p") {
-            SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
 
         Send, {%keyW% Down}
         sleep 1250
@@ -4152,7 +3970,6 @@ RunEasterPathingAbyssal() {
         Send, {%keyW% Up}
         sleep 125
 
-        SetTimer, PressE, Off
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
@@ -4178,14 +3995,6 @@ RunEasterPathingAbyssal() {
             sleep 250
         }
 
-        if (res = "1080p") {
-            SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
-
         if (limitedPathing) {
             MouseMove, %originalX%, %originalY%, 0
             return
@@ -4201,16 +4010,7 @@ RunEasterPathingAbyssal() {
         Send, {enter}
         sleep 2600
 
-        SetTimer, PressE, 100
         Send_WM_COPYDATA("start", "easter.egg.pathing")
-
-        if (res = "1080p") {
-            SetTimer, MerchantClick2, 5000
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, 5000
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, 5000
-        }
 
         sleep 1625
         Send, {%keyW% Down}
@@ -4536,7 +4336,6 @@ RunEasterPathingAbyssal() {
         sleep 1750
         Send, {d Up}
 
-        SetTimer, PressE, Off
         Send_WM_COPYDATA("stop", "easter.egg.pathing")
 
         if (res = "1080p") {
@@ -4562,14 +4361,6 @@ RunEasterPathingAbyssal() {
             sleep 250
         }
 
-        if (res = "1080p") {
-            SetTimer, MerchantClick2, Off
-        } else if (res = "1440p") {
-            SetTimer, MerchantClick1, Off
-        } else if (res = "1366x768") {
-            SetTimer, MerchantClick3, Off
-        }
-
     } if (pauseAutoRoll) {
         if (res = "1080p") {
             MouseMove, 756, 1017, 3
@@ -4585,7 +4376,6 @@ RunEasterPathingAbyssal() {
             MouseClick, Left
         }
     }
-
 
 RunEasterPathingNow:
     global toggle, restartPathing, firstLoop, easterPathingLastRun, easterPathingInterval, easterPathingWebhook, res, pathingMode
@@ -4725,7 +4515,7 @@ IniWrite, %BiomeWindy%, %iniFilePath%, "Biomes", BiomeWindy
 IniWrite, %BiomeSnowy%, %iniFilePath%, "Biomes", BiomeSnowy
 IniWrite, %BiomeRainy%, %iniFilePath%, "Biomes", BiomeRainy
 IniWrite, %BiomeHeaven%, %iniFilePath%, "Biomes", BiomeHeaven
-IniWrite, %BiomeEgglan%, %iniFilePath%, "Biomes", BiomeEgglan
+IniWrite, %BiomeEggland%, %iniFilePath%, "Biomes", BiomeEggland
 IniWrite, %BiomePumpkinMoon%, %iniFilePath%, "Biomes", BiomePumpkinMoon
 IniWrite, %BiomeGraveyard%, %iniFilePath%, "Biomes", BiomeGraveyard
 IniWrite, %BiomeBloodRain%, %iniFilePath%, "Biomes", BiomeBloodRain
@@ -4758,7 +4548,6 @@ SendWebhook(title, color := "16777215") {
     http.SetRequestHeader("Content-Type", "application/json")
     http.Send(json)
 }
-
 
 ; SC toggle
 RunStrangeController() {
@@ -5169,7 +4958,6 @@ if (toggle) {
     GuiControl,, CyclesText, %cycleCount%
     GuiControl, +c0x00DD00, CyclesText
 
-
 } else {
     GuiControl,, StatusText, Stopped
     GuiControl, +c0xFF4444, StatusText
@@ -5192,7 +4980,6 @@ ManualGUIUpdate() {
         GuiControl, +c0x00DD00, RuntimeText
         GuiControl,, CyclesText, %cycleCount%
         GuiControl, +c0x00DD00, CyclesText
-
 
     } else {
         GuiControl,, StatusText, Stopped
@@ -6806,7 +6593,6 @@ if (toggle) {
             break
         }
 
-
         if (easterInterval = 0 and easterPathing) {
             elapsed := A_TickCount - startTick
             if ((easterPathingLastRun = 0 && elapsed >= easterPathingTime) || (easterPathingLastRun > 0 && (elapsed - easterPathingLastRun) >= easterPathingInterval)) {
@@ -7692,27 +7478,6 @@ OpenPluginsFolder:
 Run, %A_ScriptDir%\plugins
 return
 
-PressE:
-    Send, {e Down}
-    SetTimer, UnPressE, -50
-Return
-
-UnPressE:
-    Send, {e Up}
-Return
-
-MerchantClick1: ; 1440p
-    ; Click, 1686, 1261, 3
-Return
-
-MerchantClick2: ; 1080p
-    ; Click, 1265, 943, 3
-Return
-
-MerchantClick3: ; 768p
-    ; Click, 910, 670, 3
-Return
-
 Send_WM_COPYDATA(ByRef StringToSend, ByRef TargetScriptTitle)
 {
     VarSetCapacity(CopyDataStruct, 3 * A_PtrSize, 0)
@@ -7789,15 +7554,11 @@ RunWebhookTest()
     return "Success!"
 }
 
-
 DoChatWait:
     sleep 3000
     PixelGetColor, ChatCheck, 132, 35, RGB
-    ;ColorList := ChatCheck
     while (ChatCheck ~= "0xF[4-9A-F]F[4-9A-F]F8")
     {
         PixelGetColor, ChatCheck, 132, 35, RGB
-        ;ColorList .= (mod(A_Index, 10) = 9 ? "`n" : " ") ChatCheck
     }
-    ; ToolTip, %ColorList%, 900, 30, 9
 return
