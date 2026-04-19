@@ -2201,7 +2201,7 @@ RunEasterPathing() {
     Run, "%A_ScriptDir%\plugins\easter.egg.pathing.ahk"
     sleep 1000
     Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-    sleep 3000
+    GoSub, DoChatWait
     if (pathingMode = "Non Vip Pathing") {
         RunEasterPathingNonVip()
     } else if (pathingMode = "Abyssal Pathing") {
@@ -2464,7 +2464,8 @@ RunEasterPathingVip() {
         }
 
         Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-        sleep 3000
+        
+        GoSub, DoChatWait
         Send, {esc}
         sleep 650
         Send, {r}
@@ -2583,7 +2584,8 @@ RunEasterPathingVip() {
         }
 
         Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-        sleep 3000
+        
+        GoSub, DoChatWait
         Send, {esc}
         sleep 650
         Send, {r}
@@ -3214,7 +3216,8 @@ RunEasterPathingNonVip() {
         }
 
         Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-        sleep 3000
+        
+        GoSub, DoChatWait
         Send, {esc}
         sleep 780
         Send, {r}
@@ -3332,7 +3335,8 @@ RunEasterPathingNonVip() {
         }
 
         Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-        sleep 3000
+        
+        GoSub, DoChatWait
         Send, {esc}
         sleep 650
         Send, {r}
@@ -4077,7 +4081,8 @@ RunEasterPathingAbyssal() {
         }
 
         Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-        sleep 3000
+        
+        GoSub, DoChatWait
         Send, {esc}
         sleep 650
         Send, {r}
@@ -4187,7 +4192,8 @@ RunEasterPathingAbyssal() {
         }
 
         Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-        sleep 3000
+        
+        GoSub, DoChatWait
         Send, {esc}
         sleep 650
         Send, {r}
@@ -5967,11 +5973,6 @@ if (toggle) {
         ; PixelSearch loop
         startTime := A_TickCount
         Loop {
-            if (Mod(A_Index, 50) = 49)
-            {
-                Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-                sleep % 3 * 1000
-            }
         if (!toggle)
         break
         if (A_TickCount - startTime > 9000)
@@ -6029,6 +6030,12 @@ if (toggle) {
         */
         MouseClick, Left
         sleep 300
+        if (Mod(cycleCount, 50) = 0)
+        {
+            Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+            
+            GoSub, DoChatWait
+        }
         cycleCount++
     }
 }
@@ -6694,11 +6701,6 @@ if (toggle) {
         ; PixelSearch loop
         startTime := A_TickCount
         Loop {
-            if (Mod(A_Index, 50) = 49)
-            {
-                Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-                sleep % 3 * 1000
-            }
         if (!toggle)
         break
         if (A_TickCount - startTime > 9000)
@@ -6755,6 +6757,12 @@ if (toggle) {
         */
         MouseClick, Left
         sleep 300
+        if (Mod(cycleCount, 50) = 0)
+        {
+            Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+            
+            GoSub, DoChatWait
+        }
         cycleCount++
     }
 }
@@ -7426,11 +7434,6 @@ if (toggle) {
         ; PixelSearch loop
         startTime := A_TickCount
         Loop {
-            if (Mod(A_Index, 50) = 49)
-            {
-                Send_WM_COPYDATA("ocr", "easter.egg.pathing")
-                sleep % 3 * 1000
-            }
         if (!toggle)
         break
         if (A_TickCount - startTime > 9000)
@@ -7490,6 +7493,12 @@ if (toggle) {
         */
         MouseClick, Left
         sleep 300
+        if (Mod(cycleCount, 50) = 0)
+        {
+            Send_WM_COPYDATA("ocr", "easter.egg.pathing")
+            
+            GoSub, DoChatWait
+        }
         cycleCount++
     }
 }
@@ -7779,3 +7788,16 @@ RunWebhookTest()
         Return "No PATCH Permission or Snowflake Error"
     return "Success!"
 }
+
+
+DoChatWait:
+    sleep 3000
+    PixelGetColor, ChatCheck, 132, 35, RGB
+    ;ColorList := ChatCheck
+    while (ChatCheck ~= "0xF[4-9A-F]F[4-9A-F]F8")
+    {
+        PixelGetColor, ChatCheck, 132, 35, RGB
+        ;ColorList .= (mod(A_Index, 10) = 9 ? "`n" : " ") ChatCheck
+    }
+    ; ToolTip, %ColorList%, 900, 30, 9
+return

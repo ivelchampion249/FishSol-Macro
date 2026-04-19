@@ -4,7 +4,7 @@
     for best results have gui transparency set at max so chat can't be seen through!
 */
 
-#Requires AutoHotkey v1.1
+;#Requires AutoHotkey v1.1
 #NoEnv
 #SingleInstance, Force
 #Persistent
@@ -31,16 +31,16 @@ if (FileExist(iniFilePath)) {
     IniRead, res, %iniFilePath%, "Macro", "resolution"
     IniRead, RunHDDSafe, %iniFilePath%, "OCR", "RunHDDSafe"
     IniRead, CustomTesseractLocation, %iniFilePath%, "OCR", "CustomTesseractLocation"
-    IniRead, tempWebhook, %iniFilePath%, "Macro", "webhookURL"
-    IniRead, easterPathingWebhook, %iniFilePath%, "Easter", 0
-    if (tempWebhook != "ERROR")
-    {
-        webhookURL := tempWebhook
-        if (InStr(webhookURL, "discord"))
-            validWebhook := true
-    }
-    if (RunHDDSafe = "ERROR")
-        IniWrite, 1, %iniFilePath%, "OCR", "RunHDDSafe"
+     IniRead, tempWebhook, %iniFilePath%, "Macro", "webhookURL"
+     IniRead, easterPathingWebhook, %iniFilePath%, "Easter", 0
+     if (tempWebhook != "ERROR")
+     {
+         webhookURL := tempWebhook
+         if (InStr(webhookURL, "discord"))
+             validWebhook := true
+     }
+     if (RunHDDSafe = "ERROR")
+         IniWrite, 1, %iniFilePath%, "OCR", "RunHDDSafe"
     if (CustomTesseractLocation = "ERROR") or (not FileExist(CustomTesseractLocation))
     {
         IniWrite, % "", %iniFilePath%, "OCR", "CustomTesseractLocation"
@@ -71,6 +71,8 @@ if hasTesseract
      . "$Graphics = [System.Drawing.Graphics]::FromImage($Bitmap)`n"
      . "$Graphics.CopyFromScreen(" X ", " Y ", 0, 0, $Bitmap.Size)`n"
      . "$MemoryStream = New-Object System.IO.MemoryStream`n"
+     . "$path = '" snapshot_location "'`; "                                 ; snapshot
+     . "$Bitmap.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)`; "  ; snapshot
      . "$Bitmap.Save($MemoryStream, [System.Drawing.Imaging.ImageFormat]::Png)`n"
      . "$Bytes = $MemoryStream.ToArray()`n`n"
      . "# Define Tesseract Process`n"
@@ -202,9 +204,9 @@ readlog:
     sleep, 300
     send, {esc}
     sleep, 300
-    RunWait, powershell.exe -command %snapshot_command%,, Hide
+    ; RunWait, powershell.exe -command %snapshot_command%,, Hide
     chat_output := OCR("\ocr\screenshot.png")
-    SetTimer, CloseChat, -800
+    SetTimer, CloseChat, -3000
     if not RunHDDSafe
         gosub SendToRead
 return
@@ -273,8 +275,8 @@ return
 ; return
 
 CloseChat:
-    MouseClick, Left, 140, 35,, 2
-    sleep, 100
+    MouseClick, Left, 140, 35,, 3
+    sleep, 300
     MouseMove, %PosX%, %PosY%, 1
 return
 
@@ -304,7 +306,7 @@ SendToRead:
     
     Loop % testLines.Length()
     {
-        if (copy ~= "i)" . testLines[A_Index]) or (copy ~= ".Egg Spawned.. " . testLines[A_Index])
+        if (copy ~= "i)" . testLines[A_Index]) or (copy ~= "i).Egg Spawned.. " . testLines[A_Index])
         {
             hasEgg := true
             EggIndex := A_Index
@@ -313,14 +315,15 @@ SendToRead:
     }
     if hasEgg 
     {
-        RunWait, % "powershell.exe -command " snapshot_command,, Hide
-
+        RunWait, powershell.exe -command %snapshot_command%,, Hide
+        sleep 1
         if (EggIndex > 0)
             try SendWebhookFile(":egg: " Eggs[EggIndex] " Spawned! :egg:", "3468175", snapshot_location)
         else
             try SendWebhookFile(":egg: Rare egg Spawned!\nUnable to determine type!", "3468175", snapshot_location)
 
     }
+    SetTimer, CloseChat, -1
 Return
 
 base64(file) {
