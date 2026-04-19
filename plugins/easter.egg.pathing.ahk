@@ -171,6 +171,7 @@ return
 start:
     ; Gosub, readlog
     ; Sleep 5000
+    SetTimer, PressE, 100
     if (res = "1440p")
     {
         SetTimer, FS1440p, 1000
@@ -190,6 +191,7 @@ return
 
 stop:
     SetTimer, readlog, Off
+    SetTimer, PressE, Off
     if (res = "1440p")
     {
         SetTimer, FS1440p, off
@@ -357,12 +359,12 @@ Receive_WM_COPYDATA(wParam, lParam)
         SetTimer, stop, -1
         return true
     }
-    else if CopyOfData ~= "start"
+    if CopyOfData ~= "start"
     {
         SetTimer, start, -1
         return true
     }
-    else if CopyOfData ~= "ocr"
+    if CopyOfData ~= "ocr"
     {
         if hasTesseract 
         {
@@ -372,12 +374,12 @@ Receive_WM_COPYDATA(wParam, lParam)
         else
             return false
     }
-    else if CopyOfData ~= "kill"
+    if CopyOfData ~= "kill"
     {
         SetTimer, killme, -1
         return true
     }
-    else if InStr(CopyOfData, "Data:{") and InStr(CopyOfData, "}:ataD")
+    if InStr(CopyOfData, "Data:{") and InStr(CopyOfData, "}:ataD")
     {
         chat_output := RegExReplace(CopyOfData, "(?:Data:{)|(?:}:ataD)", "")
         SetTimer, SendToRead, -200
@@ -512,6 +514,10 @@ FS768p:
 		Sleep 1500
 		Send, {o up}
     }
+Return
+
+PressE:
+    Send {e down}{e up}
 Return
 
 
