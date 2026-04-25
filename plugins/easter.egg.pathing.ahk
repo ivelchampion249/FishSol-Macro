@@ -4,7 +4,7 @@
     for best results have gui transparency set at max so chat can't be seen through!
 */
 
-;#Requires AutoHotkey v1.1
+#Requires AutoHotkey v1.1
 #NoEnv
 #SingleInstance, Force
 #Persistent
