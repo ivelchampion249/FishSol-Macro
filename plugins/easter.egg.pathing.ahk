@@ -4,7 +4,7 @@
     for best results have gui transparency set at max so chat can't be seen through!
 */
 
-;#Requires AutoHotkey v1.1
+#Requires AutoHotkey v1.1
 #NoEnv
 #SingleInstance, Force
 #Persistent
@@ -220,13 +220,20 @@ readlog:
     send, {esc}
     sleep, 300
     Run, powershell.exe .\ocr\MemoryOCR_CaptureRobloxChat.ps1,, Hide
-    SetTimer, CloseChat, -3000
+    SetTimer, CloseChat, -5000
+    SetTimer, Backup, -10000
 return
 
+Backup:
+    SetTimer, CloseChat, Off
 CloseChat:
-    MouseClick, Left, 140, 35,, 3
+    MouseMove, 140, 35,,3
+    Click, {Left down}
+    sleep 50
+    Click, {Left up}
     sleep, 300
     MouseMove, %PosX%, %PosY%, 1
+    SetTimer, Backup, Off
 return
 
 SendToRead:
@@ -235,7 +242,7 @@ SendToRead:
     Clipboard := copy
     if copy ~= ".Egg Spawned."
         hasEgg := true
-    EggIndex := -1
+    EggIndex := -10
     
     Loop % testLines.Length()
     {
@@ -256,7 +263,7 @@ SendToRead:
             try SendWebhookFile(":egg: Rare egg Spawned!\nUnable to determine type!", "3468175", snapshot_location)
 
     }
-    SetTimer, CloseChat, -1
+    SetTimer, Backup, -1
 Return
 
 base64(file) {
